@@ -1,0 +1,38 @@
+{
+  "general": {
+    "debug": false,
+    "snapshot_suffix": "_%Y%m%d%H%M",
+    "output_path": "snapshots"
+  },
+  "grafana": {
+    "protocol": "http",
+    "host": "localhost",
+    "port": "3000",
+    "token": "____APIKEY____",
+    "search_api_limit": 5000
+    "verify_ssl": true,
+  },
+  "contexts": {
+     // set default elements for dashboards
+     "Oracle Overview": {
+        "time_from": "now-2d",
+        "time_to": "now",
+        //  required with Oracle Overview
+        "vars": {
+	  "dbhost": "host.domain",
+	  "dbinstance": "MYDB.DOM.ORG"
+        }
+     },
+     //****
+     "Network Usage": {
+        "time_from": "now-10m",
+        "time_to": "now",
+        "vars": {
+//	  "device": "host"
+	  "device": "host-1"
+//	  , "interface": ".*"
+        }
+     }
+  }
+}
+

@@ -1,6 +1,6 @@
 # Grafana Snapshots Tool
 
-A python3 bases application to build grafana snapshots that contains data(!) using [Grafana API](https://grafana.com/docs/grafana/latest/http_api/) and a python interface [grafana_api](https://github.com/m0nhawk/grafana_api)
+A python3 bases application to build grafana snapshots that contain data(!) using [Grafana API](https://grafana.com/docs/grafana/latest/http_api/) and a python interface [grafana_api](https://github.com/m0nhawk/grafana_api)
 
 The aim of this tool is to:
 1. Easily build snapshots from existing Grafana dashboard.
@@ -10,7 +10,7 @@ The aim of this tool is to:
 The development of this tool began when we discovered that there was no solution to automate the creation of snapshots from Grafana; only the functionality from the GUI was operational.
 That was a sticking point for us since it prevented us from being able to provide reports other than mannually build dashboards with statics screenshots.
 With this tool, we are able to build static dashboards, also called snapshots, that can be shared and visualized in grafana.
-It can be also used to store particular situation even if the data window is out of the scope of the retention of the datasource.
+It can be also used to store particular situation that can be seen later even if the data window is out of the scope of the retention of the datasource.
 
 ## Install using this repo
 

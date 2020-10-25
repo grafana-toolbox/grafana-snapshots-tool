@@ -22,6 +22,7 @@ It can be also used to store particular situation even if the data window is out
 * bash
 * python >3.6
 * python modules:
+  - jinja2
   - grafana-api 1.0.3 what will pull the dependencies
     - requests
     - idna

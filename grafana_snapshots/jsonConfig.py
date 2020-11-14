@@ -42,7 +42,8 @@ class jsonConfig(object):
 
         fh.close()
         #** remove multi-line C-style comments /* ... */ sequence
-        regex = re.compile(r"/\*.*\*/", re.MULTILINE + re.DOTALL)
+#        regex = re.compile(r"/\*.*\*/", re.MULTILINE + re.DOTALL)
+        regex = re.compile(r"/[*][^*]*[*]+(?:[^/*][^*]*[*]+)*/", re.MULTILINE + re.DOTALL)
         buf = regex.sub('', buf)
 
         try:

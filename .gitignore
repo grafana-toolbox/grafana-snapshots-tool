@@ -1,3 +1,5 @@
 rebuild.sh
 */__pycache__/*
 .eggs/*
+.vscode/
+.coverage

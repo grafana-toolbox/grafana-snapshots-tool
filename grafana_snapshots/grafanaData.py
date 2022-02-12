@@ -1,7 +1,6 @@
 import sys, json, re, urllib.parse
 import datetime, dateutil.parser, dateutil.relativedelta
 from jinja2 import Template
-from grafana_api.grafana_face import GrafanaFace
 
 
 #**********************************************************************************
@@ -123,8 +122,8 @@ def check_transformations( *args ):
 	{'id': 'merge', 'options': {}}
 	{'id': 'organize', 'options': {'excludeByName': {}, 'indexByName': {'Value #A': 4, 'Value #B': 5, 'Value #C': 6, 'ifAlias': 0, 'ifDescr': 1, 'ifName': 2, 'ifType': 3}, 'renameByName': {'Value': '', 'Value #C': 'MTU'}}}
 	]
-# displayName is compute according to transformation organize option renameByName :
-# 'renameByName': {'Value': '', 'Value #C': 'MTU'}
+   # displayName is compute according to transformation organize option renameByName :
+   # 'renameByName': {'Value': '', 'Value #C': 'MTU'}
    """
    res = { 'status': False }
 
@@ -139,14 +138,14 @@ def check_transformations( *args ):
    snapshotData = None
    
    if action == 'pre':
-     name = params.get('name')
-     refId = params.get('refId')
-     if name is None or refId is None:
-        return res
+      name = params.get('name')
+      refId = params.get('refId')
+      if name is None or refId is None:
+         return res
    else:
-     snapshotData = params.get('snapshotData')
-     if snapshotData is None:
-        return res
+      snapshotData = params.get('snapshotData')
+      if snapshotData is None:
+         return res
 
    filter_found = False
    for trans in transformations:
@@ -154,11 +153,11 @@ def check_transformations( *args ):
          if trans['id'] == 'filterFieldsByName':
             filter_found = True
             if 'include' in trans['options']:
-                ref_name = name + ' #' + refId
-                if name in trans['options']['include']['names'] \
-			or ref_name in trans['options']['include']['names']:
-                   res['status'] = True
-                   break
+               ref_name = name + ' #' + refId
+               if name in trans['options']['include']['names'] \
+			            or ref_name in trans['options']['include']['names']:
+                  res['status'] = True
+                  break
       elif action == 'post':
          if trans['id'] == 'merge':
             #** we receive a list of snapshotDataObj: have to merge fields with same name
@@ -207,7 +206,8 @@ def check_transformations( *args ):
             #** get columns ordered
             if 'indexByName' in trans['options']:
                sorted_cols = sorted(trans['options']['indexByName']
-			, key=trans['options']['indexByName'].get)
+         			, key=trans['options']['indexByName'].get)
+
                #** only sort if some colunm names are provided
                if len(sorted_cols) > 0:
                   fields = []
@@ -234,12 +234,11 @@ def check_transformations( *args ):
                      if name == cur_name:
                         if 'config' not in field:
                            field['config']={
-					'custom': {},
-					'displayName': new_name,
-					'filterable': True,
-					'mappings': []
-				}
-
+                              'custom': {},
+                              'displayName': new_name,
+                              'filterable': True,
+                              'mappings': []
+                           }
                         else:
                            field['config']['displayName']=new_name
                res['status'] = True
@@ -334,23 +333,23 @@ class GrafanaData(object):
                   params = None
                   if query_type == 'query_range':
                       # compute step value
-                      step = get_step(self.time_from, self.time_to)
+                     step = get_step(self.time_from, self.time_to)
 
-                      params = {
-			'query_type': query_type,
-			'expr': urllib.parse.quote(expr),
-			'start': self.time_from,
-			'end': self.time_to,
-			'step': step
-		      }
+                     params = {
+                        'query_type': query_type,
+                        'expr': urllib.parse.quote(expr),
+                        'start': self.time_from,
+                        'end': self.time_to,
+                        'step': step
+                     }
                   else:
-                      params = {
-			'query_type': query_type,
-			'expr': urllib.parse.quote(expr),
-			'time': self.time_to
-			}
-#                  if self.debug:
-#                      print("query GET datasource proxy uri: {0}".format(url))
+                     params = {
+                        'query_type': query_type,
+                        'expr': urllib.parse.quote(expr),
+                        'time': self.time_to
+                     }
+                  if self.debug:
+                     print("query GET datasource proxy uri: {0}".format(self.api.client.url))
                   try:
                      content = self.api.datasource.get_datasource_proxy_data( str(self.datasources[dtsrc]), **params )
                   except:
@@ -358,7 +357,7 @@ class GrafanaData(object):
                      return False
 
                   if self.debug:
-                      print("query GET datasource proxy uri: {0}".format(self.api.api.req_url))
+                      print("query GET datasource proxy uri: {0}".format(self.api.client.url))
 
                   if query_type == 'query_range':
                      snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel['fieldConfig'] )
@@ -375,10 +374,10 @@ class GrafanaData(object):
                # end for targets
                if panel['type'] == 'table' :
                   res = check_transformations( {
-				  'action': 'post'
-				, 'transformations': panel['transformations']
-				, 'snapshotData': panel['snapshotData']
-			} )
+                     'action': 'post'
+                     , 'transformations': panel['transformations']
+                     , 'snapshotData': panel['snapshotData']
+                  } )
                   if res['status']:
                      panel['snapshotData'] = res['snapshotData']
 #               del panel['targets']
@@ -391,10 +390,10 @@ class GrafanaData(object):
          #** e.g.: url..
 #/d/000000133/oracle-overview?orgId=1\u0026refresh=30s\u0026var-database=X3D00\u0026var-dbinstance=All\u0026from=now-2d\u0026to=now"
          self.dashboard['snapshot'] = {
-		'originalUrl': self.api.api.url + panel_url + '?from=' + str(self.time_from * 1000) 
-			 + '&to=' +  str(self.time_to * 1000),
-		'timestamp': datetime.datetime.now().isoformat(),
- 	}
+            'originalUrl': self.api.client.url + panel_url + '?from=' + str(self.time_from * 1000) 
+               + '&to=' +  str(self.time_to * 1000),
+            'timestamp': datetime.datetime.now().isoformat(),
+         }
          for anno in self.dashboard['annotations']['list']:
             del anno['datasource']
 
@@ -464,21 +463,21 @@ class GrafanaData(object):
          if value == '$__all':
             val_name = 'All'
          var_elmt['current'] = {
-		'selected': True,
-		'text': val_name,
-		'value': value
-	}
+		      'selected': True,
+            'text': val_name,
+            'value': value
+         }
          #** have to remove all options so user can't choose an other value for which no
          #** data was collected
          safe_remove_key( var_elmt, [ 
-		  'datasource'
-		, 'definition'
-		, 'refresh'
-		, 'sort'
-		, 'tagValueQuery'
-		, 'tags'
-		, 'tagsQuery'
-	] )
+            'datasource'
+            , 'definition'
+            , 'refresh'
+            , 'sort'
+            , 'tagValueQuery'
+            , 'tags'
+            , 'tagsQuery'
+         ] )
          var_elmt['query'] = val_name
          var_elmt['options'] = [ var_elmt['current'] ]
          var_elmt['type'] = 'custom'
@@ -549,11 +548,11 @@ class GrafanaData(object):
 
          #** build timestamp list
          part_one = {
-	      	   'config': { 'unit': 'time:YYYY-MM-DD HH:mm:ss' },
-		   'name': 'Time',
-		   'type': 'time',
-		   'values': ts
-	   }
+            'config': { 'unit': 'time:YYYY-MM-DD HH:mm:ss' },
+            'name': 'Time',
+            'type': 'time',
+            'values': ts
+         }
 
          for key in result['metric'].keys():
             if key == '__name__':
@@ -565,35 +564,36 @@ class GrafanaData(object):
          displayName = ''
          #** old panel version has not this attribute
          if not 'legendFormat' in target:
-             target['legendFormat'] = ''
+            target['legendFormat'] = ''
          if target['legendFormat'] is None or target['legendFormat'] == '':
-             #** if expr is a simple metric use its name
-             #** else use label of metrics
-             if re.match(r'^[a-zA-Z0-9_]+$', target['expr']):
-                  name = target['expr']
-             name = name + json.dumps(labels)
+            #** if expr is a simple metric use its name
+            #** else use label of metrics
+            if re.match(r'^[a-zA-Z0-9_]+$', target['expr']):
+               name = target['expr']
+            name = name + json.dumps(labels)
          else:
 #** TO DO build name on template
-             name = target['legendFormat']
-             displayName = self.buildDisplayName( name, labels )
+            name = target['legendFormat']
+            displayName = self.buildDisplayName( name, labels )
 
          labels['displayName'] = name
  
          part_two = {
   	      	'config': {
-			'displayName': displayName,
-			'max': max,
-			'min': min,
-			'decimals': def_decimals,
-			'unit': def_unit,
-			'mappings': def_mappings,
-			'thresholds': def_thresholds,
-		},
-                'labels': labels,
-		'name': 'Value',
-		'type': 'number',
-		'values': values
-	}
+               'displayName': displayName,
+               'max': max,
+               'min': min,
+               'decimals': def_decimals,
+               'unit': def_unit,
+               'mappings': def_mappings,
+               'thresholds': def_thresholds,
+            },
+            'labels': labels,
+            'name': 'Value',
+            'type': 'number',
+            'values': values
+         }
+
          if def_decimals is None:
             del part_two['config']['decimals']
          if def_thresholds is None:
@@ -603,14 +603,14 @@ class GrafanaData(object):
          if def_mappings is None:
             del part_two['config']['mappings']
 
-#** build snapshotDataObj
+         #** build snapshotDataObj
          snapshotDataObj['fields']=[ part_one, part_two]
          snapshotDataObj['meta'] = { 'preferredVisualisationType': 'graph' }
-#         snapshotDataObj['name'] = name
+         # snapshotDataObj['name'] = name
          snapshotDataObj['name'] = displayName
          snapshotDataObj['refId'] = target['refId']
-#        if self.debug:
-#           print( 'build_timeseries_snapshotData::snapshot[{0}]: {1}'.format(target['refId'], snapshotDataObj ))
+         # if self.debug:
+         #    print( 'build_timeseries_snapshotData::snapshot[{0}]: {1}'.format(target['refId'], snapshotDataObj ))
          snapshotData.append( snapshotDataObj )
 
       return snapshotData
@@ -623,7 +623,7 @@ class GrafanaData(object):
       # it is composed from 2 fields :
       #    metrics
       #    value (timestamp, value) 
-   #** mappings seems to be the panel['fieldConfig']['defaults']['mappings']
+      #** mappings seems to be the panel['fieldConfig']['defaults']['mappings']
       def_mappings = panel['fieldConfig']['defaults']['mappings']
 
       def_unit = None
@@ -660,13 +660,13 @@ class GrafanaData(object):
                   metric_name = metric
                if self.debug:
                   print( 'build_table_snapshotData::snapshot[{0}]: check transformation on metric {1}'.format(target['refId'], metric_name ))
-               res = check_transformations( { 
-			'action': 'pre',
-			'transformations': panel['transformations'],
-			'name': metric_name,
-			'refId': target['refId']
-		} )
-#               if not check_filters( filter_list, metric_name ):
+               res = check_transformations( {
+                  'action': 'pre',
+                  'transformations': panel['transformations'],
+                  'name': metric_name,
+                  'refId': target['refId']
+         		} )
+               # if not check_filters( filter_list, metric_name ):
                if res is not None and not res['status']:
                   if self.debug:
                      print( 'build_table_snapshotData::snapshot[{0}]: metric {1} filtered'.format(target['refId'], metric_name ))
@@ -677,16 +677,16 @@ class GrafanaData(object):
 
                if metric not in dataObj:
                   dataObj[metric] = {
-				'config': {
-					'custom': {},
-					'displayName': metric_name,
-					'filterable': True,
-					'mappings': []
-				},
-				'name': metric_name,
-				'type': 'string',
-				'values': [ ]
-			}
+                     'config': {
+                        'custom': {},
+                        'displayName': metric_name,
+                        'filterable': True,
+                        'mappings': []
+                     },
+                     'name': metric_name,
+                     'type': 'string',
+                     'values': [ ]
+                  }
                   fields.append( dataObj[metric] )
 
          for result in data['result']:
@@ -708,7 +708,7 @@ class GrafanaData(object):
             snapshotDataObj = { }
             fields = list()
             value_pair = result['value']
-#      print('ts={0} - val={1}'.format(value_pair[0], value_pair[1]))
+            # print('ts={0} - val={1}'.format(value_pair[0], value_pair[1]))
             ts = int(value_pair[0]) * 1000
             value = value_pair[1]
             if value is None or value == 'NaN':
@@ -718,28 +718,28 @@ class GrafanaData(object):
 
             #** build timestamp field
             fields.append({
-		'config': { 
-			'mappings': def_mappings,
-			'unit': 'time:YYYY-MM-DD HH:mm:ss'
-		},
-		'name': 'Time',
-		'type': 'time',
-		'values': [ ts ]
-		})
+               'config': { 
+                  'mappings': def_mappings,
+                  'unit': 'time:YYYY-MM-DD HH:mm:ss'
+               },
+               'name': 'Time',
+               'type': 'time',
+               'values': [ ts ]
+            })
             #** build value field
             field = {
-			'config': {
-				'mappings': def_mappings,
-				'decimals': def_decimals,
-				'unit': def_unit,
-				'thresholds': def_thresholds,
-				'max': value,
-				'min': value,
-                	},
-                	'name': 'Value',
-                	'type': 'number',
-                	'values': [ value ]
-		}
+               'config': {
+                  'mappings': def_mappings,
+                  'decimals': def_decimals,
+                  'unit': def_unit,
+                  'thresholds': def_thresholds,
+                  'max': value,
+                  'min': value,
+               },
+               'name': 'Value',
+               'type': 'number',
+               'values': [ value ]
+            }
             if def_decimals is None:
                del field['config']['decimals']
             if def_thresholds is None:
@@ -750,15 +750,14 @@ class GrafanaData(object):
 
             for metric in result['metric'].keys():
                fields.append({
-			'config': { 
-				'mappings': def_mappings,
-				'filterable': True
-			},
-			'name': metric,
-			'type': 'string',
-			'values': [ result['metric'][metric] ]
-	         })
-
+                  'config': { 
+                     'mappings': def_mappings,
+                     'filterable': True
+                  },
+                  'name': metric,
+                  'type': 'string',
+                  'values': [ result['metric'][metric] ]
+   	         })
 
          #** build snapshotDataObj
          snapshotDataObj['refId'] = target['refId']
@@ -770,7 +769,6 @@ class GrafanaData(object):
       snapshotData.append( snapshotDataObj )
 
       return snapshotData
-
 
    #**********************************************************************************
    def extract_vars( self, expr ):
@@ -797,56 +795,4 @@ class GrafanaData(object):
       if self.debug:
          print('extract_vars::result expr="{0}"'.format(expr))
       return expr
-
-   #**********************************************************************************
-   def insert_snapshot(self, **kwargs ):
-
-      dashboard = kwargs.get('dashboard')
-      dashboard_name = kwargs.get('name')
-
-      #**********************************************************************************
-      #*** check if snapshot name is already present in list
-      res = []
-      try:
-         res = self.api.snapshots.get_dashboard_snapshots()
-      except:
-         print("can't list existing snapshot")
-
-      snapshots = res
-      old_snap = False
-      del_snap = False
-      for snap in snapshots:
-         #print(snap)
-         if dashboard_name == snap['name']:
-            old_snap = True
-            try:
-               res = self.api.snapshots.delete_snapshot_by_key(snap['key'])
-               del_snap = True
-            except:
-               print("can't remove existing snapshot");
-   #         print( resp)
-               break
-      if self.debug:
-         if old_snap and del_snap:
-            print("old snapshot was found and removed.")
-         elif old_snap:
-            print("old snapshot was found but not removed.")
-         else:
-            print("old snapshot was not found.")
-
-      #**********************************************************************************
-      # create new snapshot
-      params = {
-	'dashboard': dashboard,
-	'name': dashboard_name
-      }
-
-      res = False
-      try:
-         res = self.api.snapshots.create_new_snapshot( **params )
-         res = True
-      except:
-         none
-
-      return res
 

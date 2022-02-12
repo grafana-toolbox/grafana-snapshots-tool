@@ -8,6 +8,7 @@ Created on Thu Oct 1 2020
 Suivi des modifications :
     V 0.0.0 - 2020/09/16 - JF. PIK - initial version
     V 0.0.1 - 2020/10/16 - JF. PIK - switch to grafana-api
+    V 0.2.0 - 2022/02/12 - JF. PIK - switch to grafana_client
 
 """
 #***********************************************************************************************
@@ -16,16 +17,13 @@ Suivi des modifications :
 # TODO:
 #***********************************************************************************************
 
+from grafana_snapshots.constants import (PKG_NAME, PKG_VERSION, CONFIG_NAME)
 
-from grafana_snapshots.constants import (PKG_NAME, PKG_VERSION, JSON_CONFIG_NAME)
+import argparse, datetime, json, os, re, sys, traceback, unicodedata, yaml
 
-import argparse, json, sys, os, re, socket, logging, subprocess
-import datetime, dateutil.parser, dateutil.relativedelta
-import unicodedata, traceback
+import grafana_client.client as GrafanaApi
+import grafana_snapshots.grafana as Grafana
 
-from grafana_api.grafana_face import GrafanaFace
-
-from grafana_snapshots.jsonConfig import jsonConfig
 from grafana_snapshots.grafanaData import GrafanaData
 
 #******************************************************************************************
@@ -52,53 +50,13 @@ class myArgs:
     return json.dumps(obj)
 
 #******************************************************************************************
-def remove_accents_and_space(input_str):
-    nfkd_form = unicodedata.normalize('NFKD', input_str)
-    res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-    res = re.sub('\s+', '_', res)
-    return res
-
-#******************************************************************************************
-def get_dashboard_content(config, grafana_api, dashboard_name):
-
-   try:
-      res = grafana_api.search.search_dashboards(
-	type_='dash-db'
-	, limit=config['grafana']['search_api_limit']
-	)
-   except Exception as e:
-      print("error: {}".format(traceback.format_exc()) )
-#      print("error: {} - message: {}".format(e.__doc__, e.message) )
-      return None
-   dashboards = res
-   board = None
-   b_found = False
-   if args.verbose:
-      print("There are {0} dashboards:".format(len(dashboards)))
-   for board in dashboards:
-      if board['title'] == dashboard_name:
-         b_found = True
-         if args.verbose:
-            print("dashboard found")
-         break
-   if b_found and board:
-      try:
-         board = grafana_api.dashboard.get_dashboard(board['uid'])
-      except Exception as e:
-         print("error: {}".format(traceback.format_exc()) )
-   else:
-      board = None
-
-   return board
-
-#******************************************************************************************
 def save_snapshot(config, args, base_path, dashboard_name, params, action):
 
-    output_file = base_path + '/'
+    output_file = base_path 
     if 'output_path' in config['general']:
-       output_file += config['general']['output_path'] + '/'
-    file_name = remove_accents_and_space( dashboard_name )
-    output_file += file_name + '.json'
+       output_file = os.path.join(output_file, config['general']['output_path'])
+    file_name = Grafana.remove_accents_and_space( dashboard_name )
+    output_file = os.path.join(output_file, file_name + '.json')
     try:
        output = open(output_file, 'w')
     except OSError as e:
@@ -114,82 +72,96 @@ def save_snapshot(config, args, base_path, dashboard_name, params, action):
     output.close()
     print("OK: snapshot {1} to '{0}'.".format(output_file, action))
  
-#******************************************************************************************
-# get command line arguments
-
-parser = argparse.ArgumentParser(description='play with grafana snapshots.')
-parser.add_argument('-b', '--base_path'
-                        , help='set base directory to find default files.')
-parser.add_argument('-c', '--config_file'
-                        , help='path to config files.')
-
-parser.add_argument('-d', '--dashboard_name'
-                        , help='name of dashboard to export or generate.')
-
-parser.add_argument('-f', '--time_from'
-                        , help='start_time of data; format is iso date or string containg now-xF. default is \'now-5m\'.')
-
-parser.add_argument('-i', '--import_file'
-                        , help='path to the file to import as a snapshot. File as to e previously exported by this tool.')
-
-parser.add_argument('-o', '--context_name'
-                        , help='name of the context form configuration file to use to generate the data. Default is the dashbord_name.')
-
-parser.add_argument('-p', '--pretty'
-                        , action='store_true'
-                        , help='use JSON indentation when exporting or extraction snapshot.')
-
-parser.add_argument('-s', '--snapshot_name'
-                        , help='name of snapshot to extract from Grafana.')
-
-parser.add_argument('-t', '--time_to'
-                        , help='end_time of data; format is iso date or string containg now-xF. default is \'now\'.')
-
-parser.add_argument('-v ', '--verbose'
-                        , action='store_true'
-                        , help='verbose mode; display log message to stdout.')
-
-parser.add_argument('-V', '--version'
-			, action='version', version='{0} {1}'.format(PKG_NAME, PKG_VERSION)
-                        , help='display program version and exit..')
-
-parser.add_argument('action', metavar='ACTION'
-			, nargs='?'
-			, choices=['generate', 'import', 'export', 'extract']
-			, default='generate'
-                        , help='action to perform on snapshot. Is one of \'generate\' (default), \'export\', \'extract\' or, \'import\'.\ngenerate: generate snapshot and publish it into Grafana.\nexport: generate snapshot and dump it to local file.\nimport: import a local snapshoot (previously exported) to Grafana.\nextract: get snapshoot from Grafana and dump it to local file.')
-
-inArgs = myArgs()
-args = parser.parse_args(namespace=inArgs)
-
 #***********************************************************************************************
 def main():
+   #******************************************************************
+   # get command line arguments
+
+   parser = argparse.ArgumentParser(description='play with grafana snapshots.')
+   parser.add_argument('-b', '--base_path'
+                           , help='set base directory to find default files.')
+   parser.add_argument('-c', '--config_file'
+                           , help='path to config files.')
+
+   parser.add_argument('-d', '--dashboard_name'
+                           , help='name of dashboard to export or generate.')
+
+   parser.add_argument('-F', '--grafana_folder'
+                  			, help='the folder name where to export/import from/into Grafana.')
+
+   parser.add_argument('-f', '--time_from'
+                           , help='start_time of data; format is iso date or string containg now-xF. default is \'now-5m\'.')
+
+   parser.add_argument('-g', '--grafana_label'
+                  			, help='label in the config file that represents the grafana to connect to.'
+                           , default='default')
+
+   parser.add_argument('-i', '--import_file'
+                           , help='path to the file to import as a snapshot. File as to e previously exported by this tool.')
+
+   parser.add_argument('-o', '--context_name'
+                           , help='name of the context form configuration file to use to generate the data. Default is the dashbord_name.')
+
+   parser.add_argument('-p', '--pretty'
+                           , action='store_true'
+                           , help='use JSON indentation when exporting or extraction snapshot.')
+
+   parser.add_argument('-s', '--snapshot_name'
+                           , help='name of snapshot to extract from Grafana.')
+
+   parser.add_argument('-t', '--time_to'
+                           , help='end_time of data; format is iso date or string containg now-xF. default is \'now\'.')
+
+   parser.add_argument('-v ', '--verbose'
+                           , action='store_true'
+                           , help='verbose mode; display log message to stdout.')
+
+   parser.add_argument('-V', '--version'
+            , action='version', version='{0} {1}'.format(PKG_NAME, PKG_VERSION)
+                           , help='display program version and exit..')
+
+   parser.add_argument('action', metavar='ACTION'
+            , nargs='?'
+            , choices=['generate', 'import', 'export', 'extract']
+            , default='generate'
+                           , help='action to perform on snapshot. Is one of \'generate\' (default), \'export\', \'extract\' or, \'import\'.\ngenerate: generate snapshot and publish it into Grafana.\nexport: generate snapshot and dump it to local file.\nimport: import a local snapshoot (previously exported) to Grafana.\nextract: get snapshoot from Grafana and dump it to local file.')
+
+   inArgs = myArgs()
+   args = parser.parse_args(namespace=inArgs)
+
    base_path = '.'
-#   base_path = os.path.dirname(os.path.abspath(__file__))
    if args.base_path is not None:
       base_path = inArgs.base_path
 
-   config_file = base_path + '/' + JSON_CONFIG_NAME
+   config_file = os.path.join(base_path, CONFIG_NAME)
    if args.config_file is not None:
-      config_file = inArgs.config_file
+      if not re.search(r'^(\.|\/)?/', config_file):
+         config_file = os.path.join(base_path,args.config_file)
+      else:
+         config_file = args.config_file
 
-   confObj = jsonConfig(config_file)
-   if confObj is None:
-       print( 'init config failure !')
-       sys.exit(2)
-   config = confObj.load()
+   config = None
+   try:
+      with open(config_file, 'r') as cfg_fh:
+         try:
+            config = yaml.safe_load(cfg_fh)
+         except yaml.scanner.ScannerError as exc:
+            mark = exc.problem_mark
+            print("Yaml file parsing unsuccessul : %s - line: %s column: %s => %s" % (config_file, mark.line+1, mark.column+1, exc.problem) )
+   except Exception as exp:
+      print('ERROR: config file not read: %s' % str(exp))
+
    if config is None:
-       print( confObj.err_msg )
-       sys.exit(2)
+      sys.exit(1)
 
    if args.verbose is None:
       if 'debug' in config['general']:
          args.verbose = config['general']['debug']
       else:
          args.verbose = False
+   else:
+      config['general']['debug'] = args.verbose
    
-   #print( json.dumps(config, sort_keys=True, indent=4) )
-
    datasources = {}
    context = { 'vars': {} }
 
@@ -200,6 +172,8 @@ def main():
    context_name = args.dashboard_name
    if args.context_name is not None:
       context_name = args.context_name
+
+   config['general']['dashboard_name'] = context_name
 
    if 'contexts' in config and context_name in config['contexts']:
       cur_cont = config['contexts'][context_name]
@@ -214,35 +188,60 @@ def main():
       args.time_from = 'now-5m'
    if args.time_to is None:
       args.time_to = 'now'
+#************
+   config['check_folder'] = False
+   if args.grafana_folder is not None:
+      config['general']['grafana_folder'] = args.grafana_folder
+      config['check_folder'] = True
 
-   grafana_api = GrafanaFace(
-	auth=config['grafana']['token']
-	, host=config['grafana']['host']
-	, protocol=config['grafana']['protocol']
-	, port=config['grafana']['port']
-	, verify=config['grafana']['verify_ssl']
-   )
+#************
+   if not args.grafana_label in config['grafana']:
+      print("ERROR: invalid grafana config label has been specified (-g {0}).".format(args.grafana_label))
+      sys.exit(1)
+   
+   #** init default conf from grafana with set label.
+   config['grafana'] = config['grafana'][args.grafana_label]
+
+#************
+   if not 'token' in config['grafana']:
+      print("ERROR: no token has been specified in grafana config label '{0}'.".format(args.grafana_label))
+      sys.exit(1)
+
+   params = {
+      'host': config['grafana'].get('host', 'localhost'),
+      'protocol': config['grafana'].get('protocol', 'http'),
+      'port': config['grafana'].get('port', '3000'),
+      'token': config['grafana'].get('token'),
+      'verify_ssl': config['grafana'].get('verify_ssl', True),
+      'search_api_limit': config['grafana'].get('search_api_limit', 5000),
+      'folder': config['general'].get('grafana_folder', 'General'),
+   }
+
    try:
-      res = grafana_api.health.check()
-      if res['database'] != 'ok':
-         print("grafana health_check is not KO.")
-         sys.exit(2)
-      elif args.verbose:
-         print("grafana health_check is OK.")
-   except e:
-      print("error: {} - message: {}".format(status_code, e.message) )
-      sys.exit(2)
+      grafana_api = Grafana.Grafana( **params )
+   except Exception as e:
+      print("ERROR: {} - message: {}".format(e) )
+      sys.exit(1)
 
    if args.action == 'generate' or args.action == 'export':
-      dashboard = get_dashboard_content(config, grafana_api, args.dashboard_name)
-      if dashboard is None:
-         print( "dashboard not found !")
-         sys.exit(0)
+      try:
+         dashboard = grafana_api.export_dashboard(config['general']['dashboard_name'])
+      except Grafana.GrafanaNotFoundError:
+         print("KO: dashboard name not found '{0}'".format(config['general']['dashboard_name']))
+         sys.exit(1)
+      except Exception as exp:
+         print("error: dashboard '{0}' export exception '{1}'".format(config['general']['dashboard_name'], traceback.format_exc()))
+         sys.exit(1)
+
+      # dashboard = get_dashboard_content(config, grafana_api, args.dashboard_name)
+      # if dashboard is None:
+      #    print( "dashboard not found !")
+      #    sys.exit(0)
 
       try:
-         dtsrcs = grafana_api.datasource.list_datasources()
-      except e:
-         print("error: {} - message: {}".format(status_code, e.message) )
+         dtsrcs = grafana_api.list_datasources()
+      except Exception as e:
+         print("error: {} - message: {}".format(e.status_code, e.message) )
          sys.exit(2)
 
       for dtsrc in dtsrcs:
@@ -254,13 +253,13 @@ def main():
 
       context['url'] = dashboard['meta']['url']
       params = {
-	   'api': grafana_api,
-	   'dashboard': dashboard['dashboard'],
-	   'datasources': datasources,
-	   'time_to': args.time_to,
-	   'time_from': args.time_from,
-	   'context': context,
-	   'debug': args.verbose
+         'api': grafana_api.grafana_api,
+         'dashboard': dashboard['dashboard'],
+         'datasources': datasources,
+         'time_to': args.time_to,
+         'time_from': args.time_from,
+         'context': context,
+         'debug': args.verbose
       }
 
       #**********************************************************************************
@@ -273,7 +272,7 @@ def main():
 
       #**********************************************************************************
       #*** build the dashboard name
-      dashboard_name = args.dashboard_name
+      dashboard_name = config['general']['dashboard_name']
       if 'snapshot_suffix' in config['general'] and config['general']['snapshot_suffix'] :
          dashboard_name += datetime.datetime.today().strftime(config['general']['snapshot_suffix'])
 
@@ -301,75 +300,29 @@ def main():
       dashboard['dashboard']['time'] = { 'from': time_from, 'to': time_to, 'raw': raw }
 
       params = {
-	'dashboard': dashboard['dashboard'],
-	'name': dashboard_name
+         'dashboard': dashboard['dashboard'],
+         'name': dashboard_name
       }
 
       if args.action == 'generate':
          #**********************************************************************************
-         #*** check if snapshot name is already present in list
-         res = []
-         try:
-            res = grafana_api.snapshots.get_dashboard_snapshots()
-         except:
-            print("can't list existing snapshot")
-
-         snapshots = res
-         old_snap = False
-         del_snap = False
-         for snap in snapshots:
-            #print(snap)
-            if dashboard_name == snap['name']:
-               old_snap = True
-               try:
-                  res = grafana_api.snapshots.delete_snapshot_by_key(snap['key'])
-                  del_snap = True
-               except:
-                  print("can't remove existing snapshot");
-      #         print( resp)
-                  break
-         if args.verbose:
-            if old_snap and del_snap:
-               print("old snapshot was found and removed.")
-            elif old_snap:
-               print("old snapshot was found but not removed.")
-            else:
-               print("old snapshot was not found.")
-
-         #**********************************************************************************
          # create new snapshot
          try:
-            res = grafana_api.snapshots.create_new_snapshot( **params )
-            print("OK: new snapshot '{}' created.".format(dashboard_name))
+            res = grafana_api.insert_snapshot( **params )
+            if res:
+               print("OK: new snapshot '{0}' created.".format(dashboard_name))
+            else:
+               print("KO: snapshot '{0}' not created.".format(dashboard_name))
          except Exception as e:
             print("error: {}".format(traceback.format_exc()) )
             print("can't create new snapshot !");
 
       else: # action is export
-
-         output_file = base_path + '/'
-         if 'output_path' in config['general']:
-            output_file += config['general']['output_path'] + '/'
-         file_name = remove_accents_and_space( dashboard_name )
-         output_file += file_name + '.json'
-         try:
-            output = open(output_file, 'w')
-         except OSError as e:
-            print('File {0} error: {1}.'.format(output_file, e.strerror))
-            sys.exit(2)
-
-         content = None
-         if args.pretty:
-            content = json.dumps( params, sort_keys=True, indent=2 )
-         else:
-            content = json.dumps( params )
-         output.write( content )
-         output.close()
-         print("OK: snapshot exported to '{}' exported.".format(output_file))
-      # end if action == export 
+         save_snapshot(config, args, base_path, dashboard_name, params, 'exported')
+         # end if action == export 
 
    # end if action == generate|export 
-
+   #***********************************************************
    elif args.action == 'import':
       if args.import_file is None:
          print('no file to import provided!')
@@ -395,43 +348,34 @@ def main():
          print("error reading '{}': {}".format(import_path, e))
          sys.exit(2)
 
-#* format for exported snapshots is:
-#   params = {
-#	'dashboard': dashboard['dashboard'],
-#	'name': dashboard_name
-#   }
+      #* format for exported snapshots is:
+      #   params = {
+      #	   'dashboard': dashboard['dashboard'],
+      #	   'name': dashboard_name
+      #   }
 
       if 'dashboard' in params and 'name' in params:
          dashboard_name= params['name']
-
-         data_api = GrafanaData( { 'api': grafana_api, } );
-         res = data_api.insert_snapshot( **params )
-         if res:
-            print("OK: snapshot '{}' imported.".format(dashboard_name))
-         else:
-            print("can't create new snapshot !");
-
+         try:
+            res = grafana_api.insert_snapshot( **params )
+            if res:
+               print("OK: snapshot '{}' imported.".format(dashboard_name))
+            else:
+               print("KO: snapshot '{0}' not imported.".format(dashboard_name))
+         except Exception as e:
+            print("error: {}".format(traceback.format_exc()) )
+            print("can't import snapshot !");
    # end if action == import
-   elif args.action == 'extract':
-      #**********************************************************************************
-      #*** check if snapshot name is already present in list
-      res = []
-      try:
-         res = grafana_api.snapshots.get_dashboard_snapshots()
-      except:
-         print("can't find existing snapshot")
 
-      snapshots = res
-      extracted_snap = None
-      for snap in snapshots:
-         #print(snap)
-         if args.snapshot_name == snap['name']:
-            try:
-               extracted_snap = grafana_api.snapshots.get_snapshot_by_key(snap['key'])
-            except Exception as e:
-               print("error: {}".format(traceback.format_exc()) )
-               print("can't remove existing snapshot");
-            break
+   #***********************************************************
+   elif args.action == 'extract':
+      try:
+         extracted_snap = grafana_api.get_snapshot_by_name(args.snapshot_name)
+      except Exception as e:
+         print("error: {}".format(traceback.format_exc()) )
+         print("can't remove existing snapshot");
+         sys.exit(2)
+      
       if extracted_snap is None:
          print( "can't find {} in existing snapshots".format(args.snapshot_name) )
          sys.exit(2)
@@ -439,7 +383,10 @@ def main():
       save_snapshot(config, args, base_path, args.snapshot_name, extracted_snap, 'extracted')
  
 # end main...
-
+#***********************************************************************************************
 
 if __name__  == '__main__':
    main()
+
+#***********************************************************************************************
+# over

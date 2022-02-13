@@ -8,7 +8,7 @@ version = PKG_VERSION
 setup(
     name=name,
     version=version,
-    description='A Python-based application to build Grafana snapshots using the Grafana API and grafana-api python interface',
+    description='A Python-based application to build Grafana snapshots using the Grafana API and grafana-client python interface',
     long_description_content_type='text/markdown',
     long_description=open('README.md', 'r').read(),
     author="author",

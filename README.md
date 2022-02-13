@@ -1,6 +1,6 @@
 # Grafana Snapshots Tool
 
-A python3 bases application to build grafana snapshots that contains data(!) using [Grafana API](https://grafana.com/docs/grafana/latest/http_api/) and a python interface [grafana_api](https://github.com/m0nhawk/grafana_api)
+A python3 bases application to build grafana snapshots that contains data(!) using [Grafana API](https://grafana.com/docs/grafana/latest/http_api/) and a python interface [grafana-client](https://github.com/panodata/grafana-client)
 
 The aim of this tool is to:
 1. Easily build snapshots from existing Grafana dashboard.
@@ -14,16 +14,25 @@ It can be also used to store particular situation even if the data window is out
 
 ## Install using this repo
 
-```
-    $ pip install git+https://github.com/peekjef72/grafana-snapshots-tool.git
+```bash
+pip install git+https://github.com/peekjef72/grafana-snapshots-tool.git
 ```
 
+## Install using this repo
+install from pypi
+
+```bash
+pip3 install grafana-snapshots-tool 
+```
 ## Requirements:
 * bash
 * python >3.6
 * python modules:
+  - python_dateutil
+  - setuptools==39.2.0
+  - PyYaml
   - jinja2
-  - grafana-api 1.0.3 what will pull the dependencies
+  - grafana-client 2.0.0 what will pull the dependencies
     - requests
     - idna
     - urllib3
@@ -33,17 +42,19 @@ It can be also used to store particular situation even if the data window is out
 * A `Token` of an `Admin` role (grafana APIKey).
 
 ## Configuration
-The configuration is stored in a JSON file, with extended syntax that authorize comments in C++ style with // or /*... */.
+The configuration is stored in a YAML file.
+
 It contains 3 parts:
 * **general**: for script env.
 	* **debug**: enable verbose (debug) trace (for dev only...)
 	* **snapshot_suffix**: when generating or exporting a dashboard to snapshot, append that suffix to the snapshot name or file name. The suffix can contain plain text and pattern that is translated with strftime command.
 	* **output_path**: where to store the exported snapshots.
-- **grafana**: for grafana access settings
-	* **protocal**, **host**, **port**: use to build the access url
-	* **verify_ssl**: to check ssl certificate or not
-	* **token**: APIKEY with admin right from Grafana to access the REST API.
-	* **search_api_limit**: the maximum element to retrieve on search over API.
+* **grafana**: for grafana access settings
+    * **label**: a label to refer a grafana server. There must be at least 'default' label. It is used to reference several Grafana server so you can generate from one and to import to another using different 'label'.
+     	* **protocol**, **host**, **port**: use to build the access url
+    	* **verify_ssl**: to check ssl certificate or not
+    	* **token**: APIKEY with admin right from Grafana to access the REST API.
+    	* **search_api_limit**: the maximum element to retrieve on search over API.
 * **context**: to define default values for dashboards, time_from, time_to and values for variables that the data exposed in the dashboard are depending from. It is an object. Add a sub-object identified by the dashboard name, for each dashboard you want to add default value.
 	Each object can contain:
 	* **time_from** and **time_to**
@@ -57,10 +68,17 @@ build a directory structure:
 	- snapshots/
 	where your exported snapshots will be stored.
 
-**usage**: grafana-snapshots [-h] [-b BASE_PATH] [-c CONFIG_FILE]
-                         [-d DASHBOARD_NAME] [-f TIME_FROM] [-i IMPORT_FILE]
-                         [-o CONTEXT_NAME] [-t TIME_TO] [-v] [-V]
+**usage**:
+
+```bash
+grafana-snapshots -h
+usage: grafana-snapshots [-h] [-b BASE_PATH] [-c CONFIG_FILE]
+                         [-d DASHBOARD_NAME] [-F GRAFANA_FOLDER]
+                         [-f TIME_FROM] [-g GRAFANA_LABEL] [-i IMPORT_FILE]
+                         [-o CONTEXT_NAME] [-p] [-s SNAPSHOT_NAME]
+                         [-t TIME_TO] [-v] [-V]
                          [ACTION]
+```
 
 then enter into your directory and type in you commands.
 

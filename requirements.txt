@@ -1,0 +1,5 @@
+grafana_client==2.1.0
+Jinja2==3.0.3
+python_dateutil==2.8.2
+PyYAML==6.0
+setuptools==39.2.0

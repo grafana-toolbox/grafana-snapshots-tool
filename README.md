@@ -18,7 +18,7 @@ It can be also used to store particular situation even if the data window is out
 pip install git+https://github.com/peekjef72/grafana-snapshots-tool.git
 ```
 
-## Install using this repo
+## Install pypi package
 install from pypi
 
 ```bash
@@ -29,7 +29,7 @@ pip3 install grafana-snapshots-tool
 * python >3.6
 * python modules:
   - python_dateutil
-  - setuptools==39.2.0
+  - setuptools
   - PyYaml
   - jinja2
   - grafana-client 2.0.0 what will pull the dependencies

@@ -7,7 +7,7 @@ import grafana_client.api as GrafanaApi
 import grafana_client.client as GrafanaClient
 import re, traceback, unicodedata
 
-from grafana_import.constants import (PKG_NAME)
+from grafana_snapshots.constants import (PKG_NAME)
 
 #******************************************************************************************
 class GrafanaDashboardNotFoundError(Exception):

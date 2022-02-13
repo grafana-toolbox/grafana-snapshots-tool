@@ -4,10 +4,6 @@ from setuptools import setup, find_packages
 # Global variables
 name = PKG_NAME
 version = PKG_VERSION
-requires = [
-    'grafana-api',
-    'jinja2'
-]
 
 setup(
     name=name,
@@ -24,6 +20,6 @@ setup(
         ]
     },
     packages=find_packages(),
-    install_requires=requires,
+    install_requires=open('./requirements.txt').readlines(),
     package_data={'': ['conf/*']},
 )

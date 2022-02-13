@@ -28,6 +28,9 @@ pip3 install grafana-snapshots-tool
 * bash
 * python >3.6
 * python modules:
+  - python_dateutil
+  - setuptools==39.2.0
+  - PyYaml
   - jinja2
   - grafana-client 2.0.0 what will pull the dependencies
     - requests
@@ -47,7 +50,7 @@ It contains 3 parts:
 	* **snapshot_suffix**: when generating or exporting a dashboard to snapshot, append that suffix to the snapshot name or file name. The suffix can contain plain text and pattern that is translated with strftime command.
 	* **output_path**: where to store the exported snapshots.
 * **grafana**: for grafana access settings
-    * **label**: a label to refer this grafana server default at least
+    * **label**: a label to refer a grafana server. There must be at least 'default' label. It is used to reference several Grafana server so you can generate from one and to import to another using different 'label'.
      	* **protocol**, **host**, **port**: use to build the access url
     	* **verify_ssl**: to check ssl certificate or not
     	* **token**: APIKEY with admin right from Grafana to access the REST API.
@@ -65,10 +68,17 @@ build a directory structure:
 	- snapshots/
 	where your exported snapshots will be stored.
 
-**usage**: grafana-snapshots [-h] [-b BASE_PATH] [-c CONFIG_FILE]
-                         [-d DASHBOARD_NAME] [-f TIME_FROM] [-i IMPORT_FILE]
-                         [-o CONTEXT_NAME] [-t TIME_TO] [-v] [-V]
+**usage**:
+
+```bash
+grafana-snapshots -h
+usage: grafana-snapshots [-h] [-b BASE_PATH] [-c CONFIG_FILE]
+                         [-d DASHBOARD_NAME] [-F GRAFANA_FOLDER]
+                         [-f TIME_FROM] [-g GRAFANA_LABEL] [-i IMPORT_FILE]
+                         [-o CONTEXT_NAME] [-p] [-s SNAPSHOT_NAME]
+                         [-t TIME_TO] [-v] [-V]
                          [ACTION]
+```
 
 then enter into your directory and type in you commands.
 

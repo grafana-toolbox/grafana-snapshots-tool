@@ -310,7 +310,11 @@ class GrafanaData(object):
                   print("target-type is 'row': skipped")
                continue
 
-            if dtsrc in self.datasources and targets is not None:
+            if isinstance(dtsrc, dict):
+               dtsrc = dtsrc['uid']
+            # else:
+            #    ff
+            if (dtsrc in self.datasources or dtsrc == '-- Mixed --' ) and targets is not None:
 
 #              print('dt: {0}'.format(datasources[dtsrc]))
                for target in targets:
@@ -323,6 +327,10 @@ class GrafanaData(object):
                   if 'format' in target and target['format'] == 'table':
                      query_type = 'query'
 
+                  # check if expr is defined or and unconfigurated query
+                  if 'expr' not in target:
+                     print("target expr is not defined: skipped!")
+                     continue
 
                   # check if target expr contains variable ($var)
                   expr = target['expr']
@@ -350,8 +358,19 @@ class GrafanaData(object):
                      }
                   if self.debug:
                      print("query GET datasource proxy uri: {0}".format(self.api.client.url))
+                  # determine datasource name if global name is 'mixed'
+                  if dtsrc == '-- Mixed --' and 'datasource' in target:
+                     datasource_name = target['datasource']
+                     if isinstance(datasource_name, dict):
+                        datasource_name = datasource_name['uid']
+                  else:
+                     datasource_name = dtsrc
+                  if not datasource_name in self.datasources:
+                     print("datasource '{0}' was not found".format(datasource_name))
+                     continue
+
                   try:
-                     content = self.api.datasource.get_datasource_proxy_data( str(self.datasources[dtsrc]), **params )
+                     content = self.api.datasource.get_datasource_proxy_data( str(self.datasources[datasource_name]), **params )
                   except:
                      print('invalid results...')
                      return False

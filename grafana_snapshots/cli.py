@@ -245,9 +245,13 @@ def main():
          sys.exit(2)
 
       for dtsrc in dtsrcs:
-         datasources[dtsrc['name']] = dtsrc['id']
-         if 'isDefault' in dtsrc and dtsrc['isDefault']:
-            datasources['default'] = dtsrc['id']
+         if 'uid' not in dtsrc:
+            datasources[dtsrc['name']] = dtsrc['id']
+            if 'isDefault' in dtsrc and dtsrc['isDefault']:
+               datasources['default'] = dtsrc['id']
+         else:
+            datasources[dtsrc['uid']] = dtsrc['id']
+
       if args.verbose:
          print('datasources OK.')
 

@@ -100,7 +100,7 @@ def main():
                            , help='path to the file to import as a snapshot. File as to e previously exported by this tool.')
 
    parser.add_argument('-o', '--context_name'
-                           , help='name of the context form configuration file to use to generate the data. Default is the dashbord_name.')
+                           , help='name of the context set in configuration file to use to generate the data. By default the dashboard_name is used as context_name.')
 
    parser.add_argument('-p', '--pretty'
                            , action='store_true'

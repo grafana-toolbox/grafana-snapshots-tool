@@ -27,12 +27,6 @@ is open to whoever wants to implement it.
 Look through the GitHub issues for features. Anything tagged with "feature"
 is open to whoever wants to implement it.
 
-### Write Documentation
-
-Centreon SDK Python could always use more documentation, whether as part of the 
-official Centreon SDK Python docs, in docstrings, or even on the web in blog posts,
-articles, and such.
-
 ### Submit Feedback
 
 The best way to send feedback is to file an issue at https://github.com/peekjef72/grafana-snapshot/issues

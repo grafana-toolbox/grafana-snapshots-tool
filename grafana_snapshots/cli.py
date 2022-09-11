@@ -117,13 +117,13 @@ def main():
                            , help='verbose mode; display log message to stdout.')
 
    parser.add_argument('-V', '--version'
-            , action='version', version='{0} {1}'.format(PKG_NAME, PKG_VERSION)
+                           , action='version', version='{0} {1}'.format(PKG_NAME, PKG_VERSION)
                            , help='display program version and exit..')
 
    parser.add_argument('action', metavar='ACTION'
-            , nargs='?'
-            , choices=['generate', 'import', 'export', 'extract']
-            , default='generate'
+                           , nargs='?'
+                           , choices=['generate', 'import', 'export', 'extract']
+                           , default='generate'
                            , help='action to perform on snapshot. Is one of \'generate\' (default), \'export\', \'extract\' or, \'import\'.\ngenerate: generate snapshot and publish it into Grafana.\nexport: generate snapshot and dump it to local file.\nimport: import a local snapshoot (previously exported) to Grafana.\nextract: get snapshoot from Grafana and dump it to local file.')
 
    inArgs = myArgs()

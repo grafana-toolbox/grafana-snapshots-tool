@@ -250,7 +250,10 @@ def main():
             if 'isDefault' in dtsrc and dtsrc['isDefault']:
                datasources['default'] = dtsrc['id']
          else:
-            datasources[dtsrc['uid']] = dtsrc['id']
+            datasources[dtsrc['uid']] = {
+               'id': dtsrc['id'],
+               'name': dtsrc['name'],
+            }
 
       if args.verbose:
          print('datasources OK.')

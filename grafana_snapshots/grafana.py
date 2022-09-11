@@ -89,6 +89,8 @@ class Grafana(object):
       #* allow to create new dashboard with same name in specified folder.
       self.allow_new = kwargs.get('allow_new', False)
 
+      self.debug = kwargs.get('debug', False)
+
       #* build an aapi object
       self.grafana_api = GrafanaApi.GrafanaApi(
          auth=config['token'],

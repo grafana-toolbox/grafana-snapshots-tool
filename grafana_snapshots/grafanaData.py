@@ -338,40 +338,69 @@ class GrafanaData(object):
                   if m:
                       expr = self.extract_vars(expr)
 
-                  params = None
-                  if query_type == 'query_range':
-                      # compute step value
-                     step = get_step(self.time_from, self.time_to)
+                  # params = None
+                  # if query_type == 'query_range':
+                  #     # compute step value
+                  #    step = get_step(self.time_from, self.time_to)
 
-                     params = {
-                        'query_type': query_type,
-                        'expr': urllib.parse.quote(expr),
-                        'start': self.time_from,
-                        'end': self.time_to,
-                        'step': step
-                     }
-                  else:
-                     params = {
-                        'query_type': query_type,
-                        'expr': urllib.parse.quote(expr),
-                        'time': self.time_to
-                     }
+                  #    params = {
+                  #       'query_type': query_type,
+                  #       'expr': urllib.parse.quote(expr),
+                  #       'start': self.time_from,
+                  #       'end': self.time_to,
+                  #       'step': step
+                  #    }
+                  # else:
+                  #    params = {
+                  #       'query_type': query_type,
+                  #       'expr': urllib.parse.quote(expr),
+                  #       'time': self.time_to
+                  #    }
                   if self.debug:
                      print("query GET datasource proxy uri: {0}".format(self.api.client.url))
                   # determine datasource name if global name is 'mixed'
                   if dtsrc == '-- Mixed --' and 'datasource' in target:
                      datasource_name = target['datasource']
+                     # datasource set in panel is in new format { 'uid': ..., 'type':... }
                      if isinstance(datasource_name, dict):
                         datasource_name = datasource_name['uid']
+                     # datasource is in old format: str; so have to find name in datasource list
+                     else:
+                        for uid,source in self.datasources.items():
+                           if source['name'] == datasource_name:
+                              datasource_name = uid
+                              break
                   else:
                      datasource_name = dtsrc
+
                   if not datasource_name in self.datasources:
                      print("datasource '{0}' was not found".format(datasource_name))
                      continue
+                  else:
+                     if isinstance(self.datasources[datasource_name], dict):
+                        datasource_id = str(self.datasources[datasource_name]['id'])
+                     else:
+                        datasource_id = str(self.datasources[datasource_name])
 
                   try:
-                     content = self.api.datasource.get_datasource_proxy_data( str(self.datasources[datasource_name]), **params )
-                  except:
+                     if query_type == 'query_range':
+                        content = self.api.datasource.query_range(
+                           datasource_id,
+                           expr,
+                           self.time_from,
+                           self.time_to,
+                           # compute step value
+                           get_step(self.time_from, self.time_to)
+                        )
+                     else:
+                        content = self.api.datasource.query(
+                           datasource_id,
+                           expr,
+                           self.time_to,
+                        )
+
+                     # content = self.api.datasource.get_datasource_proxy_data( datasource_id, **params )
+                  except Exception as e:
                      print('invalid results...')
                      return False
 

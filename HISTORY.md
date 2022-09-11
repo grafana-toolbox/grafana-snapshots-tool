@@ -2,6 +2,9 @@
 
 # History
 
+## 0.2.1 (2022-09-11)
+* fixe error on grafana datasources: Anow the datatype returned by the API changed with grafana new version [issues #2](issues/2).
+
 ## 0.2.0 (2022-02-12)
 * migration from grafana-api to grafana-client.
   

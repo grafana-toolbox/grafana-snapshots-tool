@@ -114,5 +114,5 @@ then you can go into Grafana Gui and find the snapshot in dashboard/Manage/Snaps
 * currently snapshots for Table doesn't work.
 * repeat is not supported
 * overrides are not used to modify values !
-
+* changes with new version of Grafana (>7.5) have several impacts on the rendering of panels; a code review is required to improve the result.
 

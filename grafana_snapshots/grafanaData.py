@@ -1,7 +1,9 @@
-import sys, json, re, urllib.parse
+import copy, json, re
 import datetime, dateutil.parser, dateutil.relativedelta
+from urllib import request
 from jinja2 import Template
-
+from distutils.version import LooseVersion
+from grafana_client.knowledge import query_factory
 
 #**********************************************************************************
 def get_time(time_str):
@@ -254,7 +256,31 @@ def check_transformations( *args ):
    return res
 
 #**********************************************************************************
+class GrafanaQuery(object):
+   #***********************************************
+   def __init__( *args ):
+      self = args[0]
+      kwargs = {}
+      if len(args) > 1:
+         kwargs = args[1]
+      
+      self.datasource = kwargs.get('datasource')
+      self.query_expr = kwargs.get('query')
+      self.query = query_factory(self.datasource, self.query_expr)
+      self.format = kwargs.get('format')
+      self.time_to = kwargs.get('time_to')
+      self.time_from = kwargs.get('time_from')
+
+
+   #***********************************************
+   def dummy(self):
+      pass
+
+#**********************************************************************************
 class GrafanaData(object):
+   # prometheus query change in v 8
+   version_8 = LooseVersion('8')
+
    #***********************************************
    def __init__( *args ):
       self = args[0]
@@ -272,7 +298,58 @@ class GrafanaData(object):
          self.debug = False
 
       self.varfinder = re.compile(r'\$([a-zA-Z0-9_]+)')
-     
+
+   #***********************************************
+   def get_datasource(self, datasource):
+      res_datasource = None
+
+      if datasource != '-- Mixed --':
+         # datasource set in panel is in new format { 'uid': ..., 'type':... }
+         if isinstance(datasource, dict):
+            if 'uid' in datasource and datasource['uid'] in self.datasources:
+               res_datasource = self.datasources[datasource['uid']]
+         # datasource is in old format: str; so have to find name in datasource list
+         else:
+            for _,source in self.datasources.items():
+               if source['name'] == datasource:
+                  res_datasource = source
+                  break
+         
+      return res_datasource
+
+   #***********************************************
+   def get_query_from_datasource(self, datasource, target):
+
+      if 'type' not in datasource:
+         return None
+
+      expr = None
+      query = None
+      if datasource['type'] == 'prometheus':
+         # check query method: timeseries or table
+         query_type = 'query_range'
+         format = 'time_series'
+         if 'format' in target and target['format'] == 'table':
+            format = target['format']
+            query_type = 'query'
+
+         # check if expr is defined or and unconfigurated query
+         if 'expr' in target:
+            expr = target['expr']
+
+            # check if target expr contains variable ($var)
+            m =  self.varfinder.search(expr)
+            if m:
+               expr = self.extract_vars(expr)
+      if expr is not None:
+         params = copy.deepcopy( target )
+         params['query'] = expr
+         params['time_to'] = str(self.time_to * 1000)
+         params['time_from'] = str(self.time_from * 1000)
+
+         request = query_factory(datasource, params)
+
+      return request
    #***********************************************
    def get_dashboard_data(self):
 
@@ -306,15 +383,12 @@ class GrafanaData(object):
             else:
                #** row panel... probably
                targets = None
-               if self.debug and 'type' in panel and panel['type'] == 'row':
-                  print("target-type is 'row': skipped")
+               if self.debug and 'type' in panel and panel['type'] in ('row', 'text'):
+                  print("target-type is '{0}': skipped".format(panel['type']))
                continue
 
-            if isinstance(dtsrc, dict):
-               dtsrc = dtsrc['uid']
-            # else:
-            #    ff
-            if (dtsrc in self.datasources or dtsrc == '-- Mixed --' ) and targets is not None:
+            datasource = self.get_datasource(dtsrc)
+            if (datasource is not None or dtsrc == '-- Mixed --' ) and targets is not None:
 
 #              print('dt: {0}'.format(datasources[dtsrc]))
                for target in targets:
@@ -322,21 +396,45 @@ class GrafanaData(object):
                   if 'hide' in target and target['hide']:
                      continue
 
+                  if dtsrc == '-- Mixed --' and 'datasource' in target:
+                     datasource = self.get_datasource(target['datasource'])
+                     if datasource is not None:
+                        datasource_name = datasource['name']
+                     else:
+                        datasource_name = target['datasource']
+                  else:
+                     datasource_name = dtsrc
+
+                  if not datasource:
+                     print("datasource '{0}' was not found".format(datasource_name))
+                     continue
+
+                  request = self.get_query_from_datasource(datasource, target)
+                  if request is None:
+                     print("query type '{0}' not supported".format(datasource['type']))
+                     continue
+
+                  try:
+                     content = self.api.smartquery(datasource, request)
+                  except Exception as e:
+                     print('invalid results...: {}'.format(e))
+                     return False
+
                   # check query method: timeseries or table
                   query_type = 'query_range'
                   if 'format' in target and target['format'] == 'table':
                      query_type = 'query'
 
-                  # check if expr is defined or and unconfigurated query
-                  if 'expr' not in target:
-                     print("target expr is not defined: skipped!")
-                     continue
+                  # # check if expr is defined or and unconfigurated query
+                  # if 'expr' not in target:
+                  #    print("target expr is not defined: skipped!")
+                  #    continue
 
-                  # check if target expr contains variable ($var)
-                  expr = target['expr']
-                  m =  self.varfinder.search(expr)
-                  if m:
-                      expr = self.extract_vars(expr)
+                  # # check if target expr contains variable ($var)
+                  # expr = target['expr']
+                  # m =  self.varfinder.search(expr)
+                  # if m:
+                  #     expr = self.extract_vars(expr)
 
                   # params = None
                   # if query_type == 'query_range':
@@ -356,61 +454,46 @@ class GrafanaData(object):
                   #       'expr': urllib.parse.quote(expr),
                   #       'time': self.time_to
                   #    }
+                  # if self.debug:
+                  #    print("query GET datasource proxy uri: {0}".format(self.api.client.url))
+
+
+                  # datasource_id = str(datasource['id'])
+
+                  # try:
+                  #    if query_type == 'query_range':
+                  #       content = self.api.datasource.query_range(
+                  #          datasource_id,
+                  #          expr,
+                  #          self.time_from,
+                  #          self.time_to,
+                  #          # compute step value
+                  #          get_step(self.time_from, self.time_to)
+                  #       )
+                  #    else:
+                  #       content = self.api.datasource.query(
+                  #          datasource_id,
+                  #          expr,
+                  #          self.time_to,
+                  #       )
+
+                  #    # content = self.api.datasource.get_datasource_proxy_data( datasource_id, **params )
+                  # except Exception as e:
+                  #    print('invalid results...')
+                  #    return False
+
                   if self.debug:
-                     print("query GET datasource proxy uri: {0}".format(self.api.client.url))
-                  # determine datasource name if global name is 'mixed'
-                  if dtsrc == '-- Mixed --' and 'datasource' in target:
-                     datasource_name = target['datasource']
-                     # datasource set in panel is in new format { 'uid': ..., 'type':... }
-                     if isinstance(datasource_name, dict):
-                        datasource_name = datasource_name['uid']
-                     # datasource is in old format: str; so have to find name in datasource list
-                     else:
-                        for uid,source in self.datasources.items():
-                           if source['name'] == datasource_name:
-                              datasource_name = uid
-                              break
-                  else:
-                     datasource_name = dtsrc
+                      print("query GET datasource proxy uri: {0}".format(self.api.grafana_api.client.url))
 
-                  if not datasource_name in self.datasources:
-                     print("datasource '{0}' was not found".format(datasource_name))
-                     continue
-                  else:
-                     if isinstance(self.datasources[datasource_name], dict):
-                        datasource_id = str(self.datasources[datasource_name]['id'])
-                     else:
-                        datasource_id = str(self.datasources[datasource_name])
-
-                  try:
+                  if 'data' in content:
                      if query_type == 'query_range':
-                        content = self.api.datasource.query_range(
-                           datasource_id,
-                           expr,
-                           self.time_from,
-                           self.time_to,
-                           # compute step value
-                           get_step(self.time_from, self.time_to)
-                        )
+                        snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel['fieldConfig'] )
                      else:
-                        content = self.api.datasource.query(
-                           datasource_id,
-                           expr,
-                           self.time_to,
-                        )
-
-                     # content = self.api.datasource.get_datasource_proxy_data( datasource_id, **params )
-                  except Exception as e:
-                     print('invalid results...')
-                     return False
-
-                  if self.debug:
-                      print("query GET datasource proxy uri: {0}".format(self.api.client.url))
-
-                  if query_type == 'query_range':
+                        snapshotData = self.build_table_snapshotData( target, content['data'], panel )
+                  # new format
+                  elif 'results' in content:
                      snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel['fieldConfig'] )
-                  else:
-                     snapshotData = self.build_table_snapshotData( target, content['data'], panel )
+
                   if self.debug:
                      print('#***************************************************************')
                      print( 'snapshot[{0}]: {1}'.format(target['refId'], snapshotData ))

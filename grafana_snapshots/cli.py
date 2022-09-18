@@ -246,21 +246,18 @@ def main():
 
       for dtsrc in dtsrcs:
          if 'uid' not in dtsrc:
-            datasources[dtsrc['name']] = dtsrc['id']
+            datasources[dtsrc['name']] = dtsrc
             if 'isDefault' in dtsrc and dtsrc['isDefault']:
-               datasources['default'] = dtsrc['id']
+               datasources['default'] = dtsrc
          else:
-            datasources[dtsrc['uid']] = {
-               'id': dtsrc['id'],
-               'name': dtsrc['name'],
-            }
+            datasources[dtsrc['uid']] = dtsrc
 
       if args.verbose:
          print('datasources OK.')
 
       context['url'] = dashboard['meta']['url']
       params = {
-         'api': grafana_api.grafana_api,
+         'api': grafana_api,
          'dashboard': dashboard['dashboard'],
          'datasources': datasources,
          'time_to': args.time_to,

@@ -344,8 +344,8 @@ class GrafanaData(object):
       if expr is not None:
          params = copy.deepcopy( target )
          params['query'] = expr
-         params['time_to'] = str(self.time_to * 1000)
-         params['time_from'] = str(self.time_from * 1000)
+         params['time_to'] = self.time_to
+         params['time_from'] = self.time_from
 
          request = query_factory(datasource, params)
 

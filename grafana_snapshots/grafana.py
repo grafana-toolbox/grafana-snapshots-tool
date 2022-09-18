@@ -7,7 +7,6 @@ import grafana_client.api as GrafanaApi
 import grafana_client.client as GrafanaClient
 import re, traceback, unicodedata
 from distutils.version import LooseVersion
-from urllib.parse import urlencode
 
 from grafana_snapshots.constants import (PKG_NAME)
 
@@ -458,67 +457,16 @@ class Grafana(object):
     #**********************************************************************************
     def smartquery(self, datasource: dict, request: dict):
         """
-        Send a query to the designated data source and return its response.
+        wrapper for grafana_api.grafana_api.datasource.smart_query()
 
-        TODO: This is by far not complete. The `query_factory` function has to
-            be made more elaborate in order to query different data source
-                types.
+        input:
+            datasource: dict
+            request: dict from query_factory
+        return:
+            result from API query
         """
 
-        datasource_id = datasource["id"]
-        datasource_type = datasource["type"]
-        datasource_dialect = datasource.get("jsonData", {}).get("version", "InfluxQL")
-        access_type = datasource["access"]
+        return self.grafana_api.datasource.smartquery(datasource, request=request)
 
-        # Sanity checks.
-        if not request:
-            raise ValueError("reqeust must be given")
-
-        # Compute request method, body, and endpoint.
-        if request['method'] == 'POST':
-            send_request = self.grafana_api.client.POST
-        else:
-            send_request = self.grafana_api.client.GET
-
-        # Certain data sources like InfluxDB 1.x, still use the `/datasources/proxy` route.
-        if datasource_type == "influxdb" and datasource_dialect == "InfluxQL":
-            url = f"/datasources/proxy/{datasource_id}/query"
-            url += '?' + urlencode(request['params'])
-            request_kwargs = {"data": request["data"]}
-
-        elif datasource_type == "graphite":
-            url = f"/datasources/proxy/{datasource_id}/render"
-            request_kwargs = {"data": request["data"]}
-
-        # This case is very special. It is used for Elasticsearch and Testdata.
-        # elif expression.startswith("url://"):
-        #     url = expression.replace("url://", "")
-        #     url = url.format(
-        #         datasource_id=datasource.get("id"),
-        #         datasource_uid=datasource.get("uid"),
-        #         database_name=datasource.get("database"),
-        #     )
-        #     request_kwargs = {}
-        #     send_request = self.client.GET
-
-        # For all others, use the generic data source communication endpoint.
-        elif access_type in ["server", "proxy"]:
-            url = "/ds/query"
-            request_kwargs = {"json": request["data"]}
-
-        else:
-            raise NotImplementedError(f"Unable to submit query to data source with access type '{access_type}'")
-
-        # Submit query.
-        try:
-            r = send_request(url, **request_kwargs)
-            # logger.debug(f"Response from generic data source query: {r}")
-            return r
-        except (GrafanaClient.GrafanaClientError, GrafanaClient.GrafanaServerError) as ex:
-            print(
-                f"Querying data source failed. id={datasource_id}, type={datasource_type}. "
-                f"Reason: {ex}. Response: {ex.response or '<empty>'}"
-            )
-            raise
 #******************************************************************************************
 # over

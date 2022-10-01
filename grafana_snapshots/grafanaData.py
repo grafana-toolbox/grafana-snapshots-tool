@@ -487,12 +487,12 @@ class GrafanaData(object):
 
                   if 'data' in content:
                      if query_type == 'query_range':
-                        snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel['fieldConfig'] )
+                        snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel )
                      else:
                         snapshotData = self.build_table_snapshotData( target, content['data'], panel )
                   # new format
                   elif 'results' in content:
-                     snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel['fieldConfig'] )
+                     snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel )
 
                   if self.debug:
                      print('#***************************************************************')
@@ -615,7 +615,7 @@ class GrafanaData(object):
          break
 
    #**********************************************************************************
-   def build_timeseries_snapshotData( self, target, data, fieldConfig ):
+   def build_timeseries_snapshotData( self, target, data, panel ):
       snapshotData = list()
       snapshotDataObj = {}
       # one snapshotDataObj is a result from query_range
@@ -623,116 +623,121 @@ class GrafanaData(object):
       #    one with series of timestamp values 
       #    one with series of queried values
 
-      def_unit = None
-      if 'unit' in fieldConfig['defaults']:
-         def_unit = fieldConfig['defaults']['unit']
 
-      def_decimals = None
-      if 'decimals' in fieldConfig['defaults']:
-         def_decimals = fieldConfig['defaults']['decimals']
+      fieldConfig = panel['fieldConfig']
 
-      def_thresholds = None
-      if 'thresholds' in fieldConfig['defaults']:
-         def_thresholds = fieldConfig['defaults']['thresholds']
+      if panel['type'] != 'timeseries':
+         def_unit = None
+         if 'unit' in fieldConfig['defaults']:
+            def_unit = fieldConfig['defaults']['unit']
 
-      def_min = None
-      if 'min' in fieldConfig['defaults']:
-         def_min = fieldConfig['defaults']['min']
+         def_decimals = None
+         if 'decimals' in fieldConfig['defaults']:
+            def_decimals = fieldConfig['defaults']['decimals']
 
-      def_max = None
-      if 'max' in fieldConfig['defaults']:
-         def_max = fieldConfig['defaults']['max']
+         def_thresholds = None
+         if 'thresholds' in fieldConfig['defaults']:
+            def_thresholds = fieldConfig['defaults']['thresholds']
 
-      def_mappings = None
-      if 'mappings' in fieldConfig['defaults']:
-         def_mappings = fieldConfig['defaults']['mappings']
-      for result in data['result']:
-         snapshotDataObj = {}
-         labels = {}
+         def_min = None
+         if 'min' in fieldConfig['defaults']:
+            def_min = fieldConfig['defaults']['min']
 
-         #*** split list of [ (ts,val),...] from values into 2 lists of (ts, tsx,...) (val, valx,...)
-         ts=list()
-         values=list()
-         min = None
-         if def_min is not None:
-            min = def_min
-         max = None
-         if def_max is not None:
-            max = def_max
-         for value_pair in result['values']:
-            if self.debug:
-               print('ts={0} - val={1}'.format(value_pair[0], value_pair[1]))
-            ts.append(int(value_pair[0]) * 1000)
-            value = value_pair[1]
-            if value is None or value == 'NaN':
-               value = None
+         def_max = None
+         if 'max' in fieldConfig['defaults']:
+            def_max = fieldConfig['defaults']['max']
+
+         def_mappings = None
+         if 'mappings' in fieldConfig['defaults']:
+            def_mappings = fieldConfig['defaults']['mappings']
+
+         for result in data['result']:
+            snapshotDataObj = {}
+            labels = {}
+
+            #*** split list of [ (ts,val),...] from values into 2 lists of (ts, tsx,...) (val, valx,...)
+            ts=list()
+            values=list()
+            min = None
+            if def_min is not None:
+               min = def_min
+            max = None
+            if def_max is not None:
+               max = def_max
+            for value_pair in result['values']:
+               if self.debug:
+                  print('ts={0} - val={1}'.format(value_pair[0], value_pair[1]))
+               ts.append(int(value_pair[0]) * 1000)
+               value = value_pair[1]
+               if value is None or value == 'NaN':
+                  value = None
+               else:
+                  value = float( value )
+
+               if def_min is None and (min is None or min > value):
+                  min = value
+               if def_max is None and (max is None or max < value):
+                  max = value
+               values.append(value)
+               if self.debug:
+                  print('ts={} - value={} - min: {} - max {}'.format(value_pair[0], value, min, max))
+
+            #** build timestamp list
+            part_one = {
+               'config': { 'unit': 'time:YYYY-MM-DD HH:mm:ss' },
+               'name': 'Time',
+               'type': 'time',
+               'values': ts
+            }
+
+            for key in result['metric'].keys():
+               if key == '__name__':
+                  continue
+               else:
+                  labels[key] = result['metric'][key]
+
+            name = ''
+            displayName = ''
+            #** old panel version has not this attribute
+            if not 'legendFormat' in target:
+               target['legendFormat'] = ''
+            if target['legendFormat'] is None or target['legendFormat'] == '':
+               #** if expr is a simple metric use its name
+               #** else use label of metrics
+               if re.match(r'^[a-zA-Z0-9_]+$', target['expr']):
+                  name = target['expr']
+               name = name + json.dumps(labels)
             else:
-               value = float( value )
+   #** TO DO build name on template
+               name = target['legendFormat']
+               displayName = self.buildDisplayName( name, labels )
 
-            if def_min is None and (min is None or min > value):
-               min = value
-            if def_max is None and (max is None or max < value):
-               max = value
-            values.append(value)
-            if self.debug:
-               print('ts={} - value={} - min: {} - max {}'.format(value_pair[0], value, min, max))
+            labels['displayName'] = name
+   
+            part_two = {
+               'config': {
+                  'displayName': displayName,
+                  'max': max,
+                  'min': min,
+                  'decimals': def_decimals,
+                  'unit': def_unit,
+                  'mappings': def_mappings,
+                  'thresholds': def_thresholds,
+               },
+               'labels': labels,
+               'name': 'Value',
+               'type': 'number',
+               'values': values
+            }
 
-         #** build timestamp list
-         part_one = {
-            'config': { 'unit': 'time:YYYY-MM-DD HH:mm:ss' },
-            'name': 'Time',
-            'type': 'time',
-            'values': ts
-         }
-
-         for key in result['metric'].keys():
-            if key == '__name__':
-               continue
-            else:
-               labels[key] = result['metric'][key]
-
-         name = ''
-         displayName = ''
-         #** old panel version has not this attribute
-         if not 'legendFormat' in target:
-            target['legendFormat'] = ''
-         if target['legendFormat'] is None or target['legendFormat'] == '':
-            #** if expr is a simple metric use its name
-            #** else use label of metrics
-            if re.match(r'^[a-zA-Z0-9_]+$', target['expr']):
-               name = target['expr']
-            name = name + json.dumps(labels)
-         else:
-#** TO DO build name on template
-            name = target['legendFormat']
-            displayName = self.buildDisplayName( name, labels )
-
-         labels['displayName'] = name
- 
-         part_two = {
-  	      	'config': {
-               'displayName': displayName,
-               'max': max,
-               'min': min,
-               'decimals': def_decimals,
-               'unit': def_unit,
-               'mappings': def_mappings,
-               'thresholds': def_thresholds,
-            },
-            'labels': labels,
-            'name': 'Value',
-            'type': 'number',
-            'values': values
-         }
-
-         if def_decimals is None:
-            del part_two['config']['decimals']
-         if def_thresholds is None:
-            del part_two['config']['thresholds']
-         if def_unit is None:
-            del part_two['config']['unit']
-         if def_mappings is None:
-            del part_two['config']['mappings']
+            if def_decimals is None:
+               del part_two['config']['decimals']
+            if def_thresholds is None:
+               del part_two['config']['thresholds']
+            if def_unit is None:
+               del part_two['config']['unit']
+            if def_mappings is None:
+               del part_two['config']['mappings']
 
          #** build snapshotDataObj
          snapshotDataObj['fields']=[ part_one, part_two]
@@ -743,7 +748,8 @@ class GrafanaData(object):
          # if self.debug:
          #    print( 'build_timeseries_snapshotData::snapshot[{0}]: {1}'.format(target['refId'], snapshotDataObj ))
          snapshotData.append( snapshotDataObj )
-
+      else:
+         pass
       return snapshotData
 
    #**********************************************************************************

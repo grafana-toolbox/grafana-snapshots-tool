@@ -4,8 +4,8 @@ A python3 bases application to build grafana snapshots that contains data(!) usi
 
 The aim of this tool is to:
 1. Easily build snapshots from existing Grafana dashboard.
-2. Export the snapshots to a local storage in JSON format so it can be sent, imported an visualized to a remote Grafana.
-3. Import a snapshot in JSON format to a Grafana.
+1. Export the snapshots to a local storage in JSON format so it can be sent, imported an visualized to a remote Grafana.
+1. Import a snapshot in JSON format to a Grafana.
 
 The development of this tool began when we discovered that there was no solution to automate the creation of snapshots from Grafana; only the functionality from the GUI was operational.
 That was a sticking point for us since it prevented us from being able to provide reports other than mannually build dashboards with statics screenshots.

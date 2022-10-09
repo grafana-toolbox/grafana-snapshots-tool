@@ -2,8 +2,10 @@ import copy, json, re
 import datetime, dateutil.parser, dateutil.relativedelta
 from urllib import request
 from jinja2 import Template
-from distutils.version import LooseVersion
+# from distutils.version import LooseVersion
 from grafana_client.knowledge import query_factory
+
+from grafana_snapshots.dataresults import dataresults
 
 #**********************************************************************************
 def get_time(time_str):
@@ -279,7 +281,7 @@ class GrafanaQuery(object):
 #**********************************************************************************
 class GrafanaData(object):
    # prometheus query change in v 8
-   version_8 = LooseVersion('8')
+   # version_8 = LooseVersion('8')
 
    #***********************************************
    def __init__( *args ):
@@ -325,7 +327,7 @@ class GrafanaData(object):
 
       expr = None
       query = None
-      if datasource['type'] == 'prometheus':
+      if datasource['type'] in ('loki', 'prometheus'):
          # check query method: timeseries or table
          query_type = 'query_range'
          format = 'time_series'
@@ -337,11 +339,22 @@ class GrafanaData(object):
          if 'expr' in target:
             expr = target['expr']
 
-            # check if target expr contains variable ($var)
-            m =  self.varfinder.search(expr)
-            if m:
-               expr = self.extract_vars(expr)
+      elif datasource['type'] in ('mssql', 'mysql', 'oracle', 'postgres'):
+         if 'rawSql' in target:
+            expr = target['rawSql']
+      elif datasource['type'] == 'graphite':
+         expr = target['target']
+      # influxdb, 
+      else:
+         if 'query' in target:
+            expr = target['query']
+
       if expr is not None:
+         # check if target expr contains variable ($var)
+         m =  self.varfinder.search(expr)
+         if m:
+            expr = self.extract_vars(expr)
+
          params = copy.deepcopy( target )
          params['query'] = expr
          params['time_to'] = self.time_to
@@ -484,15 +497,17 @@ class GrafanaData(object):
 
                   if self.debug:
                       print("query GET datasource proxy uri: {0}".format(self.api.grafana_api.client.url))
+                  dataRes = dataresults(type=datasource['type'], result=content, versin=self.api.version)
+                  snapshotData = dataRes.get_snapshotData(target)
 
-                  if 'data' in content:
-                     if query_type == 'query_range':
-                        snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel )
-                     else:
-                        snapshotData = self.build_table_snapshotData( target, content['data'], panel )
-                  # new format
-                  elif 'results' in content:
-                     snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel )
+                  # if 'data' in content:
+                  #    if query_type == 'query_range':
+                  #       snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel )
+                  #    else:
+                  #       snapshotData = self.build_table_snapshotData( target, content['data'], panel )
+                  # # new format
+                  # elif 'results' in content:
+                  #    snapshotData = self.build_timeseries_snapshotData( target, content['data'], panel )
 
                   if self.debug:
                      print('#***************************************************************')

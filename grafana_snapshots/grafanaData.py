@@ -5,7 +5,7 @@ from jinja2 import Template
 # from distutils.version import LooseVersion
 from grafana_client.knowledge import query_factory
 
-from grafana_snapshots.dataresults import dataresults
+from grafana_snapshots.dataresults.dataresults import dataresults
 
 #**********************************************************************************
 def get_time(time_str):
@@ -305,7 +305,9 @@ class GrafanaData(object):
    def get_datasource(self, datasource):
       res_datasource = None
 
-      if datasource != '-- Mixed --':
+      if (isinstance(datasource, str) and datasource != '-- Mixed --') \
+         or isinstance(datasource, dict):
+
          # datasource set in panel is in new format { 'uid': ..., 'type':... }
          if isinstance(datasource, dict):
             if 'uid' in datasource and datasource['uid'] in self.datasources:
@@ -388,7 +390,9 @@ class GrafanaData(object):
                dtsrc = panel['datasource']
                if self.debug:
                   print("dtsrc: %s" % (dtsrc))
-        
+               if isinstance(dtsrc, dict) and 'uid' in dtsrc and dtsrc['uid'] == '-- Mixed --':
+                  dtsrc = '-- Mixed --'
+
             if 'targets' in panel and panel['targets'] is not None:
                targets = panel['targets']
                if self.debug:
@@ -497,7 +501,10 @@ class GrafanaData(object):
 
                   if self.debug:
                       print("query GET datasource proxy uri: {0}".format(self.api.grafana_api.client.url))
-                  dataRes = dataresults(type=datasource['type'], result=content, versin=self.api.version)
+                  dataRes = dataresults( 
+                     type=datasource['type'],
+                     results=content, version=self.api.version,
+                     panel=panel)
                   snapshotData = dataRes.get_snapshotData(target)
 
                   # if 'data' in content:
@@ -536,7 +543,7 @@ class GrafanaData(object):
          #** e.g.: url..
 #/d/000000133/oracle-overview?orgId=1\u0026refresh=30s\u0026var-database=X3D00\u0026var-dbinstance=All\u0026from=now-2d\u0026to=now"
          self.dashboard['snapshot'] = {
-            'originalUrl': self.api.client.url + panel_url + '?from=' + str(self.time_from * 1000) 
+            'originalUrl': self.api.grafana_api.client.url + panel_url + '?from=' + str(self.time_from * 1000) 
                + '&to=' +  str(self.time_to * 1000),
             'timestamp': datetime.datetime.now().isoformat(),
          }

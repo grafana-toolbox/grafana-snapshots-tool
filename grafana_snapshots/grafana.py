@@ -466,7 +466,7 @@ class Grafana(object):
             result from API query
         """
 
-        return self.grafana_api.datasource.smartquery(datasource, request=request)
+        return self.grafana_api.datasource.smartquery(datasource, None, request=request)
 
 #******************************************************************************************
 # over

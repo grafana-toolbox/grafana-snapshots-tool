@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from dataresults import dataresults
-from grafana_snapshots.dataresults.panels import DefaultPanel
+from grafana_snapshots.dataresults.panels.default import DefaultPanel
 
 #***************************************************
 class GraphPanel(DefaultPanel):
@@ -13,19 +12,22 @@ class GraphPanel(DefaultPanel):
 
         self = args[0]
         DefaultPanel.__init__(self, kwargs)
-        self.ts_fields.append( [
+        self.ts_fields.extend( [
             { 'name': 'unit', 'type': 'static', 'value': 'time:YYYY-MM-DD HH:mm:ss', }
         ] )
-        self.value_fields.append( [
-            { 'name': 'decimals', 'type': 'copy', 'value': 'defaults', },
-            { 'name': 'mappings', 'type': 'copy', 'value': 'defaults', },
-            { 'name': 'thresholds', 'type': 'copy', 'value': 'defaults', },
-            { 'name': 'unit', 'type': 'copy', 'value': 'defaults', },
+        self.value_fields.extend( [
+            { 'name': 'decimals', 'type': 'copy_all', 'value': 'defaults', },
+            { 'name': 'mappings', 'type': 'copy_all', 'value': 'defaults', },
+            { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults', },
+            { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults', },
         ] )
 
     #***********************************************
-    def get_FieldsConfig( self, results, values=None ) -> list:
+    def get_FieldsConfig(*args, **kwargs  ) -> list:
+        self = args[0]
+        results = args[1]
 
+        values = kwargs.get('values', list() )
         (ts_part, value_part) = DefaultPanel.get_FieldsConfig(self, results)
         fieldConfig = self.panel['fieldConfig']
 

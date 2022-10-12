@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from dataresults import resultsBase
+from .resultsBase import resultsBase
 
 #***************************************************
 class resultsSQL(resultsBase):

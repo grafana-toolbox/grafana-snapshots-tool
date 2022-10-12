@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from dataresults import dataresults
-from grafana_snapshots.dataresults.panels import DefaultPanel
+from grafana_snapshots.dataresults.panels.default import DefaultPanel
 
 #***************************************************
 class TimeSeriesPanel(DefaultPanel):
@@ -49,23 +48,19 @@ class TimeSeriesPanel(DefaultPanel):
     def __init__( *args, **kwargs ) -> None:
 
         self = args[0]
-        DefaultPanel.__init__(self, kwargs)
+        DefaultPanel.__init__(self, **kwargs)
 
-    #***********************************************
-    def get_FieldConfig( self, results ) -> list:
+        self.ts_fields.extend( [
+            { 'name': 'color', 'type': 'copy_all', 'value': 'defaults.color', },
+            { 'name': 'custom', 'type': 'copy', 'value': 'defaults.custom', 'exclude': [ 'axisLabel', 'scaleDistribution', 'spanNulls', 'stacking'], },
+            { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
+        ] )
 
-        # Panel.__init__(self, **{ 'type': 'timeseries'} )
+        self.value_fields.extend( [
+            { 'name': 'color', 'type': 'copy_all', 'value': 'defaults.color', },
+            { 'name': 'custom', 'type': 'copy_all', 'value': 'defaults.custom', },
+            { 'name': 'mappings', 'type': 'copy_all', 'value': 'defaults.mappings', },
+            { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
+        ] )
 
-
-        # fields: timestamp part
-        #   config:
-        #       color
-        #       custom
-        #       interval ?
-        #       thresholds
-
-        # fields: value part
-        #   config:
-        #       color
-        return list()
 #***************************************************

@@ -1,0 +1,373 @@
+{
+  "data response": {
+    "request": {
+      "url": "api/ds/query",
+      "method": "POST",
+      "data": {
+        "queries": [
+          {
+            "datasource": {
+              "uid": "h8KkCLt7z",
+              "type": "prometheus"
+            },
+            "editorMode": "code",
+            "expr": "up",
+            "hide": false,
+            "interval": "60s",
+            "legendFormat": "{{ instance }}",
+            "range": true,
+            "refId": "A",
+            "queryType": "timeSeriesQuery",
+            "exemplar": false,
+            "requestId": "2A",
+            "utcOffsetSec": 7200,
+            "datasourceId": 1,
+            "intervalMs": 200,
+            "maxDataPoints": 889
+          }
+        ],
+        "range": {
+          "from": "2022-10-01T14:02:32.271Z",
+          "to": "2022-10-01T14:07:32.271Z",
+          "raw": {
+            "from": "now-5m",
+            "to": "now"
+          }
+        },
+        "from": "1664632952271",
+        "to": "1664633252271"
+      },
+      "hideFromInspector": false
+    },
+    "response": {
+      "results": {
+        "A": {
+          "frames": [
+            {
+              "schema": {
+                "name": "localhost:9090",
+                "refId": "A",
+                "meta": {
+                  "type": "timeseries-many",
+                  "custom": {
+                    "resultType": "matrix"
+                  },
+                  "executedQueryString": "Expr: up\nStep: 1m0s"
+                },
+                "fields": [
+                  {
+                    "name": "Time",
+                    "type": "time",
+                    "typeInfo": {
+                      "frame": "time.Time"
+                    },
+                    "config": {
+                      "interval": 60000
+                    }
+                  },
+                  {
+                    "name": "Value",
+                    "type": "number",
+                    "typeInfo": {
+                      "frame": "float64"
+                    },
+                    "labels": {
+                      "__name__": "up",
+                      "instance": "localhost:9090",
+                      "job": "prometheus"
+                    },
+                    "config": {
+                      "displayNameFromDS": "localhost:9090"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "values": [
+                  [
+                    1664632920000,
+                    1664632980000,
+                    1664633040000,
+                    1664633100000,
+                    1664633160000,
+                    1664633220000
+                  ],
+                  [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ]
+                ]
+              }
+            }
+          ],
+          "refId": "A"
+        }
+      }
+    }
+  },
+
+
+
+
+  "snapshot":
+  {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "snapshotData": [],
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 9,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "links": [],
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "snapshotData": [
+          {
+            "fields": [
+              {
+                "config": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "showPoints": "auto",
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "interval": 60000,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "name": "Time",
+                "type": "time",
+                "values": [
+                  1662900360000,
+                  1662900420000,
+                  1662900480000,
+                  1662900540000,
+                  1662900600000,
+                  1662900660000
+                ]
+              },
+              {
+                "config": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "displayNameFromDS": "localhost:9090",
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "labels": {
+                  "__name__": "up",
+                  "instance": "localhost:9090",
+                  "job": "prometheus"
+                },
+                "name": "Value",
+                "type": "number",
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "meta": {
+              "custom": {
+                "resultType": "matrix"
+              },
+              "executedQueryString": "Expr: up\nStep: 1m0s",
+              "preferredVisualisationType": "graph",
+              "type": "timeseries-many"
+            },
+            "name": "localhost:9090",
+            "refId": "A"
+          }
+        ],
+        "title": "test",
+        "type": "timeseries"
+      }
+    ],
+    "schemaVersion": 37,
+    "snapshot": {
+      "originalUrl": "http://localhost:3000/d/UGoBqUMVk/one_panel_9-1-1?orgId=1&from=now-5m&to=now",
+      "timestamp": "2022-09-11T12:51:26.508Z"
+    },
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "2022-09-11T12:46:30.512Z",
+      "raw": {
+        "from": "now-5m",
+        "to": "now"
+      },
+      "to": "2022-09-11T12:51:30.512Z"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "one_panel_9.1.1",
+    "uid": "UGoBqUMVk",
+    "version": 4,
+    "weekStart": ""
+  }
+}

@@ -3,7 +3,7 @@
 
 import json, re
 
-from dataresults import resultsBase
+from .resultsBase import resultsBase
 
 #***************************************************
 class resultsMatrix(resultsBase):
@@ -49,6 +49,7 @@ class resultsMatrix(resultsBase):
         """
         snapshotData = list()
         snapshotDataObj = {}
+        (ts_part, value_part) = ( None, None)
 
         if not self.results or 'status' not in self.results \
             or self.results['status'] != 'success':
@@ -88,7 +89,7 @@ class resultsMatrix(resultsBase):
                 if self.debug:
                     print('ts={} - value={} - min: {} - max {}'.format(value_pair[0], value, min, max))
 
-            (ts_part, value_part) = self.panel.getFieldsContig(result, values=values)
+            (ts_part, value_part) = self.panel.get_FieldsConfig(result, values=values)
             #** build timestamp list
             ts_part.update( {
                 'name': 'Time',

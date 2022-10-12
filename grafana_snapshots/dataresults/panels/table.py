@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from dataresults import dataresults
-from grafana_snapshots.dataresults.panels import DefaultPanel
+from grafana_snapshots.dataresults.panels.default import DefaultPanel
 
 #***************************************************
 class TablePanel(DefaultPanel):

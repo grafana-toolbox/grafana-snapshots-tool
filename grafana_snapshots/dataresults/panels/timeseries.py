@@ -53,14 +53,23 @@ class TimeSeriesPanel(DefaultPanel):
         self.ts_fields.extend( [
             { 'name': 'color', 'type': 'copy_all', 'value': 'defaults.color', },
             { 'name': 'custom', 'type': 'copy', 'value': 'defaults.custom', 'exclude': [ 'axisLabel', 'scaleDistribution', 'spanNulls', 'stacking'], },
+            { 'name': 'links', 'type': 'copy_all', 'value': 'defaults.links', },
             { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
+            { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults.unit', },
         ] )
 
         self.value_fields.extend( [
             { 'name': 'color', 'type': 'copy_all', 'value': 'defaults.color', },
             { 'name': 'custom', 'type': 'copy_all', 'value': 'defaults.custom', },
+            { 'name': 'decimals', 'type': 'copy_all', 'value': 'defaults.decimals', },
+            { 'name': 'displayName', 'type': 'copy_all', 'value': 'defaults.displayName', },
+            { 'name': 'links', 'type': 'copy_all', 'value': 'defaults.links', },
             { 'name': 'mappings', 'type': 'copy_all', 'value': 'defaults.mappings', },
+            { 'name': 'max', 'type': 'copy_all', 'value': 'defaults.max', },
+            { 'name': 'min', 'type': 'copy_all', 'value': 'defaults.min', },
+            { 'name': 'noValue', 'type': 'copy_all', 'value': 'defaults.noValue', },
             { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
+            { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults.unit', },
         ] )
 
 #***************************************************

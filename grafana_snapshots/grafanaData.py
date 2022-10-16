@@ -383,7 +383,8 @@ class GrafanaData(object):
       if 'panels' in self.dashboard:
          for panel in self.dashboard['panels']:
             if self.debug:
-               print('panel: %s' % (panel) )
+               print("**********************************\n"
+                  + 'panel: %s' % (panel) )
             dtsrc = 'default'
             target = None
             if 'datasource' in panel and panel['datasource'] is not None:
@@ -431,6 +432,9 @@ class GrafanaData(object):
                      print("query type '{0}' not supported".format(datasource['type']))
                      continue
 
+                  if self.debug:
+                      print("query datasource proxy uri: {0}".format(request))
+
                   try:
                      content = self.api.smartquery(datasource, request)
                   except Exception as e:
@@ -438,9 +442,9 @@ class GrafanaData(object):
                      return False
 
                   # check query method: timeseries or table
-                  query_type = 'query_range'
+                  format = 'time_series'
                   if 'format' in target and target['format'] == 'table':
-                     query_type = 'query'
+                     format = target['format']
 
                   # # check if expr is defined or and unconfigurated query
                   # if 'expr' not in target:
@@ -498,12 +502,14 @@ class GrafanaData(object):
                   # except Exception as e:
                   #    print('invalid results...')
                   #    return False
+                  # if self.debug:
+                  #     print("query GET datasource proxy uri: {0}".format(self.api.grafana_api.client.url))
 
-                  if self.debug:
-                      print("query GET datasource proxy uri: {0}".format(self.api.grafana_api.client.url))
                   dataRes = dataresults( 
                      type=datasource['type'],
-                     results=content, version=self.api.version,
+                     format=format,
+                     results=content,
+                     version=self.api.version,
                      panel=panel)
                   snapshotData = dataRes.get_snapshotData(target)
 
@@ -525,15 +531,16 @@ class GrafanaData(object):
                      for elmt in snapshotData:
                         panel['snapshotData'].append(elmt)
                # end for targets
-               if panel['type'] == 'table' :
-                  res = check_transformations( {
-                     'action': 'post'
-                     , 'transformations': panel['transformations']
-                     , 'snapshotData': panel['snapshotData']
-                  } )
-                  if res['status']:
-                     panel['snapshotData'] = res['snapshotData']
+               # if panel['type'] == 'table' :
+               #    res = check_transformations( {
+               #       'action': 'post'
+               #       , 'transformations': panel['transformations']
+               #       , 'snapshotData': panel['snapshotData']
+               #    } )
+               #    if res['status']:
+               #       panel['snapshotData'] = res['snapshotData']
 #               del panel['targets']
+               panel['datasource'] = None
                safe_remove_key( panel, [ 'targets', 'scopedVars' ])
             else:
                print("either datasource or target was not found")

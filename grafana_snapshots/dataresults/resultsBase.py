@@ -13,6 +13,8 @@ class resultsBase(object):
         if self.results is None:
             raise ValueError("results not set!")
 
+        self.format = kwargs.get('format', 'time_series')
+
         self.debug = kwargs.get('debug', False)
         self.panel = PanelDispatcher(
             version = kwargs.get('version'),

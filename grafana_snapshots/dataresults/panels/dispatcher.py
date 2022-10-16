@@ -57,6 +57,15 @@ class PanelDispatcher:
         return self.panelObj.get_FieldsConfig(results, **kwargs)
 
     #***********************************************
+    def get_FieldsConfig(*args, **kwargs) -> list:
+        self = args[0]
+        return self.panelObj.get_FieldsConfig(*args[1:], **kwargs)
+
+    #***********************************************
+    def set_overrides(self, snapshotDataElmt) -> None:
+        return self.panelObj.set_overrides(snapshotDataElmt)
+
+    #***********************************************
     # def __getattr__(*args, **kwargs) -> list:
     #     self = args[0]
     #     results = args[1]

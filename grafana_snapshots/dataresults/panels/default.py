@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import copy, re
 
 #***************************************************
 class DefaultPanel:
@@ -56,7 +57,7 @@ class DefaultPanel:
                             continue
                         if 'include' not in field or \
                             ( 'include' in field and key in field['include']):
-                            config_elmt[field['name']][key] = fieldConfig[key]
+                            config_elmt[field['name']][key] = copy.deepcopy(fieldConfig[key])
 
                 # if field['value'] == 'defaults':
                 #     if 'defaults' in fieldConfig and fieldConfig['defaults'] is not None \
@@ -78,5 +79,101 @@ class DefaultPanel:
             { 'config': self.get_FieldConfig(self.ts_fields, results) },
             { 'config': self.get_FieldConfig(self.value_fields, results) },
         ]
+
+    #***********************************************
+    def _set_target_attributes(self, attributes: str, value: any, source: dict=None) -> None:
+        target = None
+        (attrs) = attributes.split('.')
+        if source is None:
+            return
+        target = source
+        for idx in range(0, len(attrs)):
+            attr = attrs[idx]
+            if attr not in target:
+                target = None
+                break
+            if idx == len(attrs) -1:
+                target[attr] = value
+            else:
+                target = target[attr]
+        return
+
+    #***********************************************
+    def _check_matcher(self, matcher: dict, field: dict, refId: str) -> bool:
+        """
+        Matcher has two attributes (id, options)
+        id: test to perform
+           - byName; options contains exact column name
+           - byRegexp; options contains regexp to check
+           - byType; options contains type of columns : label: "string", timestamp: "time", value: "number", ?: "boolean"
+           - byFrameRefID; options contains the refId name ; if column name is comming from refId the check is true
+
+        options: value to check
+        """
+        res = False
+        if matcher['id'] == 'byName':
+            if 'name' in field and field['name'] == matcher['options']:
+                res = True
+        elif matcher['id'] == 'byType':
+            if 'type' in field and field['type'] == matcher['options']:
+                res = True
+        elif matcher['id'] == 'byRegexp' and 'name' in field:
+            if re.match(matcher['options'], field['name']):
+                res = True
+        elif matcher['id'] == 'byFrameRefID' and refId is not None \
+            and refId == matcher['options']:
+            res = True
+
+        return res
+
+    #***********************************************
+    def set_overrides(self, snapshotDataElmt: dict) -> None:
+        """
+        an override is an object tha select fields and update theirs properties
+
+        {
+            "matcher": {
+                "id": "byName",
+                "options": "Time"
+            },
+            "properties": [
+                {
+                    "id": "custom.width",
+                    "value": 210
+                }
+            ]
+        },
+        {
+            "matcher": {
+                "id": "byType",
+                "options": "time"
+            },
+            "properties": [
+                {
+                    "id": "custom.filterable",
+                    "value": true
+                }
+            ]
+        }
+        """
+        if snapshotDataElmt is None or \
+            (snapshotDataElmt is not None and 'fields' not in snapshotDataElmt):
+            return
+
+        if 'fieldConfig' not in self.panel \
+            or ( 'fieldConfig' in self.panel and 'overrides' not in self.panel['fieldConfig']):
+            return
+
+        refId = snapshotDataElmt.get('refId', None)
+
+        for override in self.panel['fieldConfig']['overrides']:
+            if 'matcher' in override and override['matcher']:
+            #  byName; options contains exact column name
+            #  byRegexp; options contains regexp to check
+            #  byType; options contains type of columns : label: "string", timestamp: "time", value: "number", ?: "boolean"
+                for field in snapshotDataElmt['fields']:
+                    if self._check_matcher(override['matcher'], field, refId):
+                        for property in override['properties']:
+                            self._set_target_attributes(property['id'], property['value'], source=field['config'])
 
 #***************************************************

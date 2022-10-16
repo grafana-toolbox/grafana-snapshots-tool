@@ -11,7 +11,7 @@ class GraphPanel(DefaultPanel):
     def __init__( *args, **kwargs ) -> None:
 
         self = args[0]
-        DefaultPanel.__init__(self, kwargs)
+        DefaultPanel.__init__(self, **kwargs)
         self.ts_fields.extend( [
             { 'name': 'unit', 'type': 'static', 'value': 'time:YYYY-MM-DD HH:mm:ss', }
         ] )

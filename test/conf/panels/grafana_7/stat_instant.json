@@ -1,0 +1,88 @@
+{
+    "cacheTimeout": null,
+    "datasource": "Prometheus",
+    "fieldConfig": {
+        "defaults": {
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                    {
+                        "color": "#299c46",
+                        "value": null
+                    },
+                    {
+                        "color": "#d44a3a",
+                        "value": 400
+                    }
+                ]
+            },
+            "mappings": [
+                {
+                    "id": 0,
+                    "op": "=",
+                    "text": "N/A",
+                    "type": 1,
+                    "value": "null"
+                },
+                {
+                    "id": 1,
+                    "op": "=",
+                    "text": "YES",
+                    "type": 1,
+                    "value": "1"
+                },
+                {
+                    "id": 2,
+                    "op": "=",
+                    "text": "NO",
+                    "type": 1,
+                    "value": "0"
+                }
+            ],
+            "decimals": 0,
+            "unit": "none"
+        },
+        "overrides": []
+    },
+    "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 0,
+        "y": 19
+    },
+    "id": 20,
+    "interval": null,
+    "links": [],
+    "maxDataPoints": 100,
+    "options": {
+        "reduceOptions": {
+            "values": false,
+            "calcs": [
+                "lastNotNull"
+            ],
+            "fields": ""
+        },
+        "orientation": "horizontal",
+        "text": {},
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto"
+    },
+    "pluginVersion": "7.5.16",
+    "repeatDirection": "h",
+    "targets": [
+        {
+            "exemplar": true,
+            "expr": "probe_http_status_code{job=~\"blackbox_http.*\", host=~\"$host\"}",
+            "format": "table",
+            "instant": true,
+            "interval": "$interval",
+            "intervalFactor": 1,
+            "legendFormat": "{{ host }} {{ url }}",
+            "refId": "A"
+        }
+    ],
+    "title": "HTTP Status Code",
+    "type": "stat"
+}

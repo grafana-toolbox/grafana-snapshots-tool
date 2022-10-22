@@ -1,0 +1,68 @@
+{
+    "request": {
+        "url": "api/datasources/proxy/10/api/v1/query_range?query=cpu_usage_percent&start=1664697840&end=1664698140&step=15",
+        "method": "GET",
+        "hideFromInspector": false
+    },
+    "response": {
+        "status": "success",
+        "data": {
+            "resultType": "matrix",
+            "result": [
+                {
+                    "metric": {
+                        "__name__": "cpu_usage_percent",
+                        "instance": "private_host",
+                        "job": "private"
+                    },
+                    "values": [
+                        [
+                            1664697840,
+                            "2"
+                        ],
+                        [
+                            1664697855,
+                            "2"
+                        ],
+                        [
+                            1664697870,
+                            "1.8"
+                        ],
+                        [
+                            1664697885,
+                            "1.8"
+                        ],
+                        [
+                            1664697900,
+                            "2"
+                        ],
+                        [
+                            1664697915,
+                            "2"
+                        ],
+                        [
+                            1664697930,
+                            "1.9"
+                        ],
+                        [
+                            1664697945,
+                            "1.9"
+                        ],
+                        [
+                            1664697960,
+                            "1.9"
+                        ],
+                        [
+                            1664697975,
+                            "1.9"
+                        ],
+                        [
+                            1664697990,
+                            "1.9"
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+}

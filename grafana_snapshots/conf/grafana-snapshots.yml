@@ -4,12 +4,13 @@ general:
   output_path: snapshots
 grafana:
   default:
-    protocol: http
-    host: localhost
-    port: 3000
-    token: "____APIKEY____"
+    protocol: https
+    host: ***REMOVED***
+    port: 443
+    token: "***REMOVED***"
     search_api_limit: 5000
-    verify_ssl: true
+    verify_ssl: false
+
 contexts:
   # set default elements for dashboards
   "Oracle Overview":

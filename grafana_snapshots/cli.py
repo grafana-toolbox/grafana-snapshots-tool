@@ -17,13 +17,11 @@ Suivi des modifications :
 # TODO:
 #***********************************************************************************************
 
-from grafana_snapshots.constants import (PKG_NAME, PKG_VERSION, CONFIG_NAME)
 
 import argparse, datetime, json, os, re, sys, traceback, unicodedata, yaml
 
-import grafana_client.client as GrafanaApi
+from grafana_snapshots.constants import (PKG_NAME, PKG_VERSION, CONFIG_NAME)
 import grafana_snapshots.grafana as Grafana
-
 from grafana_snapshots.grafanaData import GrafanaData
 
 #******************************************************************************************
@@ -220,13 +218,13 @@ def main():
    try:
       grafana_api = Grafana.Grafana( **params )
    except Exception as e:
-      print("ERROR: {} - message: {}".format(e) )
+      print("ERROR: message: {}".format(e) )
       sys.exit(1)
 
    if args.action == 'generate' or args.action == 'export':
       try:
          dashboard = grafana_api.export_dashboard(config['general']['dashboard_name'])
-      except Grafana.GrafanaNotFoundError:
+      except Grafana.GrafanaDashboardNotFoundError:
          print("KO: dashboard name not found '{0}'".format(config['general']['dashboard_name']))
          sys.exit(1)
       except Exception as exp:

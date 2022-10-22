@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+#**********************************************************************************
+
 import copy, re
 
-#***************************************************
+#**********************************************************************************
 class DefaultPanel:
     #***********************************************
     def __init__( *args, **kwargs ) -> None:
@@ -129,7 +131,7 @@ class DefaultPanel:
     #***********************************************
     def set_overrides(self, snapshotDataElmt: dict) -> None:
         """
-        an override is an object tha select fields and update theirs properties
+        an override is an object that selects fields from results and updates theirs properties
 
         {
             "matcher": {
@@ -176,4 +178,4 @@ class DefaultPanel:
                         for property in override['properties']:
                             self._set_target_attributes(property['id'], property['value'], source=field['config'])
 
-#***************************************************
+#**********************************************************************************

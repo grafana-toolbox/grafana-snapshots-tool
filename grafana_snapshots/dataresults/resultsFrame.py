@@ -133,7 +133,8 @@ class resultsFrame(resultsBase):
                         # snapshotDataObj['name'] = name
                         if name is not None:
                             snapshotDataObj['name'] = name
-                        snapshotDataObj['refId'] = target['refId']
+                        # snapshotDataObj['refId'] = target['refId']
+                        snapshotDataObj['refId'] = refId['refId']
 
                     self.panel.set_overrides( snapshotDataObj )
                     snapshotData.append( snapshotDataObj )
@@ -222,7 +223,8 @@ class resultsFrame(resultsBase):
                 snapshotDataObj['fields'] = self.panel.get_FieldsConfig(frame, None, fields=fields)
                 snapshotDataObj['meta'] = meta
 
-                snapshotDataObj['refId'] = target['refId']
+                # snapshotDataObj['refId'] = target['refId']
+                snapshotDataObj['refId'] = refId['refId']
 
                 self.panel.set_overrides( snapshotDataObj )
                 snapshotData.append( snapshotDataObj )

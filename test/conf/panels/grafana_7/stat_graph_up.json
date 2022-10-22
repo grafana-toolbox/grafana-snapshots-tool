@@ -1,0 +1,77 @@
+{
+    "description": "",
+    "fieldConfig": {
+      "defaults": {
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "red",
+              "value": null
+            },
+            {
+              "color": "green",
+              "value": 1
+            }
+          ]
+        },
+        "mappings": [
+          {
+            "from": "",
+            "id": 1,
+            "text": "UP",
+            "to": "",
+            "type": 1,
+            "value": "1"
+          },
+          {
+            "from": "",
+            "id": 2,
+            "text": "Down",
+            "to": "",
+            "type": 1,
+            "value": "0"
+          }
+        ],
+        "noValue": "N/A"
+      },
+      "overrides": []
+    },
+    "gridPos": {
+      "h": 4,
+      "w": 24,
+      "x": 0,
+      "y": 9
+    },
+    "id": 23763571993,
+    "options": {
+      "reduceOptions": {
+        "values": false,
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": ""
+      },
+      "orientation": "auto",
+      "text": {},
+      "textMode": "auto",
+      "colorMode": "background",
+      "graphMode": "area",
+      "justifyMode": "auto"
+    },
+    "pluginVersion": "7.5.16",
+    "targets": [
+      {
+        "exemplar": true,
+        "expr": "probe_success{job=~\"blackbox_http.*\", host=~\"$host\"}",
+        "interval": "",
+        "legendFormat": "{{ host }} {{ url }}",
+        "refId": "A"
+      }
+    ],
+    "timeFrom": null,
+    "timeShift": null,
+    "title": "$host",
+    "type": "stat",
+    "datasource": null
+  }

@@ -1,0 +1,79 @@
+{
+    "fieldConfig": {
+      "defaults": {
+        "custom": {
+          "drawStyle": "line",
+          "lineInterpolation": "linear",
+          "barAlignment": 0,
+          "lineWidth": 1,
+          "fillOpacity": 40,
+          "gradientMode": "none",
+          "spanNulls": false,
+          "showPoints": "auto",
+          "pointSize": 6,
+          "axisPlacement": "auto",
+          "axisLabel": "",
+          "scaleDistribution": {
+            "type": "linear"
+          },
+          "hideFrom": {
+            "tooltip": false,
+            "graph": false,
+            "legend": false
+          }
+        },
+        "color": {
+          "mode": "palette-classic"
+        },
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "color": "red",
+              "value": 80
+            }
+          ]
+        },
+        "mappings": [],
+        "unit": "short"
+      },
+      "overrides": []
+    },
+    "gridPos": {
+      "h": 12,
+      "w": 24,
+      "x": 0,
+      "y": 41
+    },
+    "id": 11,
+    "options": {
+      "tooltipOptions": {
+        "mode": "multi"
+      },
+      "legend": {
+        "displayMode": "list",
+        "placement": "bottom",
+        "calcs": []
+      },
+      "graph": {}
+    },
+    "pluginVersion": "7.5.11",
+    "targets": [
+      {
+        "exemplar": true,
+        "expr": "anonymized",
+        "interval": "",
+        "legendFormat": "{{ instance }}",
+        "refId": "A"
+      }
+    ],
+    "timeFrom": null,
+    "timeShift": null,
+    "title": "Evolution (over time range)",
+    "type": "timeseries",
+    "datasource": null
+  }

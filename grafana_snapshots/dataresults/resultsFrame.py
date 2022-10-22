@@ -87,7 +87,7 @@ class resultsFrame(resultsBase):
     def get_snapshotData(self, target: dict)-> list:
         snapshotData = list()
         snapshotDataObj = {}
-        (ts_part, value_part) = ( None, None)
+        (ts_part, value_part, ref_id) = ( None, None, None)
 
         if not self.results or 'results' not in self.results \
             or len(self.results['results']) <= 0:
@@ -144,7 +144,7 @@ class resultsFrame(resultsBase):
         # each frame represents a data line
         # on line has columns which are timestamp, [ labels_values ], values
         elif self.format == 'table':
-            for _, refId in self.results['results'].items():
+            for ref_id, refId in self.results['results'].items():
 
                 fields_names = {}
                 # for idx, frame in refId['frames'].items():
@@ -224,7 +224,8 @@ class resultsFrame(resultsBase):
                 snapshotDataObj['meta'] = meta
 
                 # snapshotDataObj['refId'] = target['refId']
-                snapshotDataObj['refId'] = refId['refId']
+            
+                snapshotDataObj['refId'] = ref_id
 
                 self.panel.set_overrides( snapshotDataObj )
                 snapshotData.append( snapshotDataObj )

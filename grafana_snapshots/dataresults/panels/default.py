@@ -95,7 +95,7 @@ class DefaultPanel:
                 target = None
                 break
             if idx == len(attrs) -1:
-                target[attr] = value
+                target[attr] = copy.deepcopy(value)
             else:
                 target = target[attr]
         return

@@ -4,12 +4,12 @@ general:
   output_path: snapshots
 grafana:
   default:
-    protocol: https
-    host: dal-v-survdadc.dassault-avion.val
-    port: 443
-    token: "eyJrIjoiaTM0YkFVRnQ3Y1pHMnF2dGRaejIzV2ZiSWFaSmFvNUoiLCJuIjoiQVBJIEtleSIsImlkIjoxfQ=="
+    protocol: http
+    host: localhost
+    port: 3000
+    token: "____APIKEY____"
     search_api_limit: 5000
-    verify_ssl: false
+    verify_ssl: true
 
 contexts:
   # set default elements for dashboards

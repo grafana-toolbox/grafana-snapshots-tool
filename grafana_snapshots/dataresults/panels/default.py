@@ -44,7 +44,7 @@ class DefaultPanel:
             elif field['type'] == 'copy_all':
                 fieldConfig = self._get_target_attributes( field['value'] )
                 if fieldConfig is not None:
-                    config_elmt[field['name']] = fieldConfig
+                    config_elmt[field['name']] = copy.deepcopy(fieldConfig)
 
             # copy attributes with conditions
             elif field['type'] == 'copy':
@@ -77,10 +77,26 @@ class DefaultPanel:
         self = args[0]
         results = args[1]
 
-        return [
-            { 'config': self.get_FieldConfig(self.ts_fields, results) },
-            { 'config': self.get_FieldConfig(self.value_fields, results) },
-        ]
+        fields = kwargs.get('fields', [] )
+        res = []
+        for field in fields:
+            if 'type' in field and field['type'] == 'timestamp':
+                config = self.get_FieldConfig(self.ts_fields, results)
+            else:
+                config = self.get_FieldConfig(self.value_fields, results)
+            if 'config' in field['value']:
+                field['value']['config'].update( config )
+            else:
+                field['value']['config'] = config
+            res.append(field['value'])
+
+        if len(res) == 0:
+            res = [
+                { 'config': self.get_FieldConfig(self.ts_fields, results) },
+                { 'config': self.get_FieldConfig(self.value_fields, results) },
+            ]
+
+        return res
 
     #***********************************************
     def _set_target_attributes(self, attributes: str, value: any, source: dict=None) -> None:
@@ -91,12 +107,14 @@ class DefaultPanel:
         target = source
         for idx in range(0, len(attrs)):
             attr = attrs[idx]
-            if attr not in target:
-                target = None
-                break
             if idx == len(attrs) -1:
-                target[attr] = copy.deepcopy(value)
+                # target[attr] = copy.deepcopy(value)
+                target[attr] = value
             else:
+                # check if we can climb the tree (attribute exists)
+                if attr not in target:
+                    target = None
+                    break
                 target = target[attr]
         return
 

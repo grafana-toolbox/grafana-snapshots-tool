@@ -1,0 +1,110 @@
+{
+    "request": {
+      "url": "api/ds/query",
+      "method": "POST",
+      "data": {
+        "queries": [
+          {
+            "datasource": {
+              "uid": "h8KkCLt7z",
+              "type": "prometheus"
+            },
+            "editorMode": "code",
+            "expr": "rate(process_cpu_seconds_total[1m])",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A",
+            "queryType": "timeSeriesQuery",
+            "exemplar": false,
+            "requestId": "4A",
+            "utcOffsetSec": 7200,
+            "interval": "",
+            "datasourceId": 1,
+            "intervalMs": 15000,
+            "maxDataPoints": 892
+          }
+        ],
+        "range": {
+          "from": "2022-10-24T10:04:48.321Z",
+          "to": "2022-10-24T10:06:48.321Z",
+          "raw": {
+            "from": "now-2m",
+            "to": "now"
+          }
+        },
+        "from": "1666605888321",
+        "to": "1666606008321"
+      },
+      "hideFromInspector": false
+    },
+    "response": {
+      "results": {
+        "A": {
+          "frames": [
+            {
+              "schema": {
+                "refId": "A",
+                "meta": {
+                  "type": "timeseries-many",
+                  "custom": {
+                    "resultType": "matrix"
+                  },
+                  "executedQueryString": "Expr: rate(process_cpu_seconds_total[1m])\nStep: 15s"
+                },
+                "fields": [
+                  {
+                    "name": "Time",
+                    "type": "time",
+                    "typeInfo": {
+                      "frame": "time.Time"
+                    },
+                    "config": {
+                      "interval": 15000
+                    }
+                  },
+                  {
+                    "name": "Value",
+                    "type": "number",
+                    "typeInfo": {
+                      "frame": "float64"
+                    },
+                    "labels": {
+                      "instance": "localhost:9090",
+                      "job": "prometheus"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "values": [
+                  [
+                    1666605885000,
+                    1666605900000,
+                    1666605915000,
+                    1666605930000,
+                    1666605945000,
+                    1666605960000,
+                    1666605975000,
+                    1666605990000,
+                    1666606005000
+                  ],
+                  [
+                    0.00044444444444444485,
+                    0.0006666666666666721,
+                    0.00022222222222222736,
+                    0.00022222222222222736,
+                    0.00022222222222221746,
+                    0.00022222222222221746,
+                    0.00022222222222221746,
+                    0.0011111111111111072,
+                    0.0011111111111111072
+                  ]
+                ]
+              }
+            }
+          ],
+          "refId": "A"
+        }
+      }
+    }
+  }

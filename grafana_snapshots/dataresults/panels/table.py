@@ -37,30 +37,30 @@ class TablePanel(DefaultPanel):
         ] )
 
     #***********************************************
-    def get_FieldsConfig(*args, **kwargs) -> list:
-        self = args[0]
-        results = args[1]
+    # def get_FieldsConfig(*args, **kwargs) -> list:
+    #     self = args[0]
+    #     results = args[1]
 
-        fields = kwargs.get('fields', [] )
-        res = []
-        for field in fields:
-            if 'type' in field and field['type'] == 'timestamp':
-                config = self.get_FieldConfig(self.ts_fields, results)
-            else:
-                config = self.get_FieldConfig(self.value_fields, results)
-            if 'config' in field['value']:
-                field['value']['config'].update( config )
-            else:
-                field['value']['config'] = config
-            res.append(field['value'])
+    #     fields = kwargs.get('fields', [] )
+    #     res = []
+    #     for field in fields:
+    #         if 'type' in field and field['type'] == 'timestamp':
+    #             config = self.get_FieldConfig(self.ts_fields, results)
+    #         else:
+    #             config = self.get_FieldConfig(self.value_fields, results)
+    #         if 'config' in field['value']:
+    #             field['value']['config'].update( config )
+    #         else:
+    #             field['value']['config'] = config
+    #         res.append(field['value'])
 
-        if len(res) == 0:
-            res = [
-                { 'config': self.get_FieldConfig(self.ts_fields, results) },
-                { 'config': self.get_FieldConfig(self.value_fields, results) },
-            ]
+    #     if len(res) == 0:
+    #         res = [
+    #             { 'config': self.get_FieldConfig(self.ts_fields, results) },
+    #             { 'config': self.get_FieldConfig(self.value_fields, results) },
+    #         ]
 
-        return res
+    #     return res
 
     #***********************************************
     def set_transformations(self, snapshotDataElmt: dict) -> None:

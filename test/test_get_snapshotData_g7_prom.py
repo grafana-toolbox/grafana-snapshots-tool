@@ -7,18 +7,18 @@ datasource_type = 'prometheus'
 api_version = LooseVersion('7.5.11')
 
 #***************************************************************************************
-def test_ts_ts(build_config):
+def test_data_ts_range_panel_ts(build_config):
     # read the datasource
     content = build_config.readResponse('queries/grafana_7/prometheus/timeseries_5m.json')
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_7/timeseries.json')
     # build a target
-    if 'targets' in panel and len(panel['targets'])>0:
-        target = panel['targets'][0]
-        target['refId'] = 'A'
-    else:
-        raise Exception("can' build target from panel")
+    # if 'targets' in panel and len(panel['targets'])>0:
+    #     target = panel['targets'][0]
+    #     target['refId'] = 'A'
+    # else:
+    #     raise Exception("can' build target from panel")
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -26,7 +26,7 @@ def test_ts_ts(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(panel['targets'])
 
     assert snapshotData is not None, "invalid data"
     # only one result

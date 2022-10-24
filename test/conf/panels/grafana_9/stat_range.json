@@ -1,0 +1,78 @@
+{
+    "id": 8,
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    "type": "stat",
+    "title": "Stat Panel",
+    "targets": [
+      {
+        "refId": "A",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "h8KkCLt7z"
+        },
+        "editorMode": "code",
+        "expr": "rate(process_cpu_seconds_total[30s])",
+        "legendFormat": "__auto",
+        "range": true
+      }
+    ],
+    "fieldConfig": {
+      "defaults": {
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "value": null,
+              "color": "green"
+            },
+            {
+              "value": 80,
+              "color": "red"
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        }
+      },
+      "overrides": [
+        {
+          "matcher": {
+            "id": "byName",
+            "options": "{instance=\"localhost:9090\", job=\"prometheus\"}"
+          },
+          "properties": [
+            {
+              "id": "unit",
+              "value": "percentunit"
+            }
+          ]
+        }
+      ]
+    },
+    "datasource": {
+      "uid": "h8KkCLt7z",
+      "type": "prometheus"
+    },
+    "options": {
+      "reduceOptions": {
+        "values": false,
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": ""
+      },
+      "orientation": "auto",
+      "textMode": "auto",
+      "colorMode": "background",
+      "graphMode": "area",
+      "justifyMode": "auto"
+    },
+    "pluginVersion": "9.2.0"
+  }

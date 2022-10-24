@@ -84,7 +84,7 @@ class resultsFrame(resultsBase):
     """
 
     #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
+    def get_snapshotData(self, targets: list)-> list:
         snapshotData = list()
         snapshotDataObj = {}
         (ts_part, value_part, ref_id) = ( None, None, None)
@@ -95,7 +95,7 @@ class resultsFrame(resultsBase):
 
         # required format is time_series:
         if self.format == 'time_series':
-            for _, refId in self.results['results'].items():
+            for ref_id, refId in self.results['results'].items():
 
                 # loop on each timeseries received from the frame
                 for frame in refId['frames']:
@@ -133,8 +133,7 @@ class resultsFrame(resultsBase):
                         # snapshotDataObj['name'] = name
                         if name is not None:
                             snapshotDataObj['name'] = name
-                        # snapshotDataObj['refId'] = target['refId']
-                        snapshotDataObj['refId'] = refId['refId']
+                        snapshotDataObj['refId'] = ref_id
 
                     self.panel.set_overrides( snapshotDataObj )
                     snapshotData.append( snapshotDataObj )
@@ -223,8 +222,6 @@ class resultsFrame(resultsBase):
                 snapshotDataObj['fields'] = self.panel.get_FieldsConfig(frame, None, fields=fields)
                 snapshotDataObj['meta'] = meta
 
-                # snapshotDataObj['refId'] = target['refId']
-            
                 snapshotDataObj['refId'] = ref_id
 
                 self.panel.set_overrides( snapshotDataObj )

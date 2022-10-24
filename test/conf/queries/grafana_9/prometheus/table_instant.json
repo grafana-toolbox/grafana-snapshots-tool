@@ -1,0 +1,243 @@
+{
+    "request": {
+      "url": "api/ds/query",
+      "method": "POST",
+      "data": {
+        "queries": [
+          {
+            "datasource": {
+              "uid": "h8KkCLt7z",
+              "type": "prometheus"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "rate(prometheus_http_requests_total[30s])",
+            "format": "table",
+            "instant": true,
+            "legendFormat": "{{ handler }}",
+            "range": false,
+            "refId": "A",
+            "queryType": "timeSeriesQuery",
+            "requestId": "6A",
+            "utcOffsetSec": 7200,
+            "interval": "",
+            "datasourceId": 1,
+            "intervalMs": 15000,
+            "maxDataPoints": 1037
+          }
+        ],
+        "range": {
+          "from": "2022-10-23T17:54:07.479Z",
+          "to": "2022-10-23T17:56:07.479Z",
+          "raw": {
+            "from": "now-2m",
+            "to": "now"
+          }
+        },
+        "from": "1666547647479",
+        "to": "1666547767479"
+      },
+      "hideFromInspector": false
+    },
+    "response": {
+      "results": {
+        "A": {
+          "frames": [
+            {
+              "schema": {
+                "name": "/api/v1/label/:name/values",
+                "refId": "A",
+                "meta": {
+                  "type": "timeseries-many",
+                  "custom": {
+                    "resultType": "vector"
+                  },
+                  "executedQueryString": "Expr: rate(prometheus_http_requests_total[30s])\nStep: 15s"
+                },
+                "fields": [
+                  {
+                    "name": "Time",
+                    "type": "time",
+                    "typeInfo": {
+                      "frame": "time.Time"
+                    }
+                  },
+                  {
+                    "name": "Value",
+                    "type": "number",
+                    "typeInfo": {
+                      "frame": "float64"
+                    },
+                    "labels": {
+                      "code": "200",
+                      "handler": "/api/v1/label/:name/values",
+                      "instance": "localhost:9090",
+                      "job": "prometheus"
+                    },
+                    "config": {
+                      "displayNameFromDS": "/api/v1/label/:name/values"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "values": [
+                  [
+                    1666547767479
+                  ],
+                  [
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "schema": {
+                "name": "/api/v1/labels",
+                "refId": "A",
+                "meta": {
+                  "type": "timeseries-many",
+                  "custom": {
+                    "resultType": "vector"
+                  },
+                  "executedQueryString": "Expr: rate(prometheus_http_requests_total[30s])\nStep: 15s"
+                },
+                "fields": [
+                  {
+                    "name": "Time",
+                    "type": "time",
+                    "typeInfo": {
+                      "frame": "time.Time"
+                    }
+                  },
+                  {
+                    "name": "Value",
+                    "type": "number",
+                    "typeInfo": {
+                      "frame": "float64"
+                    },
+                    "labels": {
+                      "code": "200",
+                      "handler": "/api/v1/labels",
+                      "instance": "localhost:9090",
+                      "job": "prometheus"
+                    },
+                    "config": {
+                      "displayNameFromDS": "/api/v1/labels"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "values": [
+                  [
+                    1666547767479
+                  ],
+                  [
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "schema": {
+                "name": "/api/v1/query",
+                "refId": "A",
+                "meta": {
+                  "type": "timeseries-many",
+                  "custom": {
+                    "resultType": "vector"
+                  },
+                  "executedQueryString": "Expr: rate(prometheus_http_requests_total[30s])\nStep: 15s"
+                },
+                "fields": [
+                  {
+                    "name": "Time",
+                    "type": "time",
+                    "typeInfo": {
+                      "frame": "time.Time"
+                    }
+                  },
+                  {
+                    "name": "Value",
+                    "type": "number",
+                    "typeInfo": {
+                      "frame": "float64"
+                    },
+                    "labels": {
+                      "code": "200",
+                      "handler": "/api/v1/query",
+                      "instance": "localhost:9090",
+                      "job": "prometheus"
+                    },
+                    "config": {
+                      "displayNameFromDS": "/api/v1/query"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "values": [
+                  [
+                    1666547767479
+                  ],
+                  [
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "schema": {
+                "name": "/metrics",
+                "refId": "A",
+                "meta": {
+                  "type": "timeseries-many",
+                  "custom": {
+                    "resultType": "vector"
+                  },
+                  "executedQueryString": "Expr: rate(prometheus_http_requests_total[30s])\nStep: 15s"
+                },
+                "fields": [
+                  {
+                    "name": "Time",
+                    "type": "time",
+                    "typeInfo": {
+                      "frame": "time.Time"
+                    }
+                  },
+                  {
+                    "name": "Value",
+                    "type": "number",
+                    "typeInfo": {
+                      "frame": "float64"
+                    },
+                    "labels": {
+                      "code": "200",
+                      "handler": "/metrics",
+                      "instance": "localhost:9090",
+                      "job": "prometheus"
+                    },
+                    "config": {
+                      "displayNameFromDS": "/metrics"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "values": [
+                  [
+                    1666547767479
+                  ],
+                  [
+                    0.06666666666666667
+                  ]
+                ]
+              }
+            }
+          ],
+          "refId": "A"
+        }
+      }
+    }
+  }

@@ -1,0 +1,144 @@
+{
+    "id": 6,
+    "gridPos": {
+      "h": 9,
+      "w": 14,
+      "x": 0,
+      "y": 0
+    },
+    "type": "table",
+    "title": "Instant metric",
+    "transformations": [],
+    "datasource": {
+      "type": "prometheus",
+      "uid": "h8KkCLt7z"
+    },
+    "pluginVersion": "9.1.1",
+    "fieldConfig": {
+      "defaults": {
+        "custom": {
+          "align": "center",
+          "displayMode": "auto",
+          "inspect": false,
+          "width": 123
+        },
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "color": "red",
+              "value": 80
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        },
+        "min": -1,
+        "unit": "none"
+      },
+      "overrides": [
+        {
+          "matcher": {
+            "id": "byName",
+            "options": "Time"
+          },
+          "properties": [
+            {
+              "id": "custom.width",
+              "value": 210
+            }
+          ]
+        },
+        {
+          "matcher": {
+            "id": "byName",
+            "options": "handler"
+          },
+          "properties": [
+            {
+              "id": "custom.width",
+              "value": 243
+            }
+          ]
+        },
+        {
+          "matcher": {
+            "id": "byName",
+            "options": "code"
+          },
+          "properties": [
+            {
+              "id": "unit",
+              "value": "none"
+            },
+            {
+              "id": "min",
+              "value": 100
+            },
+            {
+              "id": "max",
+              "value": 500
+            },
+            {
+              "id": "custom.displayMode",
+              "value": "gradient-gauge"
+            },
+            {
+              "id": "thresholds",
+              "value": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 300
+                  },
+                  {
+                    "color": "red",
+                    "value": 500
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "options": {
+      "showHeader": true,
+      "footer": {
+        "show": false,
+        "reducer": [
+          "sum"
+        ],
+        "fields": "",
+        "enablePagination": false
+      },
+      "sortBy": []
+    },
+    "targets": [
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "h8KkCLt7z"
+        },
+        "editorMode": "code",
+        "exemplar": false,
+        "expr": "rate(prometheus_http_requests_total[30s])",
+        "format": "table",
+        "instant": true,
+        "legendFormat": "{{ handler }}",
+        "range": false,
+        "refId": "A"
+      }
+    ]
+  }

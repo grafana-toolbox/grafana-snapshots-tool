@@ -56,7 +56,7 @@ class resultsSQL(resultsBase):
     }
     """
     #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
+    def get_snapshotData(self, targets: list)-> list:
         fields = []
         return fields
 

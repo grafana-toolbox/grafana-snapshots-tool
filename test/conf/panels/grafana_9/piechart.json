@@ -1,0 +1,73 @@
+{
+    "id": 12,
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    "type": "piechart",
+    "title": "Pie Panel",
+    "targets": [
+      {
+        "refId": "A",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "h8KkCLt7z"
+        },
+        "editorMode": "code",
+        "expr": "rate(prometheus_http_requests_total[30s])",
+        "legendFormat": "{{handler}}",
+        "range": false,
+        "instant": true,
+        "exemplar": false
+      }
+    ],
+    "fieldConfig": {
+      "defaults": {
+        "custom": {
+          "hideFrom": {
+            "tooltip": false,
+            "viz": false,
+            "legend": false
+          }
+        },
+        "color": {
+          "mode": "palette-classic"
+        },
+        "mappings": [],
+        "unit": "none",
+        "min": 0,
+        "max": 100
+      },
+      "overrides": []
+    },
+    "datasource": {
+      "uid": "h8KkCLt7z",
+      "type": "prometheus"
+    },
+    "pluginVersion": "9.2.0",
+    "options": {
+      "reduceOptions": {
+        "values": false,
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": ""
+      },
+      "pieType": "donut",
+      "tooltip": {
+        "mode": "single",
+        "sort": "none"
+      },
+      "legend": {
+        "showLegend": true,
+        "displayMode": "table",
+        "placement": "right",
+        "values": [
+          "value",
+          "percent"
+        ]
+      }
+    }
+  }

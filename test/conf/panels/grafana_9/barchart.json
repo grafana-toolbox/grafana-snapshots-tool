@@ -1,0 +1,89 @@
+{
+    "id": 14,
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    "type": "barchart",
+    "title": "Bar chart Title",
+    "targets": [
+      {
+        "refId": "A",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "h8KkCLt7z"
+        },
+        "editorMode": "code",
+        "expr": "rate(prometheus_http_requests_total[30s])",
+        "legendFormat": "{{handler}}",
+        "range": true,
+        "format": "time_series"
+      }
+    ],
+    "fieldConfig": {
+      "defaults": {
+        "custom": {
+          "lineWidth": 1,
+          "fillOpacity": 80,
+          "gradientMode": "none",
+          "axisPlacement": "auto",
+          "axisLabel": "",
+          "axisColorMode": "text",
+          "scaleDistribution": {
+            "type": "linear"
+          },
+          "axisCenteredZero": false,
+          "hideFrom": {
+            "tooltip": false,
+            "viz": false,
+            "legend": false
+          }
+        },
+        "color": {
+          "mode": "palette-classic"
+        },
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "value": null,
+              "color": "green"
+            },
+            {
+              "value": 80,
+              "color": "red"
+            }
+          ]
+        }
+      },
+      "overrides": []
+    },
+    "datasource": {
+      "uid": "h8KkCLt7z",
+      "type": "prometheus"
+    },
+    "options": {
+      "orientation": "auto",
+      "xTickLabelRotation": 45,
+      "xTickLabelSpacing": 0,
+      "showValue": "auto",
+      "stacking": "none",
+      "groupWidth": 0.7,
+      "barWidth": 0.97,
+      "barRadius": 0,
+      "tooltip": {
+        "mode": "single",
+        "sort": "none"
+      },
+      "legend": {
+        "showLegend": true,
+        "displayMode": "list",
+        "placement": "bottom",
+        "calcs": []
+      },
+      "xField": "Time"
+    }
+  }

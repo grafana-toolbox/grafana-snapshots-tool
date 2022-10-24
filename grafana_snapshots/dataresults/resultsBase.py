@@ -31,7 +31,7 @@ class resultsBase(object):
         return self.results
 
     #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
+    def get_snapshotData(self, targets: list)-> list:
         raise NotImplementedError('method not implemented')
 
     #***********************************************
@@ -84,58 +84,7 @@ class resultsStream(resultsBase):
     }
     """
     #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
-        fields = []
-        return fields
-
-#**********************************************************************************
-class resultsGraphite(resultsBase):
-    """
-    response contains an array of results:
-    e.g.: Graphite
-    "response": [
-        {
-            "target": "<query...>",
-            "datapoints": [
-                [ <values>, timestamp ],
-                [ ... ]
-            ]
-        }
-    ]
-    """
-    #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
-        fields = []
-        return fields
-
-#**********************************************************************************
-class resultsInflux(resultsBase):
-    """
-    response contains an array of results:
-    e.g.: Graphite
-    "response": [
-        {
-            "statement_id": 0,
-            "series": [
-                { serie },
-            ]
-        }
-    ]
-
-    serie: {
-        "name": "<serie_name>",
-        "columns": [
-            "time", "<others columns names>",
-        ],
-        "values":[
-            [ timestamp_1, value_1],
-            [ timestamp_2, value_2],
-            [ ..., ...]
-        ]
-    }
-    """
-    #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
+    def get_snapshotData(self, targets: list)-> list:
         fields = []
         return fields
 

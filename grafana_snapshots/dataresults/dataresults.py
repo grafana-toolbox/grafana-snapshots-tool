@@ -3,10 +3,12 @@
 
 from distutils.version import LooseVersion
 
-from .resultsBase import resultsStream, resultsGraphite, resultsInflux
+from .resultsBase import resultsStream
 from grafana_snapshots.dataresults.resultsMatrix import resultsMatrix
 from grafana_snapshots.dataresults.resultsSQL import resultsSQL
 from grafana_snapshots.dataresults.resultsFrame import resultsFrame
+from grafana_snapshots.dataresults.resultsGraphite import resultsGraphite
+from grafana_snapshots.dataresults.resultsInfluxDB import resultsInfluxDB
 
 #***************************************************
 class dataresults(object):
@@ -34,7 +36,7 @@ class dataresults(object):
             klass = resultsSQL
 
         elif self.type == "influxdb":
-            klass = resultsInflux
+            klass = resultsInfluxDB
 
         elif self.type == "loki":
             klass = resultsStream

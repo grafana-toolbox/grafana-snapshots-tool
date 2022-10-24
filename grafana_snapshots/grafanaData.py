@@ -1,5 +1,5 @@
 import copy, json, re
-import datetime, dateutil.parser, dateutil.relativedelta
+import datetime, dateutil.parser, dateutil.relativedelta, time
 from urllib import request
 from jinja2 import Template
 # from distutils.version import LooseVersion
@@ -322,6 +322,14 @@ class GrafanaData(object):
       return res_datasource
 
    #***********************************************
+   def get_offsetFromUTC(self) -> int:
+      ts = time.time()
+      utc_offset = (
+         datetime.datetime.fromtimestamp(ts) -
+         datetime.datetime.utcfromtimestamp(ts)).total_seconds()
+      return int(utc_offset)
+
+   #***********************************************
    def get_query_from_datasource(self, datasource, target):
 
       if 'type' not in datasource:
@@ -358,6 +366,7 @@ class GrafanaData(object):
             expr = self.extract_vars(expr)
 
          params = copy.deepcopy( target )
+         params['utcOffsetSec'] = self.get_offsetFromUTC()
          params['query'] = expr
          params['time_to'] = self.time_to
          params['time_from'] = self.time_from

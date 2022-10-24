@@ -1,0 +1,68 @@
+{
+  "id": 10,
+  "gridPos": {
+    "x": 0,
+    "y": 17,
+    "w": 3,
+    "h": 4
+  },
+  "type": "stat",
+  "title": "Stat Panel Table",
+  "targets": [
+    {
+      "refId": "A",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "h8KkCLt7z"
+      },
+      "editorMode": "code",
+      "expr": "up",
+      "legendFormat": "__auto",
+      "range": true,
+      "format": "table",
+      "instant": false,
+      "exemplar": false
+    }
+  ],
+  "options": {
+    "reduceOptions": {
+      "values": false,
+      "calcs": [
+        "lastNotNull"
+      ],
+      "fields": "/^job$/"
+    },
+    "orientation": "auto",
+    "textMode": "auto",
+    "colorMode": "value",
+    "graphMode": "area",
+    "justifyMode": "auto"
+  },
+  "fieldConfig": {
+    "defaults": {
+      "mappings": [],
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "value": null,
+            "color": "green"
+          },
+          {
+            "value": 80,
+            "color": "red"
+          }
+        ]
+      },
+      "color": {
+        "mode": "thresholds"
+      }
+    },
+    "overrides": []
+  },
+  "datasource": {
+    "uid": "h8KkCLt7z",
+    "type": "prometheus"
+  },
+  "pluginVersion": "9.2.0"
+}

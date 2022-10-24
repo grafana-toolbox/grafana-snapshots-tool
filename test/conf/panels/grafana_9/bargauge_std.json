@@ -1,0 +1,74 @@
+{
+    "id": 12,
+    "gridPos": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    "type": "bargauge",
+    "title": "Gauge Panel",
+    "targets": [
+      {
+        "refId": "A",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "h8KkCLt7z"
+        },
+        "editorMode": "code",
+        "expr": "rate(process_cpu_seconds_total[30s])*100",
+        "legendFormat": "__auto",
+        "range": false,
+        "instant": true,
+        "exemplar": false
+      }
+    ],
+    "fieldConfig": {
+      "defaults": {
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "value": 50,
+              "color": "#EAB839"
+            },
+            {
+              "color": "red",
+              "value": 80
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        },
+        "unit": "percent",
+        "min": 0,
+        "max": 100
+      },
+      "overrides": []
+    },
+    "datasource": {
+      "uid": "h8KkCLt7z",
+      "type": "prometheus"
+    },
+    "pluginVersion": "9.2.0",
+    "options": {
+      "reduceOptions": {
+        "values": false,
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": ""
+      },
+      "orientation": "horizontal",
+      "displayMode": "lcd",
+      "showUnfilled": true,
+      "minVizWidth": 0,
+      "minVizHeight": 10
+    }
+  }

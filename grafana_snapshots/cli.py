@@ -237,18 +237,10 @@ def main():
       #    sys.exit(0)
 
       try:
-         dtsrcs = grafana_api.list_datasources()
+         datasources = grafana_api.get_datasources()
       except Exception as e:
          print("error: {} - message: {}".format(e.status_code, e.message) )
          sys.exit(2)
-
-      for dtsrc in dtsrcs:
-         if 'uid' not in dtsrc:
-            datasources[dtsrc['name']] = dtsrc
-            if 'isDefault' in dtsrc and dtsrc['isDefault']:
-               datasources['default'] = dtsrc
-         else:
-            datasources[dtsrc['uid']] = dtsrc
 
       if args.verbose:
          print('datasources OK.')
@@ -266,7 +258,7 @@ def main():
 
       #**********************************************************************************
       #*** collect the data from datasources to populate the snapshot
-      data_api = GrafanaData( params );
+      data_api = GrafanaData( params )
       res = data_api.get_dashboard_data()
       if res is None or not res:
          print("can't obtain dashboard data... snapshot canceled!")

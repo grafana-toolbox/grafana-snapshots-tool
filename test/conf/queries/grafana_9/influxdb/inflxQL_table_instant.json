@@ -1,0 +1,92 @@
+{
+    "request": {
+      "method": "POST",
+      "url": "api/datasources/proxy/2/query",
+      "params": {
+        "db": "site",
+        "epoch": "ms"
+      },
+      "data": "q=SELECT%20mean(%22value%22)%20AS%20%22cpuMean%22%20FROM%20%22cpu%22%20WHERE%20(%22hostname%22%20%3D%20'server1'%20OR%20%22hostname%22%20%3D%20'server2')%20AND%20time%20%3E%3D%20now()%20-%2015m%20and%20time%20%3C%3D%20now()%20GROUP%20BY%20%22hostname%22%3BSELECT%20mean(%22value%22)%20AS%20%22loginCountMean%22%20FROM%20%22logins.count%22%20WHERE%20(%22hostname%22%20%3D%20'server1'%20OR%20%22hostname%22%20%3D%20'server2')%20AND%20time%20%3E%3D%20now()%20-%2015m%20and%20time%20%3C%3D%20now()%20GROUP%20BY%20%22hostname%22",
+      "precision": "ms",
+      "hideFromInspector": false
+    },
+    "response": {
+      "results": [
+        {
+          "statement_id": 0,
+          "series": [
+            {
+              "name": "cpu",
+              "tags": {
+                "hostname": "server1"
+              },
+              "columns": [
+                "time",
+                "cpuMean"
+              ],
+              "values": [
+                [
+                  1666800207484,
+                  53.417890604311005
+                ]
+              ]
+            },
+            {
+              "name": "cpu",
+              "tags": {
+                "hostname": "server2"
+              },
+              "columns": [
+                "time",
+                "cpuMean"
+              ],
+              "values": [
+                [
+                  1666800207484,
+                  53.38393290322464
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "statement_id": 1,
+          "series": [
+            {
+              "name": "logins.count",
+              "tags": {
+                "hostname": "server1"
+              },
+              "columns": [
+                "time",
+                "loginCountMean"
+              ],
+              "values": [
+                [
+                  1666800207486,
+                  -1171.5544029856053
+                ]
+              ]
+            },
+            {
+              "name": "logins.count",
+              "tags": {
+                "hostname": "server2"
+              },
+              "columns": [
+                "time",
+                "loginCountMean"
+              ],
+              "values": [
+                [
+                  1666800207486,
+                  -1171.588866367
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "executedQueryString": "SELECT mean(\"value\") AS \"cpuMean\" FROM \"cpu\" WHERE (\"hostname\" = 'server1' OR \"hostname\" = 'server2') AND time >= now() - 15m and time <= now() GROUP BY \"hostname\";SELECT mean(\"value\") AS \"loginCountMean\" FROM \"logins.count\" WHERE (\"hostname\" = 'server1' OR \"hostname\" = 'server2') AND time >= now() - 15m and time <= now() GROUP BY \"hostname\""
+    }
+  }

@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+#***************************************************
 from .resultsBase import resultsBase
+from typing import Union
 
 #***************************************************
 class resultsGraphite(resultsBase):
@@ -20,7 +21,7 @@ class resultsGraphite(resultsBase):
     """
 
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
         snapshotData = list()
         snapshotDataObj = {}
         (ts_part, value_part, ref_id) = ( None, None, None)
@@ -28,6 +29,11 @@ class resultsGraphite(resultsBase):
         if not self.results or not isinstance(self.results, list) \
             or len(self.results) <= 0:
             return snapshotData
+
+        if targets is None:
+            targets = []
+        if isinstance(targets, dict):
+            targets = [ targets ]
 
         # required format is time_series:
 

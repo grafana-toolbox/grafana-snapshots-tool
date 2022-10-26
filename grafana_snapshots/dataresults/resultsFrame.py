@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+#***************************************************
 from .resultsBase import resultsBase
+from typing import Union
 
 #***************************************************
 class resultsFrame(resultsBase):
@@ -84,7 +85,7 @@ class resultsFrame(resultsBase):
     """
 
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
         snapshotData = list()
         snapshotDataObj = {}
         (ts_part, value_part, ref_id) = ( None, None, None)
@@ -93,9 +94,18 @@ class resultsFrame(resultsBase):
             or len(self.results['results']) <= 0:
             return snapshotData
 
+        if targets is None:
+            targets = []
+        if isinstance(targets, dict):
+            targets = [ targets ]
+
         # required format is time_series:
         if self.format == 'time_series':
             for ref_id, refId in self.results['results'].items():
+
+                #* the result contains an error
+                if 'error' in refId:
+                    return snapshotData
 
                 # loop on each timeseries received from the frame
                 for frame in refId['frames']:
@@ -129,7 +139,8 @@ class resultsFrame(resultsBase):
                     #** build snapshotDataObj for the current timeseries
                     if ts_part is not None and value_part is not None:
                         snapshotDataObj['fields']=[ ts_part, value_part]
-                        snapshotDataObj['meta'] = frame['schema']['meta']
+                        if 'meta' in frame['schema']:
+                            snapshotDataObj['meta'] = frame['schema']['meta']
                         # snapshotDataObj['name'] = name
                         if name is not None:
                             snapshotDataObj['name'] = name

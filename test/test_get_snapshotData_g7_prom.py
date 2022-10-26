@@ -13,12 +13,10 @@ def test_data_ts_range_panel_ts(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_7/timeseries.json')
-    # build a target
-    # if 'targets' in panel and len(panel['targets'])>0:
-    #     target = panel['targets'][0]
-    #     target['refId'] = 'A'
-    # else:
-    #     raise Exception("can' build target from panel")
+
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -26,7 +24,7 @@ def test_data_ts_range_panel_ts(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(panel['targets'])
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # only one result

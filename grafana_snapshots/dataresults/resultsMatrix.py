@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+#***************************************************
 import json, re
 
 from .resultsBase import resultsBase
+from typing import Union
 
 #***************************************************
 class resultsMatrix(resultsBase):
@@ -40,7 +41,7 @@ class resultsMatrix(resultsBase):
     }
     """
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
         """
         one snapshotDataObj is a result from query_range
         it is composed from 2 fields :
@@ -57,6 +58,8 @@ class resultsMatrix(resultsBase):
 
         if targets is None:
             targets = []
+        if isinstance(targets, dict):
+            targets = [ targets ]
 
         # required format is time_series:
         if self.format == 'time_series':

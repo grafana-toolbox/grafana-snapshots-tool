@@ -1,0 +1,146 @@
+{
+    "targets": [
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "M3k6ZPrnz"
+            },
+            "query": "from(bucket: \"HyperEncabulator\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TemperatureData\")\r\n  |> filter(fn: (r) => r[\"MeasType\"] == \"setpoint\" or r[\"MeasType\"] == \"actual\")\r\n  |> filter(fn: (r) => r[\"Tank\"] == \"${Tank}\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Temperature\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+            "refId": "A"
+        }
+    ],
+    "request": {
+        "url": "api/ds/query",
+        "method": "POST",
+        "data": {
+            "queries": [
+                {
+                    "datasource": {
+                        "uid": "M3k6ZPrnz",
+                        "type": "influxdb"
+                    },
+                    "query": "from(bucket: \"HyperEncabulator\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TemperatureData\")\r\n  |> filter(fn: (r) => r[\"MeasType\"] == \"setpoint\" or r[\"MeasType\"] == \"actual\")\r\n  |> filter(fn: (r) => r[\"Tank\"] == \"A5\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Temperature\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+                    "refId": "A",
+                    "datasourceId": 202,
+                    "intervalMs": 60000,
+                    "maxDataPoints": 1441
+                }
+            ],
+            "range": {
+                "from": "2022-10-26T10:32:03.493Z",
+                "to": "2022-10-26T10:37:03.493Z",
+                "raw": {
+                    "from": "now-5m",
+                    "to": "now"
+                }
+            },
+            "from": "1666780323493",
+            "to": "1666780623493"
+        },
+        "hideFromInspector": false
+    },
+    "response": {
+        "results": {
+            "A": {
+                "frames": [
+                    {
+                        "schema": {
+                            "name": "TemperatureData",
+                            "refId": "A",
+                            "meta": {
+                                "executedQueryString": "from(bucket: \"HyperEncabulator\")\r\n  |> range(start: 2022-10-26T10:32:03.493Z, stop: 2022-10-26T10:37:03.493Z)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TemperatureData\")\r\n  |> filter(fn: (r) => r[\"MeasType\"] == \"setpoint\" or r[\"MeasType\"] == \"actual\")\r\n  |> filter(fn: (r) => r[\"Tank\"] == \"A5\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Temperature\")\r\n  |> aggregateWindow(every: 1m0s, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")"
+                            },
+                            "fields": [
+                                {
+                                    "name": "Time",
+                                    "type": "time",
+                                    "typeInfo": {
+                                        "frame": "time.Time",
+                                        "nullable": true
+                                    }
+                                },
+                                {
+                                    "name": "Temperature",
+                                    "type": "number",
+                                    "typeInfo": {
+                                        "frame": "float64",
+                                        "nullable": true
+                                    },
+                                    "labels": {
+                                        "MeasType": "actual",
+                                        "Tank": "A5"
+                                    }
+                                }
+                            ]
+                        },
+                        "data": {
+                            "values": [
+                                [
+                                    1666780380000,
+                                    1666780440000,
+                                    1666780500000,
+                                    1666780560000,
+                                    1666780620000
+                                ],
+                                [
+                                    46,
+                                    46.875,
+                                    46.875,
+                                    43.625,
+                                    44
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        "schema": {
+                            "name": "TemperatureData",
+                            "refId": "A",
+                            "fields": [
+                                {
+                                    "name": "Time",
+                                    "type": "time",
+                                    "typeInfo": {
+                                        "frame": "time.Time",
+                                        "nullable": true
+                                    }
+                                },
+                                {
+                                    "name": "Temperature",
+                                    "type": "number",
+                                    "typeInfo": {
+                                        "frame": "float64",
+                                        "nullable": true
+                                    },
+                                    "labels": {
+                                        "MeasType": "setpoint",
+                                        "Tank": "A5"
+                                    }
+                                }
+                            ]
+                        },
+                        "data": {
+                            "values": [
+                                [
+                                    1666780380000,
+                                    1666780440000,
+                                    1666780500000,
+                                    1666780560000,
+                                    1666780620000
+                                ],
+                                [
+                                    45,
+                                    45,
+                                    45,
+                                    45,
+                                    45
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "refId": "A"
+            }
+        }
+    }
+}

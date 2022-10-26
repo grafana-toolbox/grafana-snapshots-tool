@@ -1,0 +1,212 @@
+{
+    "targets": [
+        {
+            "groupBy": [
+                {
+                    "params": [
+                        "$__interval"
+                    ],
+                    "type": "time"
+                },
+                {
+                    "params": [
+                        "null"
+                    ],
+                    "type": "fill"
+                }
+            ],
+            "measurement": "logins.count",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT sum(\"value\") FROM \"logins.count\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+            "rawQuery": true,
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+                [
+                    {
+                        "params": [
+                            "value"
+                        ],
+                        "type": "field"
+                    },
+                    {
+                        "params": [],
+                        "type": "mean"
+                    }
+                ]
+            ],
+            "tags": [],
+            "datasource": {
+                "uid": "000000002",
+                "type": "influxdb"
+            },
+            "alias": "login sum"
+        }
+    ],
+    "request": {
+      "method": "POST",
+      "url": "api/datasources/proxy/2/query",
+      "params": {
+        "db": "site",
+        "epoch": "ms"
+      },
+      "data": "q=SELECT%20mean(%22value%22)%20FROM%20%22logins.count%22%20WHERE%20time%20%3E%3D%20now()%20-%205m%20and%20time%20%3C%3D%20now()%20GROUP%20BY%20time(1m)%2C%20%22datacenter%22",
+      "precision": "ms",
+      "hideFromInspector": false
+    },
+    "response": {
+      "results": [
+        {
+          "statement_id": 0,
+          "series": [
+            {
+              "name": "logins.count",
+              "tags": {
+                "datacenter": "Africa"
+              },
+              "columns": [
+                "time",
+                "mean"
+              ],
+              "values": [
+                [
+                  1666779720000,
+                  -1177.7187859034598
+                ],
+                [
+                  1666779780000,
+                  -1169.4855332422783
+                ],
+                [
+                  1666779840000,
+                  -1162.268478095589
+                ],
+                [
+                  1666779900000,
+                  -1164.996716550783
+                ],
+                [
+                  1666779960000,
+                  -1168.6117991130798
+                ],
+                [
+                  1666780020000,
+                  -1168.42519637533
+                ]
+              ]
+            },
+            {
+              "name": "logins.count",
+              "tags": {
+                "datacenter": "America"
+              },
+              "columns": [
+                "time",
+                "mean"
+              ],
+              "values": [
+                [
+                  1666779720000,
+                  -1177.8217191712997
+                ],
+                [
+                  1666779780000,
+                  -1170.4282016238785
+                ],
+                [
+                  1666779840000,
+                  -1162.5871421231855
+                ],
+                [
+                  1666779900000,
+                  -1164.6320285053052
+                ],
+                [
+                  1666779960000,
+                  -1168.4934218512196
+                ],
+                [
+                  1666780020000,
+                  -1167.2904630531784
+                ]
+              ]
+            },
+            {
+              "name": "logins.count",
+              "tags": {
+                "datacenter": "Asia"
+              },
+              "columns": [
+                "time",
+                "mean"
+              ],
+              "values": [
+                [
+                  1666779720000,
+                  -1177.105418931261
+                ],
+                [
+                  1666779780000,
+                  -1169.3037126740599
+                ],
+                [
+                  1666779840000,
+                  -1162.610743333011
+                ],
+                [
+                  1666779900000,
+                  -1164.9288207847774
+                ],
+                [
+                  1666779960000,
+                  -1168.8915340479637
+                ],
+                [
+                  1666780020000,
+                  -1167.5574582184693
+                ]
+              ]
+            },
+            {
+              "name": "logins.count",
+              "tags": {
+                "datacenter": "Europe"
+              },
+              "columns": [
+                "time",
+                "mean"
+              ],
+              "values": [
+                [
+                  1666779720000,
+                  -1177.3798686709833
+                ],
+                [
+                  1666779780000,
+                  -1170.3525040587135
+                ],
+                [
+                  1666779840000,
+                  -1162.7180428631057
+                ],
+                [
+                  1666779900000,
+                  -1164.5743592108283
+                ],
+                [
+                  1666779960000,
+                  -1168.7505808715684
+                ],
+                [
+                  1666780020000,
+                  -1168.366684188175
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "executedQueryString": "SELECT mean(\"value\") FROM \"logins.count\" WHERE time >= now() - 5m and time <= now() GROUP BY time(1m), \"datacenter\""
+    }
+  }

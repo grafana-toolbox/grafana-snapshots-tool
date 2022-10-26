@@ -284,14 +284,19 @@ class GrafanaData(object):
    # version_8 = LooseVersion('8')
 
    #***********************************************
-   def __init__( *args ):
+   def __init__( *args, **kwargs ):
       self = args[0]
-      kwargs = {}
-      if len(args) > 1:
-         kwargs = args[1]
+
       self.api = kwargs.get('api')
+      if self.api is None:
+         raise Exception('api not set')
       self.dashboard = kwargs.get('dashboard')
-      self.datasources = kwargs.get('datasources')
+      datasources = kwargs.get('datasources', None)
+      if datasources is None:
+         self.datasources = self.api.get_datasources()
+      else:
+         self.datasources = datasources
+
       self.time_to = get_time( kwargs.get('time_to') )
       self.time_from = get_time(kwargs.get('time_from'))
       self.context = kwargs.get('context')
@@ -513,9 +518,13 @@ class GrafanaData(object):
                   #    return False
                   # if self.debug:
                   #     print("query GET datasource proxy uri: {0}".format(self.api.grafana_api.client.url))
+                  dialect = None
+                  if datasource['type'] == 'influxdb':
+                     dialect = datasource["jsonData"].get("version", "InfluxQL")
 
                   dataRes = dataresults( 
                      type=datasource['type'],
+                     dialect = dialect,
                      format=format,
                      results=content,
                      version=self.api.version,

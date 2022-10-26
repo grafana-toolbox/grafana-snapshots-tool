@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .resultsBase import resultsBase
+from typing import Union
 
 #***************************************************
 class resultsInfluxDB(resultsBase):
@@ -19,8 +20,12 @@ class resultsInfluxDB(resultsBase):
 
     serie: {
         "name": "<serie_name>",
+        "tags": {
+            "tag_name": "tag_value"
+        },
         "columns": [
-            "time", "<others columns names>",
+            "time",
+            "<others columns names>",
         ],
         "values":[
             [ timestamp_1, value_1],
@@ -32,7 +37,7 @@ class resultsInfluxDB(resultsBase):
     """
 
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
         snapshotData = list()
         snapshotDataObj = {}
         (ts_part, value_part, ref_id) = ( None, None, None)
@@ -44,6 +49,11 @@ class resultsInfluxDB(resultsBase):
 
         if targets is None:
             targets = []
+        if isinstance(targets, dict):
+            targets = [ targets ]
+
+        # it seems that v1 Influxdb data ha always the same format:
+        # format time_series, table, logs provide the same results.
 
         # required format is time_series:
         if self.format == 'time_series':
@@ -89,18 +99,24 @@ class resultsInfluxDB(resultsBase):
                         'type': 'number',
                         'values': values
                     } )
-                    name = serie['name']
-
-                #** build snapshotDataObj
-                if ts_part is not None and value_part is not None:
-                    snapshotDataObj['fields']=[ ts_part, value_part]
-                    if 'alias' in target:
-                        snapshotDataObj['name'] = target['alias']
+                    if 'tags' in serie:
+                        name = list(serie['tags'].values())[0]
+                        value_part.update({
+                            'labels': serie['tags'],
+                        })
+                    elif 'alias' in target:
+                        name = target['alias']
                     else:
                         ####
-                        # WARNING: take the name of the last serie : why not but why ?
+                        # WARNING: take the name of the last serie : why but why not ?
                         ####
-                        snapshotDataObj['name'] = '{0}.{1}'.format(name, serie['columns'][1])
+                        name = '{0}.{1}'.format(serie['name'], serie['columns'][1])
+
+                    value_part['config']['displayNameFromDS'] = name
+
+                    #** build snapshotDataObj
+                    snapshotDataObj['fields']=[ ts_part, value_part]
+                    snapshotDataObj['name'] = name
 
                     if 'query' in target:
                         snapshotDataObj['meta'] = { 'executedQueryString': target['query'] }
@@ -112,8 +128,7 @@ class resultsInfluxDB(resultsBase):
                         snapshotDataObj['refId'] = '?'
 
                     self.panel.set_overrides( snapshotDataObj )
-
-                snapshotData.append( snapshotDataObj )
+                    snapshotData.append( snapshotDataObj )
 
         # format is table : received results are same than for time_series
         # but they must be formatted differently :

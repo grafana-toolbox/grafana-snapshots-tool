@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from distutils.version import LooseVersion
+from typing import Union
 
 from .resultsBase import resultsStream
 from grafana_snapshots.dataresults.resultsMatrix import resultsMatrix
@@ -36,7 +37,11 @@ class dataresults(object):
             klass = resultsSQL
 
         elif self.type == "influxdb":
-            klass = resultsInfluxDB
+            dialect = kwargs.get('dialect', None)
+            if dialect == 'Flux':
+                klass = resultsFrame
+            else:
+                klass = resultsInfluxDB
 
         elif self.type == "loki":
             klass = resultsStream
@@ -50,8 +55,8 @@ class dataresults(object):
         self.results = klass(**kwargs)
 
     #***********************************************
-    def get_snapshotData(self, target: dict)-> list:
-        fields = self.results.get_snapshotData(target)
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
+        fields = self.results.get_snapshotData(targets)
         return fields
 
 #***************************************************

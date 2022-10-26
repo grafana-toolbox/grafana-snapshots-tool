@@ -15,6 +15,7 @@ class ConfigReader(object):
     #***********************************************
     def __init__(self, **kwargs) -> None:
         self.response = {}
+        self.targets = []
         self.panel = {}
         self.base_path = kwargs.get('base', None)
 
@@ -38,9 +39,13 @@ class ConfigReader(object):
     #***********************************************
     def readResponse(self, filepath: str) -> dict:
         response = self._readFile(filepath)
-        if response is not None and 'response' in response:
-            self.response = response['response']
-            self.response_name = filepath
+        if response is not None:
+            if 'response' in response:
+                self.response = response['response']
+                self.response_name = filepath
+            if 'targets' in response:
+                self.targets = response['targets']
+
         return self.response
 
     #***********************************************

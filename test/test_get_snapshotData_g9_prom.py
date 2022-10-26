@@ -17,14 +17,16 @@ def test_data_ts_range_panel_ts(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/two_timeseries.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
@@ -44,14 +46,17 @@ def test_data_ts_instant_panel_ts(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/timeseries_instant.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
@@ -70,14 +75,17 @@ def test_data_ts_range_panel_ts_overwrite(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/timeseries_overwrites.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -100,14 +108,17 @@ def test_data_ts_range_panel_stat(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/stat_range.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -122,14 +133,17 @@ def test_data_ts_range_panel_gauge(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/gauge_std.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -144,14 +158,17 @@ def test_data_ts_range_panel_bargauge(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/bargauge_std.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -172,14 +189,17 @@ def test_data_ts_range_panel_piechart(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/piechart.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -204,14 +224,17 @@ def test_data_table_instant_panel_table(build_config):
     format = 'table'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/table_overwrite.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one results
@@ -248,14 +271,17 @@ def test_data_table_range_panel_table(build_config):
     format = 'table'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/table_overwrite.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one results
@@ -291,14 +317,17 @@ def test_data_table_range_panel_stat(build_config):
     format = 'table'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/stat_range_specific_field.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # one results

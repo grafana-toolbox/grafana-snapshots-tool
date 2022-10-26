@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .resultsBase import resultsBase
+from typing import Union
 
 #***************************************************
 class resultsSQL(resultsBase):
@@ -56,8 +57,21 @@ class resultsSQL(resultsBase):
     }
     """
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
-        fields = []
-        return fields
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
+        snapshotData = list()
+        snapshotDataObj = {}
+        (ts_part, value_part) = ( None, None)
 
+        if not self.results or 'status' not in self.results \
+            or self.results['status'] != 'success':
+            return snapshotData
+
+        if targets is None:
+            targets = []
+        if isinstance(targets, dict):
+            targets = [ targets ]
+
+        # NOT YET IMPLEMENTED
+
+        return snapshotData
 #***************************************************

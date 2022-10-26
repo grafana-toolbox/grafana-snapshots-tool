@@ -1,4 +1,48 @@
 {
+    "targets": [
+        {
+            "groupBy": [
+                {
+                    "params": [
+                        "$__interval"
+                    ],
+                    "type": "time"
+                },
+                {
+                    "params": [
+                        "null"
+                    ],
+                    "type": "fill"
+                }
+            ],
+            "measurement": "logins.count",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT sum(\"value\") FROM \"logins.count\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+            "rawQuery": true,
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+                [
+                    {
+                        "params": [
+                            "value"
+                        ],
+                        "type": "field"
+                    },
+                    {
+                        "params": [],
+                        "type": "mean"
+                    }
+                ]
+            ],
+            "tags": [],
+            "datasource": {
+                "uid": "000000002",
+                "type": "influxdb"
+            }
+        }
+    ],
     "request": {
         "method": "POST",
         "url": "api/datasources/proxy/2/query",

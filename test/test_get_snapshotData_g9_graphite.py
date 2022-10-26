@@ -16,14 +16,17 @@ def test_data_ts_range_panel_ts(build_config):
     format = None
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/two_timeseries.json')
-    target = None
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(target)
+    snapshotData = dataRes.get_snapshotData(targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results

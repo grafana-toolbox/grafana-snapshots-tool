@@ -7,6 +7,7 @@ import grafana_client.api as GrafanaApi
 import grafana_client.client as GrafanaClient
 import re, traceback, unicodedata
 from distutils.version import LooseVersion
+from requests.exceptions import ConnectionError
 
 from grafana_snapshots.constants import (PKG_NAME)
 
@@ -70,14 +71,16 @@ class Grafana(object):
         self = args[0]
 
         config = { }
-        config['protocol'] = kwargs.get('protocol', 'http')
-        config['host'] = kwargs.get('host', 'localhost')
-        config['port'] = kwargs.get('port', 3000)
-        config['token'] = kwargs.get('token', None)
-        if config['token'] is None:
-            raise GrafanaClient.GrafanaBadInputError('grafana token is not defined')
+        url = kwargs.get('url', None)
+        if url is None:
+            config['protocol'] = kwargs.get('protocol', 'http')
+            config['host'] = kwargs.get('host', 'localhost')
+            config['port'] = kwargs.get('port', 3000)
+            config['token'] = kwargs.get('token', None)
+            if config['token'] is None:
+                raise GrafanaClient.GrafanaBadInputError('grafana token is not defined')
 
-        config['verify_ssl'] = kwargs.get('verify_ssl', True)
+            config['verify_ssl'] = kwargs.get('verify_ssl', True)
 
         self.search_api_limit = kwargs.get('search_api_limit', 5000)
         #* set the default destination folder for dash
@@ -92,14 +95,21 @@ class Grafana(object):
 
         self.debug = kwargs.get('debug', False)
 
-        #* build an aapi object
-        self.grafana_api = GrafanaApi.GrafanaApi(
-            auth=config['token'],
-            host=config['host'],
-            protocol=config['protocol'],
-            port=config['port'],
-            verify=config['verify_ssl'],
-        )
+        #* build an api object
+        if url is None:
+            self.grafana_api = GrafanaApi.GrafanaApi(
+                auth=config['token'],
+                host=config['host'],
+                protocol=config['protocol'],
+                port=config['port'],
+                verify=config['verify_ssl'],
+            )
+        else:
+            self.grafana_api = GrafanaApi.GrafanaApi.from_url(url)
+            try:
+                self.grafana_api.connect()
+            except ConnectionError:
+                raise Exception("Connecting to Grafana failed")
 
         #* try to connect to the API
         try:
@@ -345,6 +355,27 @@ class Grafana(object):
             res = False
 
         return res
+
+    #***********************************************
+    def get_datasources(self):
+
+        datasources = {}
+
+        try:
+            dtsrcs = self.list_datasources()
+        except Exception as e:
+            raise
+
+        for dtsrc in dtsrcs:
+            if 'uid' not in dtsrc:
+                datasources[dtsrc['name']] = dtsrc
+                if 'isDefault' in dtsrc and dtsrc['isDefault']:
+                    datasources['default'] = dtsrc
+            else:
+                datasources[dtsrc['uid']] = dtsrc
+        self.datasources = datasources
+
+        return self.datasources
 
     #***********************************************
     def list_datasources(self):

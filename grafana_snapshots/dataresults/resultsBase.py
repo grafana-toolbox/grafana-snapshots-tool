@@ -3,6 +3,7 @@
 #**********************************************************************************
 import re
 from jinja2 import Template
+from typing import Union
 
 from grafana_snapshots.dataresults.panels.dispatcher import PanelDispatcher
 
@@ -31,7 +32,7 @@ class resultsBase(object):
         return self.results
 
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
         raise NotImplementedError('method not implemented')
 
     #***********************************************

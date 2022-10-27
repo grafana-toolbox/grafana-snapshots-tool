@@ -1,0 +1,1131 @@
+{
+  "Re9Lqf0Gk": {
+    "id": 148,
+    "uid": "Re9Lqf0Gk",
+    "orgId": 1,
+    "name": "AWS IoT SiteWise",
+    "type": "grafana-iot-sitewise-datasource",
+    "typeName": "AWS IoT SiteWise",
+    "typeLogoUrl": "public/plugins/grafana-iot-sitewise-datasource/img/sitewise.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "authType": "keys",
+      "defaultRegion": "us-east-1"
+    },
+    "readOnly": false
+  },
+  "qenjJQtnk": {
+    "id": 180,
+    "uid": "qenjJQtnk",
+    "orgId": 1,
+    "name": "AWS IoT TwinMaker",
+    "type": "grafana-iot-twinmaker-datasource",
+    "typeName": "AWS IoT TwinMaker",
+    "typeLogoUrl": "public/plugins/grafana-iot-twinmaker-datasource/img/AWS-IoT-TwinMaker.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "assumeRoleArn": "arn:aws:iam::932917950170:role/IoTTwinMakerDashboardRoleForPlayGrafanaOrg",
+      "authType": "keys",
+      "defaultRegion": "us-east-1",
+      "workspaceId": "CookieFactoryPlayGrafana"
+    },
+    "readOnly": false
+  },
+  "eGrsgrG4k": {
+    "id": 230,
+    "uid": "eGrsgrG4k",
+    "orgId": 1,
+    "name": "Azure Monitor",
+    "type": "grafana-azure-monitor-datasource",
+    "typeName": "Azure Monitor",
+    "typeLogoUrl": "public/app/plugins/datasource/grafana-azure-monitor-datasource/img/logo.jpg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "afZoUrgGz": {
+    "id": 127,
+    "uid": "afZoUrgGz",
+    "orgId": 1,
+    "name": "Cognite Data Fusion",
+    "type": "cognitedata-datasource",
+    "typeName": "Cognite Data Fusion",
+    "typeLogoUrl": "public/plugins/cognitedata-datasource/img/CDF_logo.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "cogniteProject": "publicdata"
+    },
+    "readOnly": false
+  },
+  "000000008": {
+    "id": 8,
+    "uid": "000000008",
+    "orgId": 1,
+    "name": "demo.robustperception.io",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "http://demo.robustperception.io:9090",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "exemplarTraceIdDestinations": [
+        {
+          "name": "traceID",
+          "url": "http://localhost:3000/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Jaeger%22,%7B%22query%22:%22$${__value.raw}%22%7D%5D"
+        }
+      ],
+      "httpHeaderName1": "admin",
+      "httpMethod": "POST",
+      "keepCookies": [],
+      "timeInterval": "15s"
+    },
+    "readOnly": false
+  },
+  "kKO9T574k": {
+    "id": 232,
+    "uid": "kKO9T574k",
+    "orgId": 1,
+    "name": "Discourse Datasource",
+    "type": "grafana-discourse-datasource",
+    "typeName": "Discourse Datasource",
+    "typeLogoUrl": "public/plugins/grafana-discourse-datasource/img/logo.svg",
+    "access": "proxy",
+    "url": "https://community.grafana.com",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "httpHeaderName1": "Api-Key",
+      "httpHeaderName2": "Api-Username"
+    },
+    "readOnly": false
+  },
+  "HYve3xy7z": {
+    "id": 191,
+    "uid": "HYve3xy7z",
+    "orgId": 1,
+    "name": "Doom",
+    "type": "grafana-doom-datasource",
+    "typeName": "Doom",
+    "typeLogoUrl": "public/plugins/grafana-doom-datasource/img/logo.png",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "aDCxdqe7k": {
+    "id": 219,
+    "uid": "aDCxdqe7k",
+    "orgId": 1,
+    "name": "Elasticsearch 8.2.0 + Sample eCommerce Orders",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "https://34.72.102.97:9200",
+    "user": "",
+    "database": "kibana_sample_data_ecommerce",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "8.0.0",
+      "includeFrozen": false,
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 5,
+      "timeField": "order_date",
+      "tlsSkipVerify": true
+    },
+    "readOnly": false
+  },
+  "zhJlxe67k": {
+    "id": 222,
+    "uid": "zhJlxe67k",
+    "orgId": 1,
+    "name": "Elasticsearch 8.2.0 + Sample Flight Data",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "https://34.72.102.97:9200",
+    "user": "",
+    "database": "kibana_sample_data_flights",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "8.0.0",
+      "includeFrozen": false,
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 5,
+      "timeField": "timestamp",
+      "tlsSkipVerify": true
+    },
+    "readOnly": false
+  },
+  "7DRKae6nk": {
+    "id": 225,
+    "uid": "7DRKae6nk",
+    "orgId": 1,
+    "name": "Elasticsearch 8.2.0 + Sample Web Logs",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "https://34.72.102.97:9200",
+    "user": "",
+    "database": "kibana_sample_data_logs",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "8.0.0",
+      "includeFrozen": false,
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 5,
+      "timeField": "timestamp",
+      "tlsSkipVerify": true
+    },
+    "readOnly": false
+  },
+  "9cY0WtPMz": {
+    "id": 153,
+    "uid": "9cY0WtPMz",
+    "orgId": 1,
+    "name": "gdev-testdata",
+    "type": "testdata",
+    "typeName": "TestData DB",
+    "typeLogoUrl": "public/app/plugins/datasource/testdata/img/testdata.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "_sJ_nZm7k": {
+    "id": 162,
+    "uid": "_sJ_nZm7k",
+    "orgId": 1,
+    "name": "GitHub: Grafana Repo",
+    "type": "grafana-github-datasource",
+    "typeName": "GitHub",
+    "typeLogoUrl": "public/plugins/grafana-github-datasource/img/github.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "C9kavcd7z": {
+    "id": 178,
+    "uid": "C9kavcd7z",
+    "orgId": 1,
+    "name": "Google Cloud Monitoring",
+    "type": "stackdriver",
+    "typeName": "Google Cloud Monitoring",
+    "typeLogoUrl": "public/app/plugins/datasource/cloud-monitoring/img/cloud_monitoring_logo.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "authenticationType": "jwt",
+      "clientEmail": "test-178@secure-sensor-329411.iam.gserviceaccount.com",
+      "defaultProject": "secure-sensor-329411",
+      "tokenUri": "https://oauth2.googleapis.com/token"
+    },
+    "readOnly": false
+  },
+  "000000122": {
+    "id": 122,
+    "uid": "000000122",
+    "orgId": 1,
+    "name": "Google Sheets: Sample Spreadsheets",
+    "type": "grafana-googlesheets-datasource",
+    "typeName": "Google Sheets",
+    "typeLogoUrl": "public/plugins/grafana-googlesheets-datasource/img/sheets.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "authType": "key"
+    },
+    "readOnly": false
+  },
+  "000000017": {
+    "id": 17,
+    "uid": "000000017",
+    "orgId": 1,
+    "name": "Grafana TestData",
+    "type": "testdata",
+    "typeName": "TestData DB",
+    "typeLogoUrl": "public/app/plugins/datasource/testdata/img/testdata.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "000000077": {
+    "id": 77,
+    "uid": "000000077",
+    "orgId": 1,
+    "name": "grafana-misc-stats",
+    "type": "graphite",
+    "typeName": "Graphite",
+    "typeLogoUrl": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+    "access": "proxy",
+    "url": "https://graphite-us-central1.grafana.net/graphite",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "graphiteType": "metrictank",
+      "graphiteVersion": "1.1",
+      "keepCookies": [],
+      "rollupIndicatorEnabled": true
+    },
+    "readOnly": false
+  },
+  "-DI2VkR4z": {
+    "id": 226,
+    "uid": "-DI2VkR4z",
+    "orgId": 1,
+    "name": "grafanacloud-ml-metrics",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "https://machine-learning-prod-us-central-0.grafana.net/machine-learning/predict",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "manageAlerts": false
+    },
+    "readOnly": false
+  },
+  "grafanacloud-cardinality-management": {
+    "id": 182,
+    "uid": "grafanacloud-cardinality-management",
+    "orgId": 1,
+    "name": "grafanacloud-play-cardinality-management",
+    "type": "grafana-cardinality-datasource",
+    "typeName": "Grafana cardinality adapter",
+    "typeLogoUrl": "public/plugins/grafana-cardinality-datasource/img/icon_small.svg",
+    "access": "proxy",
+    "url": "proxy",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": true
+  },
+  "grafanacloud-graphite": {
+    "id": 169,
+    "uid": "grafanacloud-graphite",
+    "orgId": 1,
+    "name": "grafanacloud-play-graphite",
+    "type": "graphite",
+    "typeName": "Graphite",
+    "typeLogoUrl": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+    "access": "proxy",
+    "url": "https://graphite-prod-10-prod-us-central-0.grafana.net/graphite",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": true
+  },
+  "grafanacloud-logs": {
+    "id": 170,
+    "uid": "grafanacloud-logs",
+    "orgId": 1,
+    "name": "grafanacloud-play-logs",
+    "type": "loki",
+    "typeName": "Loki",
+    "typeLogoUrl": "public/app/plugins/datasource/loki/img/loki_icon.svg",
+    "access": "proxy",
+    "url": "https://logs-prod-us-central1.grafana.net",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "derivedFields": [
+        {
+          "datasourceUid": "grafanacloud-traces",
+          "matcherRegex": "traceID=(\\w+)",
+          "name": "traceID",
+          "url": "${__value.raw}"
+        }
+      ],
+      "timeout": "300"
+    },
+    "readOnly": true
+  },
+  "grafanacloud-ngalertmanager": {
+    "id": 176,
+    "uid": "grafanacloud-ngalertmanager",
+    "orgId": 1,
+    "name": "grafanacloud-play-ngalertmanager",
+    "type": "alertmanager",
+    "typeName": "Alertmanager",
+    "typeLogoUrl": "public/app/plugins/datasource/alertmanager/img/logo.svg",
+    "access": "proxy",
+    "url": "https://alertmanager-us-central1.grafana.net",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": true
+  },
+  "grafanacloud-prom": {
+    "id": 171,
+    "uid": "grafanacloud-prom",
+    "orgId": 1,
+    "name": "grafanacloud-play-prom",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "exemplarTraceIdDestinations": [
+        {
+          "datasourceUid": "grafanacloud-traces",
+          "name": "traceID"
+        }
+      ],
+      "timeout": "150"
+    },
+    "readOnly": true
+  },
+  "grafanacloud-traces": {
+    "id": 172,
+    "uid": "grafanacloud-traces",
+    "orgId": 1,
+    "name": "grafanacloud-play-traces",
+    "type": "tempo",
+    "typeName": "Tempo",
+    "typeLogoUrl": "public/app/plugins/datasource/tempo/img/tempo_logo.svg",
+    "access": "proxy",
+    "url": "https://tempo-us-central1.grafana.net/tempo",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "tracesToLogs": {
+        "datasourceUid": "grafanacloud-logs"
+      }
+    },
+    "readOnly": true
+  },
+  "grafanacloud-usage": {
+    "id": 294,
+    "uid": "grafanacloud-usage",
+    "orgId": 1,
+    "name": "grafanacloud-usage",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "https://billing.grafana.net/api/prom",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "manageAlerts": false,
+      "timeInterval": "60s",
+      "timeout": "150"
+    },
+    "readOnly": true
+  },
+  "000000001": {
+    "id": 1,
+    "uid": "000000001",
+    "orgId": 1,
+    "name": "Graphite",
+    "type": "graphite",
+    "typeName": "Graphite",
+    "typeLogoUrl": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+    "access": "proxy",
+    "url": "http://graphite.play-grafana:8080",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": true,
+    "jsonData": {
+      "graphiteType": "default",
+      "graphiteVersion": "1.0",
+      "keepCookies": []
+    },
+    "readOnly": false
+  },
+  "wJbQ_Y9nk": {
+    "id": 201,
+    "uid": "wJbQ_Y9nk",
+    "orgId": 1,
+    "name": "Graphite: Random Timeseries",
+    "type": "graphite",
+    "typeName": "Graphite",
+    "typeLogoUrl": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+    "access": "proxy",
+    "url": "http://graphite.grafana.fun",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "graphiteType": "default",
+      "graphiteVersion": "1.1"
+    },
+    "readOnly": false
+  },
+  "1konmJrnz": {
+    "id": 199,
+    "uid": "1konmJrnz",
+    "orgId": 1,
+    "name": "Graphite: wikimedia.org metrics",
+    "type": "graphite",
+    "typeName": "Graphite",
+    "typeLogoUrl": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+    "access": "proxy",
+    "url": "https://graphite.wikimedia.org",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "graphiteType": "default",
+      "graphiteVersion": "1.1"
+    },
+    "readOnly": false
+  },
+  "000000002": {
+    "id": 2,
+    "uid": "000000002",
+    "orgId": 1,
+    "name": "InfluxDB",
+    "type": "influxdb",
+    "typeName": "InfluxDB",
+    "typeLogoUrl": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg",
+    "access": "proxy",
+    "url": "http://influxdb.play-grafana:8086",
+    "user": "admin",
+    "database": "site",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "httpMode": "POST",
+      "keepCookies": [],
+      "timeInterval": "10s",
+      "version": "InfluxQL"
+    },
+    "readOnly": false
+  },
+  "M3k6ZPrnz": {
+    "id": 202,
+    "uid": "M3k6ZPrnz",
+    "orgId": 1,
+    "name": "InfluxDB v2.2 + Flux",
+    "type": "influxdb",
+    "typeName": "InfluxDB",
+    "typeLogoUrl": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg",
+    "access": "proxy",
+    "url": "https://influxdb.grafana.fun",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "defaultBucket": "_monitoring",
+      "httpMode": "POST",
+      "organization": "grafana",
+      "version": "Flux"
+    },
+    "readOnly": false
+  },
+  "zXvfRSSVz": {
+    "id": 240,
+    "uid": "zXvfRSSVz",
+    "orgId": 1,
+    "name": "LMS TNS Logs",
+    "type": "loki",
+    "typeName": "Loki",
+    "typeLogoUrl": "public/app/plugins/datasource/loki/img/loki_icon.svg",
+    "access": "proxy",
+    "url": "https://logs-prod3.grafana.net",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "derivedFields": [
+        {
+          "datasourceUid": "vhSJgIIVk",
+          "matcherRegex": "traceID=(\\w+)",
+          "name": "traceID",
+          "url": "${__value.raw}"
+        }
+      ]
+    },
+    "readOnly": false
+  },
+  "vhSJgIIVk": {
+    "id": 239,
+    "uid": "vhSJgIIVk",
+    "orgId": 1,
+    "name": "LMS TNS Traces",
+    "type": "tempo",
+    "typeName": "Tempo",
+    "typeLogoUrl": "public/app/plugins/datasource/tempo/img/tempo_logo.svg",
+    "access": "proxy",
+    "url": "https://tempo-us-central1.grafana.net/tempo",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "nodeGraph": {
+        "enabled": true
+      }
+    },
+    "readOnly": false
+  },
+  "NX9d1VH7k": {
+    "id": 167,
+    "uid": "NX9d1VH7k",
+    "orgId": 1,
+    "name": "Loki",
+    "type": "loki",
+    "typeName": "Loki",
+    "typeLogoUrl": "public/app/plugins/datasource/loki/img/loki_icon.svg",
+    "access": "proxy",
+    "url": "https://logs-prod-us-central1.grafana.net",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "3QPj-dNVk": {
+    "id": 289,
+    "uid": "3QPj-dNVk",
+    "orgId": 1,
+    "name": "Mock",
+    "type": "grafana-mock-datasource",
+    "typeName": "Mock",
+    "typeLogoUrl": "public/plugins/grafana-mock-datasource/img/mock.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "3t8hjdV4k": {
+    "id": 235,
+    "uid": "3t8hjdV4k",
+    "orgId": 1,
+    "name": "MongoDB",
+    "type": "grafana-mongodb-datasource",
+    "typeName": "MongoDB",
+    "typeLogoUrl": "public/plugins/grafana-mongodb-datasource/img/mongodb-icon.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "connection": "mongodb+srv://christineuser:Zs05bm3S7AFbP1jB@cluster0.wscph.mongodb.net/sample_analytics"
+    },
+    "readOnly": false
+  },
+  "QTzGEw97z": {
+    "id": 205,
+    "uid": "QTzGEw97z",
+    "orgId": 1,
+    "name": "MySQL 8: Cities of the World Data",
+    "type": "mysql",
+    "typeName": "MySQL",
+    "typeLogoUrl": "public/app/plugins/datasource/mysql/img/mysql_logo.svg",
+    "access": "proxy",
+    "url": "35.239.100.39",
+    "user": "grafanaReadOnly",
+    "database": "world_x",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "bo2ZeUr7k": {
+    "id": 203,
+    "uid": "bo2ZeUr7k",
+    "orgId": 1,
+    "name": "MySQL 8: Sakila Video Data",
+    "type": "mysql",
+    "typeName": "MySQL",
+    "typeLogoUrl": "public/app/plugins/datasource/mysql/img/mysql_logo.svg",
+    "access": "proxy",
+    "url": "35.239.100.39",
+    "user": "grafanaReadOnly",
+    "database": "sakila",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "maxIdleConns": 70,
+      "tlsSkipVerify": false
+    },
+    "readOnly": false
+  },
+  "000000024": {
+    "id": 24,
+    "uid": "000000024",
+    "orgId": 1,
+    "name": "MySQL: dummy time series data",
+    "type": "mysql",
+    "typeName": "MySQL",
+    "typeLogoUrl": "public/app/plugins/datasource/mysql/img/mysql_logo.svg",
+    "access": "proxy",
+    "url": "mysql.play-grafana:3306",
+    "user": "root",
+    "database": "testdata",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "000000089": {
+    "id": 89,
+    "uid": "000000089",
+    "orgId": 1,
+    "name": "MySQL: githubstats",
+    "type": "mysql",
+    "typeName": "MySQL",
+    "typeLogoUrl": "public/app/plugins/datasource/mysql/img/mysql_logo.svg",
+    "access": "proxy",
+    "url": "cloudsql-proxy.play-grafana:3306",
+    "user": "github_stats_reader",
+    "database": "github_stats",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "authenticationType": "jwt",
+      "maxOpenConns": 10
+    },
+    "readOnly": false
+  },
+  "CZaR7wrnz": {
+    "id": 204,
+    "uid": "CZaR7wrnz",
+    "orgId": 1,
+    "name": "Prometheus 2.36: Dummy Time Series",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "https://prometheus.grafana.fun",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "httpMethod": "POST"
+    },
+    "readOnly": false
+  },
+  "lXkyJe6nk": {
+    "id": 221,
+    "uid": "lXkyJe6nk",
+    "orgId": 1,
+    "name": "Prometheus 2.36: Grafana News Sample Application",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "https://prometheus.grafana.news",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "httpMethod": "POST"
+    },
+    "readOnly": false
+  },
+  "NfggWZLGz": {
+    "id": 152,
+    "uid": "NfggWZLGz",
+    "orgId": 1,
+    "name": "Prometheus: Robust Perception Sample Endpoint",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "http://demo.robustperception.io:9090/",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "httpMethod": "GET"
+    },
+    "readOnly": false
+  },
+  "j_w3s5fMk": {
+    "id": 151,
+    "uid": "j_w3s5fMk",
+    "orgId": 1,
+    "name": "Static",
+    "type": "marcusolsson-static-datasource",
+    "typeName": "Static",
+    "typeLogoUrl": "public/plugins/marcusolsson-static-datasource/img/logo.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {},
+    "readOnly": false
+  },
+  "Ys6TvgyGz": {
+    "id": 154,
+    "uid": "Ys6TvgyGz",
+    "orgId": 1,
+    "name": "Sun and Moon",
+    "type": "fetzerch-sunandmoon-datasource",
+    "typeName": "Sun and Moon",
+    "typeLogoUrl": "public/plugins/fetzerch-sunandmoon-datasource/img/logo.png",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "latitude": 59.6803666,
+      "longitude": 16.6082008
+    },
+    "readOnly": false
+  },
+  "LyLuS367k": {
+    "id": 218,
+    "uid": "LyLuS367k",
+    "orgId": 1,
+    "name": "Synthetic Monitoring",
+    "type": "synthetic-monitoring-datasource",
+    "typeName": "Synthetic Monitoring API",
+    "typeLogoUrl": "public/plugins/synthetic-monitoring-datasource/img/logo.svg",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "apiHost": "https://synthetic-monitoring-api.grafana.net",
+      "dashboards": [
+        {
+          "json": "sm-http.json",
+          "latestVersion": 46,
+          "title": "Synthetic Monitoring HTTP",
+          "uid": "rq0JrllZz",
+          "version": 46
+        },
+        {
+          "json": "sm-ping.json",
+          "latestVersion": 46,
+          "title": "Synthetic Monitoring Ping",
+          "uid": "EHyn7ueZk",
+          "version": 46
+        },
+        {
+          "json": "sm-dns.json",
+          "latestVersion": 46,
+          "title": "Synthetic Monitoring DNS",
+          "uid": "lgL6odgGz",
+          "version": 46
+        },
+        {
+          "json": "sm-tcp.json",
+          "latestVersion": 46,
+          "title": "Synthetic Monitoring TCP",
+          "uid": "mh84e5mMk",
+          "version": 46
+        },
+        {
+          "json": "sm-summary.json",
+          "latestVersion": 46,
+          "title": "Synthetic Monitoring Summary",
+          "uid": "fU-WBSqWz",
+          "version": 46
+        },
+        {
+          "json": "sm-traceroute.json",
+          "latestVersion": 8,
+          "title": "Synthetic Monitoring Traceroute",
+          "uid": "hk8gHB4nk",
+          "version": 8
+        }
+      ],
+      "initialized": true,
+      "logs": {
+        "grafanaName": "grafanacloud-play-logs",
+        "hostedId": 106314
+      },
+      "metrics": {
+        "grafanaName": "grafanacloud-play-prom",
+        "hostedId": 214685
+      }
+    },
+    "readOnly": false
+  },
+  "DFWTa1z7z": {
+    "id": 160,
+    "uid": "DFWTa1z7z",
+    "orgId": 1,
+    "name": "Tempo",
+    "type": "tempo",
+    "typeName": "Tempo",
+    "typeLogoUrl": "public/app/plugins/datasource/tempo/img/tempo_logo.svg",
+    "access": "proxy",
+    "url": "https://tempo-us-central1.grafana.net/tempo",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "tracesToLogs": {
+        "datasourceUid": "NX9d1VH7k",
+        "lokiSearch": false
+      }
+    },
+    "readOnly": false
+  },
+  "000000003": {
+    "id": 3,
+    "uid": "000000003",
+    "orgId": 1,
+    "name": "z Elastic Metrics (down)",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "http://elasticsearch.play-grafana:9200",
+    "user": "",
+    "database": "[metrics-]YYYY.MM.DD",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "7.10.0",
+      "includeFrozen": false,
+      "interval": "Daily",
+      "keepCookies": [],
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 5,
+      "timeField": "@timestamp"
+    },
+    "readOnly": false
+  },
+  "000000006": {
+    "id": 6,
+    "uid": "000000006",
+    "orgId": 1,
+    "name": "z ES Logs (down)",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "http://elasticsearch.play-grafana:9200",
+    "user": "",
+    "database": "[logs-]YYYY.MM.DD",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "7.10.0",
+      "includeFrozen": false,
+      "interval": "Daily",
+      "keepCookies": [],
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 5,
+      "timeField": "@timestamp",
+      "tlsAuth": false
+    },
+    "readOnly": false
+  },
+  "000000021": {
+    "id": 21,
+    "uid": "000000021",
+    "orgId": 1,
+    "name": "z github (down)",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "http://elasticsearch.play-grafana:9200",
+    "user": "",
+    "database": "github",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "5.0.0",
+      "includeFrozen": false,
+      "keepCookies": [],
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 256,
+      "timeField": "created_at"
+    },
+    "readOnly": false
+  },
+  "000000022": {
+    "id": 22,
+    "uid": "000000022",
+    "orgId": 1,
+    "name": "z github_closed (down)",
+    "type": "elasticsearch",
+    "typeName": "Elasticsearch",
+    "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+    "access": "proxy",
+    "url": "http://elasticsearch.play-grafana:9200",
+    "user": "",
+    "database": "github",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "esVersion": "5.0.0",
+      "includeFrozen": false,
+      "keepCookies": [],
+      "logLevelField": "",
+      "logMessageField": "",
+      "maxConcurrentShardRequests": 256,
+      "timeField": "closed_at"
+    },
+    "readOnly": false
+  },
+  "lPrMwAs7k": {
+    "id": 190,
+    "uid": "lPrMwAs7k",
+    "orgId": 1,
+    "name": "z Google BigQuery (down)",
+    "type": "grafana-bigquery-datasource",
+    "typeName": "Google BigQuery",
+    "typeLogoUrl": "public/plugins/grafana-bigquery-datasource/img/logo.png",
+    "access": "proxy",
+    "url": "",
+    "user": "",
+    "database": "",
+    "basicAuth": false,
+    "isDefault": false,
+    "jsonData": {
+      "authenticationType": "jwt",
+      "clientEmail": "play-grafana-net@chris-analytics-testing.iam.gserviceaccount.com",
+      "defaultProject": "chris-analytics-testing",
+      "graphiteVersion": "1.1",
+      "tokenUri": "https://oauth2.googleapis.com/token"
+    },
+    "readOnly": false
+  },
+  "P5GpXAv7z": {
+    "id": 177,
+    "uid": "P5GpXAv7z",
+    "orgId": 1,
+    "name": "z grafanacloud-ml-metrics (down)",
+    "type": "prometheus",
+    "typeName": "Prometheus",
+    "typeLogoUrl": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+    "access": "proxy",
+    "url": "https://machine-learning-prod-us-central-0.grafana.net/machine-learning/predict",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "httpMethod": "POST",
+      "manageAlerts": false
+    },
+    "readOnly": false
+  },
+  "000000014": {
+    "id": 14,
+    "uid": "000000014",
+    "orgId": 1,
+    "name": "z raintank tsdb (down)",
+    "type": "graphite",
+    "typeName": "Graphite",
+    "typeLogoUrl": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+    "access": "proxy",
+    "url": "https://tsdb.raintank.io/graphite",
+    "user": "",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": false,
+    "jsonData": {
+      "graphiteVersion": "1.1",
+      "keepCookies": []
+    },
+    "readOnly": false
+  }
+}

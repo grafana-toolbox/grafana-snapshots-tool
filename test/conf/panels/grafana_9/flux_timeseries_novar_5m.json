@@ -1,0 +1,91 @@
+{
+    "id": 2,
+    "gridPos": {
+      "h": 9,
+      "w": 24,
+      "x": 0,
+      "y": 4
+    },
+    "type": "timeseries",
+    "title": "Temperature Data",
+    "datasource": {
+      "uid": "M3k6ZPrnz",
+      "type": "influxdb"
+    },
+    "fieldConfig": {
+      "defaults": {
+        "custom": {
+          "drawStyle": "line",
+          "lineInterpolation": "linear",
+          "barAlignment": 0,
+          "lineWidth": 1,
+          "fillOpacity": 0,
+          "gradientMode": "none",
+          "spanNulls": false,
+          "showPoints": "auto",
+          "pointSize": 5,
+          "stacking": {
+            "mode": "none",
+            "group": "A"
+          },
+          "axisPlacement": "auto",
+          "axisLabel": "",
+          "axisColorMode": "text",
+          "scaleDistribution": {
+            "type": "linear"
+          },
+          "axisCenteredZero": false,
+          "hideFrom": {
+            "tooltip": false,
+            "viz": false,
+            "legend": false
+          },
+          "thresholdsStyle": {
+            "mode": "off"
+          }
+        },
+        "color": {
+          "mode": "palette-classic"
+        },
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "color": "red",
+              "value": 80
+            }
+          ]
+        }
+      },
+      "overrides": []
+    },
+    "options": {
+      "tooltip": {
+        "mode": "single",
+        "sort": "none"
+      },
+      "legend": {
+        "showLegend": true,
+        "displayMode": "list",
+        "placement": "bottom",
+        "calcs": []
+      }
+    },
+    "targets": [
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "M3k6ZPrnz"
+        },
+        "query": "from(bucket: \"HyperEncabulator\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"TemperatureData\")\r\n  |> filter(fn: (r) => r[\"MeasType\"] == \"actual\")\r\n\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Temperature\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+        "refId": "A"
+      }
+    ],
+    "description": "",
+    "interval": "60s"
+  }

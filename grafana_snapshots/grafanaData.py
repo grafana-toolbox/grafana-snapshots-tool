@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#***********************************************************************************************
 import copy, json, re
 import datetime, dateutil.parser, dateutil.relativedelta, time
 from urllib import request
@@ -282,6 +284,7 @@ class GrafanaQuery(object):
 class GrafanaData(object):
    # prometheus query change in v 8
    # version_8 = LooseVersion('8')
+   varfinder = re.compile(r'(?:\$([a-zA-Z0-9_]+))|(?:\${([a-zA-Z0-9_]+)})')
 
    #***********************************************
    def __init__( *args, **kwargs ):
@@ -303,8 +306,6 @@ class GrafanaData(object):
       self.debug = kwargs.get('debug')
       if self.debug is None:
          self.debug = False
-
-      self.varfinder = re.compile(r'\$([a-zA-Z0-9_]+)')
 
    #***********************************************
    def get_datasource(self, datasource):
@@ -366,7 +367,7 @@ class GrafanaData(object):
 
       if expr is not None:
          # check if target expr contains variable ($var)
-         m =  self.varfinder.search(expr)
+         m =  GrafanaData.varfinder.search(expr)
          if m:
             expr = self.extract_vars(expr)
 
@@ -572,8 +573,10 @@ class GrafanaData(object):
                + '&to=' +  str(self.time_to * 1000),
             'timestamp': datetime.datetime.now().isoformat(),
          }
-         for anno in self.dashboard['annotations']['list']:
-            del anno['datasource']
+
+         if 'annotations' in self.dashboard:
+            for anno in self.dashboard['annotations']['list']:
+               del anno['datasource']
 
          #** remove autorefresh for snapshots
          self.dashboard['refresh'] = ''
@@ -604,9 +607,13 @@ class GrafanaData(object):
       return name
 
    #**********************************************************************************
-   def get_var_value_from_dashboard( self, var_name):
+   def get_var_value_from_dashboard( self, var_name: str) ->str:
       #** init value to varname: if not found will display the unset var!
       value = '$' + var_name
+
+      if 'templating' not in self.dashboard \
+         or ( 'templating' in self.dashboard and 'list' not in self.dashboard['templating']):
+         return ''
 
 #      if self.debug:
 #         print('get_var_value_from_dashboard::looking for default value for {0}'.format(var_name))
@@ -632,7 +639,12 @@ class GrafanaData(object):
       return value
 
    #**********************************************************************************
-   def update_var_template_into_dashboard(self, var_name, value ):
+   def update_var_template_into_dashboard(self, var_name: str, value: str ) -> None:
+
+      if 'templating' not in self.dashboard \
+         or ( 'templating' in self.dashboard and 'list' not in self.dashboard['templating']):
+         return ''
+
       for var_elmt in self.dashboard['templating']['list']:
          if 'name' not in var_elmt or var_elmt['name'] != var_name:
             continue
@@ -959,22 +971,33 @@ class GrafanaData(object):
 
       vl = list()
       #** collect all var_name from expression
-      for m in re.finditer( self.varfinder, expr ):
+      for m in re.finditer( GrafanaData.varfinder, expr ):
          var = m.group(1)
+         # variable is in normal format : $var
+         if var is not None:
+            format = 'raw'
+         else:
+            format = 'encapsulated'
+ 
+            var = m.group(2)
+
          #** check if the context (user args) provides a value for thee variable
          #** else use the  current value from dashboard templating list
          if var not in self.context['vars']:
              self.context['vars'][var] = self.get_var_value_from_dashboard( var )
          if self.debug:
             print( 'found variable ${0} => "{1}"'.format(var, self.context['vars'][var]) )
-         vl.append(var)
+         vl.append( { 'name': var, 'format': format, })
 
       #** replace all variables name with values in expr
       for var in vl:
-         val = self.context['vars'][var]
+         val = self.context['vars'][var['name']]
          if val == '$__all':
             val = '.*'
-         expr = expr.replace( '$' + var, val )
+         if var['format'] == 'raw':
+            expr = expr.replace( '$' + var, val )
+         elif var['format'] == 'encapsulated':
+            expr = re.sub( '\${\s*' + var['name'] + '\s*\}', val, expr, flags=re.MULTILINE )
 
       if self.debug:
          print('extract_vars::result expr="{0}"'.format(expr))

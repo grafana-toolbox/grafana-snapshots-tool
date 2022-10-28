@@ -1,0 +1,126 @@
+{
+    "id": 9,
+    "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 21
+    },
+    "type": "timeseries",
+    "title": "Bytes Sent",
+    "transformations": [],
+    "datasource": {
+        "uid": "$datasource",
+        "type": "loki"
+    },
+    "pluginVersion": "8.0.0-beta3",
+    "maxDataPoints": 50,
+    "description": "",
+    "fieldConfig": {
+        "defaults": {
+            "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 100,
+                "gradientMode": "hue",
+                "spanNulls": false,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                    "mode": "none",
+                    "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "axisColorMode": "text",
+                "scaleDistribution": {
+                    "type": "linear"
+                },
+                "axisCenteredZero": false,
+                "hideFrom": {
+                    "tooltip": false,
+                    "viz": false,
+                    "legend": false
+                },
+                "thresholdsStyle": {
+                    "mode": "off"
+                }
+            },
+            "color": {
+                "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                    {
+                        "color": "green",
+                        "value": null
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                ]
+            },
+            "unit": "decbytes"
+        },
+        "overrides": [
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "Bytes sent"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "fixedColor": "light-blue",
+                            "mode": "fixed"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "appfelstrudel"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "fixedColor": "yellow",
+                            "mode": "fixed"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "options": {
+        "tooltip": {
+            "mode": "single",
+            "sort": "none"
+        },
+        "legend": {
+            "showLegend": true,
+            "displayMode": "list",
+            "placement": "bottom",
+            "calcs": []
+        }
+    },
+    "targets": [
+        {
+            "datasource": {
+                "uid": "$datasource"
+            },
+            "expr": "sum by (host) (sum_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | status=200 | unwrap body_bytes_sent |  __error__=\"\" [$__interval]))",
+            "legendFormat": "Bytes sent",
+            "refId": "A"
+        }
+    ],
+    "interval": "60s"
+}

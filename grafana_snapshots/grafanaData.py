@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 #***********************************************************************************************
 import copy, json, re
-import datetime, dateutil.parser, dateutil.relativedelta, time
+import dateutil.parser, dateutil.relativedelta, time
+from datetime import datetime, timezone
 from urllib import request
 from jinja2 import Template
 # from distutils.version import LooseVersion
@@ -12,13 +13,13 @@ from grafana_snapshots.dataresults.dataresults import dataresults
 #**********************************************************************************
 def get_time(time_str):
 
-    now = datetime.datetime.now() 
+    now = datetime.now() 
     ts = None
 
     if time_str is None:
         time_str = now
 
-    if type(time_str) is datetime.datetime:
+    if type(time_str) is datetime:
         ts = int(time_str.timestamp())
     elif type(time_str) is int:
         # it must be an unix timestamp
@@ -30,20 +31,20 @@ def get_time(time_str):
             factor = 0
             ts = now
             if m.group(1) and m.group(2):
-               val = int(m.group(1))
-               if m.group(2) == 'm':
-                  dt = dateutil.relativedelta.relativedelta(minutes=val)
-               elif m.group(2) == 'h':
-                  dt = dateutil.relativedelta.relativedelta(hours=val)
-               elif m.group(2) == 'd':
-                  dt = dateutil.relativedelta.relativedelta(days=val)
-               elif m.group(2) == 'w':
-                  dt = dateutil.relativedelta.relativedelta(weeks=val)
-               elif m.group(2) == 'M':
-                  dt = dateutil.relativedelta.relativedelta(months=val)
-               elif m.group(2) == 'y':
-                  dt = dateutil.relativedelta.relativedelta(years=val)
-               ts = ts - dt
+                val = int(m.group(1))
+                if m.group(2) == 'm':
+                    dt = dateutil.relativedelta.relativedelta(minutes=val)
+                elif m.group(2) == 'h':
+                    dt = dateutil.relativedelta.relativedelta(hours=val)
+                elif m.group(2) == 'd':
+                    dt = dateutil.relativedelta.relativedelta(days=val)
+                elif m.group(2) == 'w':
+                    dt = dateutil.relativedelta.relativedelta(weeks=val)
+                elif m.group(2) == 'M':
+                    dt = dateutil.relativedelta.relativedelta(months=val)
+                elif m.group(2) == 'y':
+                    dt = dateutil.relativedelta.relativedelta(years=val)
+                ts = ts - dt
             ts = int( ts.timestamp() )
         else:
             time_str = dateutil.parser.parse(time_str)
@@ -87,36 +88,36 @@ def get_step(ts_from, ts_to):
 #    step = STEP_INTERVAL * (int(int(ts_to - ts_from) / ( MAX_RESOLUTION_POINT * STEP_INTERVAL)) + 1)
 #    step = STEP_INTERVAL * (int(delta) / ( MAX_RESOLUTION_POINT * STEP_INTERVAL)) + 1)
     for step in steps:
-      if int( delta / step ) < MAX_RESOLUTION:
-         break
+        if int( delta / step ) < MAX_RESOLUTION:
+            break
 
 #    print('step={0}'.format(step))
     return step
 
 #**********************************************************************************
 def safe_remove_key(dict_elmt, keys):
-   if isinstance( keys, str ):
-      keys = [ str ]
-   for key in keys:
-      if key in dict_elmt:
-         del dict_elmt[key]
+    if isinstance( keys, str ):
+        keys = [ str ]
+    for key in keys:
+        if key in dict_elmt:
+            del dict_elmt[key]
 
 #***************************************************
 def check_filters( filters, name ):
-   """
+    """
     filter format is:
        {'include': {'names': ['ifAlias', 'ifDescr', 'ifName', 'Value']}}
-   """
+    """
 
-   #** if not filter defined: keep the field
-   if len(filters) == 0:
-      return True
+    #** if not filter defined: keep the field
+    if len(filters) == 0:
+        return True
 
-   for filter in filters:
-      if 'include' in filter:
-          if name in filter['include']['names']:
-             return True
-   return False
+    for filter in filters:
+        if 'include' in filter:
+            if name in filter['include']['names']:
+                return True
+    return False
 
 #***************************************************
 def check_transformations( *args ):
@@ -260,27 +261,6 @@ def check_transformations( *args ):
    return res
 
 #**********************************************************************************
-class GrafanaQuery(object):
-   #***********************************************
-   def __init__( *args ):
-      self = args[0]
-      kwargs = {}
-      if len(args) > 1:
-         kwargs = args[1]
-      
-      self.datasource = kwargs.get('datasource')
-      self.query_expr = kwargs.get('query')
-      self.query = query_factory(self.datasource, self.query_expr)
-      self.format = kwargs.get('format')
-      self.time_to = kwargs.get('time_to')
-      self.time_from = kwargs.get('time_from')
-
-
-   #***********************************************
-   def dummy(self):
-      pass
-
-#**********************************************************************************
 class GrafanaData(object):
    # prometheus query change in v 8
    # version_8 = LooseVersion('8')
@@ -288,98 +268,120 @@ class GrafanaData(object):
 
    #***********************************************
    def __init__( *args, **kwargs ):
-      self = args[0]
+        self = args[0]
 
-      self.api = kwargs.get('api')
-      if self.api is None:
-         raise Exception('api not set')
-      self.dashboard = kwargs.get('dashboard')
-      datasources = kwargs.get('datasources', None)
-      if datasources is None:
-         self.datasources = self.api.get_datasources()
-      else:
-         self.datasources = datasources
+        self.api = kwargs.get('api')
+        if self.api is None:
+            raise Exception('api not set')
+        self.dashboard = kwargs.get('dashboard')
+        datasources = kwargs.get('datasources', None)
+        if datasources is None:
+            self.datasources = self.api.get_datasources()
+        else:
+            self.datasources = datasources
 
-      self.time_to = get_time( kwargs.get('time_to') )
-      self.time_from = get_time(kwargs.get('time_from'))
-      self.context = kwargs.get('context')
-      self.debug = kwargs.get('debug')
-      if self.debug is None:
-         self.debug = False
+        self.time_to = get_time( kwargs.get('time_to') )
+        self.time_from = get_time(kwargs.get('time_from'))
+        self.context = kwargs.get('context')
+        self.debug = kwargs.get('debug')
+        if self.debug is None:
+            self.debug = False
 
    #***********************************************
    def get_datasource(self, datasource):
-      res_datasource = None
+        res_datasource = None
 
-      if (isinstance(datasource, str) and datasource != '-- Mixed --') \
-         or isinstance(datasource, dict):
+        if (isinstance(datasource, str) and datasource != '-- Mixed --') \
+            or isinstance(datasource, dict):
 
-         # datasource set in panel is in new format { 'uid': ..., 'type':... }
-         if isinstance(datasource, dict):
-            if 'uid' in datasource and datasource['uid'] in self.datasources:
-               res_datasource = self.datasources[datasource['uid']]
-         # datasource is in old format: str; so have to find name in datasource list
-         else:
-            for _,source in self.datasources.items():
-               if source['name'] == datasource:
-                  res_datasource = source
-                  break
-         
-      return res_datasource
+            # datasource set in panel is in new format { 'uid': ..., 'type':... }
+            if isinstance(datasource, dict):
+                if 'uid' in datasource and datasource['uid'] in self.datasources:
+                    res_datasource = self.datasources[datasource['uid']]
+            # datasource is in old format: str; so have to find name in datasource list
+            else:
+                for _,source in self.datasources.items():
+                    if source['name'] == datasource:
+                        res_datasource = source
+                        break
+            
+        return res_datasource
 
    #***********************************************
    def get_offsetFromUTC(self) -> int:
-      ts = time.time()
-      utc_offset = (
-         datetime.datetime.fromtimestamp(ts) -
-         datetime.datetime.utcfromtimestamp(ts)).total_seconds()
-      return int(utc_offset)
+        ts = time.time()
+        utc_offset = (
+            datetime.fromtimestamp(ts) -
+            datetime.utcfromtimestamp(ts)).total_seconds()
+        return int(utc_offset)
 
    #***********************************************
-   def get_query_from_datasource(self, datasource, target):
+   def get_query_from_datasource(self, datasource, target, panel=None):
 
-      if 'type' not in datasource:
-         return None
+        if 'type' not in datasource:
+            return None
 
-      expr = None
-      query = None
-      if datasource['type'] in ('loki', 'prometheus'):
-         # check query method: timeseries or table
-         query_type = 'query_range'
-         format = 'time_series'
-         if 'format' in target and target['format'] == 'table':
-            format = target['format']
-            query_type = 'query'
+        expr = None
+        var_type = None
 
-         # check if expr is defined or and unconfigurated query
-         if 'expr' in target:
-            expr = target['expr']
+        if datasource['type'] in ('loki', 'prometheus'):
+            # check query method: timeseries or table
+            # query_type = 'query_range'
+            # format = 'time_series'
+            # if 'format' in target and target['format'] == 'table':
+            #    format = target['format']
+            #    query_type = 'query'
 
-      elif datasource['type'] in ('mssql', 'mysql', 'oracle', 'postgres'):
-         if 'rawSql' in target:
-            expr = target['rawSql']
-      elif datasource['type'] == 'graphite':
-         expr = target['target']
-      # influxdb, 
-      else:
-         if 'query' in target:
-            expr = target['query']
+            # check if expr is defined or and unconfigurated query
+            if 'expr' in target:
+                expr = target['expr']
 
-      if expr is not None:
-         # check if target expr contains variable ($var)
-         m =  GrafanaData.varfinder.search(expr)
-         if m:
-            expr = self.extract_vars(expr)
+        elif datasource['type'] in ('mssql', 'mysql', 'oracle', 'postgres'):
+            if 'rawSql' in target:
+                expr = target['rawSql']
+        elif datasource['type'] == 'graphite':
+            expr = target['target']
+            var_type = 'graphite'
 
-         params = copy.deepcopy( target )
-         params['utcOffsetSec'] = self.get_offsetFromUTC()
-         params['query'] = expr
-         params['time_to'] = self.time_to
-         params['time_from'] = self.time_from
+        # influxdb, 
+        elif datasource['type'] == 'influxdb':
+            if 'query' in target:
+                expr = target['query']
+            # add variables for grafana internal substitution
+            # $__interval, $timeFilter
+            interval = '10m'
+            if panel is not None and 'interval' in panel:
+                m = re.match(r'^[<>=]+(.+)',panel['interval'])
+                if m is not None:
+                    interval = m.group(1)
 
-         request = query_factory(datasource, params)
+            self.context['vars'].update({
+    #*** WARNING
+                '__interval': interval,
+                'timeFilter': "time >= '{}' AND time <= '{}'".format(
+                datetime.fromtimestamp(self.time_from, timezone.utc).isoformat(),
+                datetime.fromtimestamp(self.time_to, timezone.utc).isoformat(),
+                )
+            })
+        else:
+            if 'query' in target:
+                expr = target['query']
 
-      return request
+        if expr is not None:
+            # check if target expr contains variable ($var)
+            m =  GrafanaData.varfinder.search(expr)
+            if m:
+                expr = self.extract_vars(expr, type=var_type)
+
+            params = copy.deepcopy( target )
+            params['utcOffsetSec'] = self.get_offsetFromUTC()
+            params['query'] = expr
+            params['time_to'] = self.time_to
+            params['time_from'] = self.time_from
+
+            request = query_factory(datasource, params)
+
+        return request
    #***********************************************
    def get_dashboard_data(self):
 
@@ -529,6 +531,7 @@ class GrafanaData(object):
                      format=format,
                      results=content,
                      version=self.api.version,
+                     vars=self.context['vars'],
                      panel=panel)
                   snapshotData = dataRes.get_snapshotData(target)
 
@@ -571,7 +574,7 @@ class GrafanaData(object):
          self.dashboard['snapshot'] = {
             'originalUrl': self.api.grafana_api.client.url + panel_url + '?from=' + str(self.time_from * 1000) 
                + '&to=' +  str(self.time_to * 1000),
-            'timestamp': datetime.datetime.now().isoformat(),
+            'timestamp': datetime.now().isoformat(),
          }
 
          if 'annotations' in self.dashboard:
@@ -593,85 +596,88 @@ class GrafanaData(object):
 
    #**********************************************************************************
    def buildDisplayName( self, name, labels ):
+        """
+        TO remove
+        """
 
-      if re.match(r'{{', name):
-         tm = Template( name )
-         name = tm.render( labels )
-      if re.match(r'\$', name):
-      #** replace all variables name with values in expr
-         for var in self.context['vars']:
-            name = name.replace( '$' + var, self.context['vars'][var] )
-#      if self.debug:
-#         print('buildDisplayName::result displayName="{0}"'.format(name))
+        if re.match(r'{{', name):
+            tm = Template( name )
+            name = tm.render( labels )
+        if re.match(r'\$', name):
+        #** replace all variables name with values in expr
+            for var in self.context['vars']:
+                name = name.replace( '$' + var, self.context['vars'][var] )
+    #      if self.debug:
+    #         print('buildDisplayName::result displayName="{0}"'.format(name))
 
-      return name
+        return name
 
    #**********************************************************************************
    def get_var_value_from_dashboard( self, var_name: str) ->str:
-      #** init value to varname: if not found will display the unset var!
-      value = '$' + var_name
+        #** init value to varname: if not found will display the unset var!
+        value = '$' + var_name
 
-      if 'templating' not in self.dashboard \
-         or ( 'templating' in self.dashboard and 'list' not in self.dashboard['templating']):
-         return ''
+        if 'templating' not in self.dashboard \
+            or ( 'templating' in self.dashboard and 'list' not in self.dashboard['templating']):
+            return ''
 
-#      if self.debug:
-#         print('get_var_value_from_dashboard::looking for default value for {0}'.format(var_name))
-#         print('get_var_value_from_dashboard::looking for default value templating{0}'.format(self.dashboard['templating']['list']))
-      for tpl_list in self.dashboard['templating']['list']:
-         if self.debug and 'name' in tpl_list:
-            print('get_var_value_from_dashboard::check name {0}'.format(tpl_list['name']))
-         if 'name' not in tpl_list or tpl_list['name'] != var_name:
-            continue
-#      #** if all can be set use 'all'
-#      if 'includeAll' in tpl_list and tpl_list['includeAll']:
-#         value = '.*'
-#      else:
-         if 'value' in tpl_list['current']:
-            cur_val = tpl_list['current']['value']
-            if isinstance(cur_val, list) and len(cur_val)>0:
-               value = cur_val[0]
-            else:
-               value = cur_val
-            break
-      if self.debug:
-         print('get_var_value_from_dashboard::value {0}'.format(value))
-      return value
+    #      if self.debug:
+    #         print('get_var_value_from_dashboard::looking for default value for {0}'.format(var_name))
+    #         print('get_var_value_from_dashboard::looking for default value templating{0}'.format(self.dashboard['templating']['list']))
+        for tpl_list in self.dashboard['templating']['list']:
+            if self.debug and 'name' in tpl_list:
+                print('get_var_value_from_dashboard::check name {0}'.format(tpl_list['name']))
+            if 'name' not in tpl_list or tpl_list['name'] != var_name:
+                continue
+    #      #** if all can be set use 'all'
+    #      if 'includeAll' in tpl_list and tpl_list['includeAll']:
+    #         value = '.*'
+    #      else:
+            if 'value' in tpl_list['current']:
+                cur_val = tpl_list['current']['value']
+                if isinstance(cur_val, list) and len(cur_val)>0:
+                    value = cur_val[0]
+                else:
+                    value = cur_val
+                    break
+        if self.debug:
+            print('get_var_value_from_dashboard::value {0}'.format(value))
+        return value
 
    #**********************************************************************************
    def update_var_template_into_dashboard(self, var_name: str, value: str ) -> None:
 
-      if 'templating' not in self.dashboard \
-         or ( 'templating' in self.dashboard and 'list' not in self.dashboard['templating']):
-         return ''
+        if 'templating' not in self.dashboard \
+            or ( 'templating' in self.dashboard and 'list' not in self.dashboard['templating']):
+            return ''
 
-      for var_elmt in self.dashboard['templating']['list']:
-         if 'name' not in var_elmt or var_elmt['name'] != var_name:
-            continue
+        for var_elmt in self.dashboard['templating']['list']:
+            if 'name' not in var_elmt or var_elmt['name'] != var_name:
+                continue
 
-         val_name = value
-         if value == '$__all':
-            val_name = 'All'
-         var_elmt['current'] = {
-		      'selected': True,
-            'text': val_name,
-            'value': value
-         }
-         #** have to remove all options so user can't choose an other value for which no
-         #** data was collected
-         safe_remove_key( var_elmt, [ 
-            'datasource'
-            , 'definition'
-            , 'refresh'
-            , 'sort'
-            , 'tagValueQuery'
-            , 'tags'
-            , 'tagsQuery'
-         ] )
-         var_elmt['query'] = val_name
-         var_elmt['options'] = [ var_elmt['current'] ]
-         var_elmt['type'] = 'custom'
-         break
+            val_name = value
+            if value == '$__all':
+                val_name = 'All'
+            var_elmt['current'] = {
+                'selected': True,
+                'text': val_name,
+                'value': value
+            }
+            #** have to remove all options so user can't choose an other value for which no
+            #** data was collected
+            safe_remove_key( var_elmt, [ 
+                'datasource'
+                , 'definition'
+                , 'refresh'
+                , 'sort'
+                , 'tagValueQuery'
+                , 'tags'
+                , 'tagsQuery'
+            ] )
+            var_elmt['query'] = val_name
+            var_elmt['options'] = [ var_elmt['current'] ]
+            var_elmt['type'] = 'custom'
+            break
 
    #**********************************************************************************
    def build_timeseries_snapshotData( self, target, data, panel ):
@@ -967,39 +973,46 @@ class GrafanaData(object):
       return snapshotData
 
    #**********************************************************************************
-   def extract_vars( self, expr ):
+   def extract_vars( self, expr:str, type:str='regexpr' )-> str:
 
-      vl = list()
-      #** collect all var_name from expression
-      for m in re.finditer( GrafanaData.varfinder, expr ):
-         var = m.group(1)
-         # variable is in normal format : $var
-         if var is not None:
-            format = 'raw'
-         else:
-            format = 'encapsulated'
- 
-            var = m.group(2)
+        vl = list()
+        #** collect all var_name from expression
+        for m in re.finditer( GrafanaData.varfinder, expr ):
+            var = m.group(1)
+            # variable is in normal format : $var
+            if var is not None:
+                format = 'raw'
+            else:
+                format = 'encapsulated'
+    
+                var = m.group(2)
 
-         #** check if the context (user args) provides a value for thee variable
-         #** else use the  current value from dashboard templating list
-         if var not in self.context['vars']:
-             self.context['vars'][var] = self.get_var_value_from_dashboard( var )
-         if self.debug:
-            print( 'found variable ${0} => "{1}"'.format(var, self.context['vars'][var]) )
-         vl.append( { 'name': var, 'format': format, })
+            #** check if the context (user args) provides a value for thee variable
+            #** else use the  current value from dashboard templating list
+            if var not in self.context['vars']:
+                self.context['vars'][var] = self.get_var_value_from_dashboard( var )
+            if self.debug:
+                print( 'found variable ${0} => "{1}"'.format(var, self.context['vars'][var]) )
+            vl.append( { 'name': var, 'format': format, })
 
-      #** replace all variables name with values in expr
-      for var in vl:
-         val = self.context['vars'][var['name']]
-         if val == '$__all':
-            val = '.*'
-         if var['format'] == 'raw':
-            expr = expr.replace( '$' + var, val )
-         elif var['format'] == 'encapsulated':
-            expr = re.sub( '\${\s*' + var['name'] + '\s*\}', val, expr, flags=re.MULTILINE )
+        #** replace all variables name with values in expr
+        for var in vl:
+            val = self.context['vars'][var['name']]
+            if isinstance(val, str):
+                if val == '$__all':
+                    val = '.*'
+            elif isinstance(val, list):
+                if type == 'regexpr':
+                    val = '(' + '|'.join(val) + ')'
+                elif type== 'graphite':
+                    val = '{' + ','.join(val) + '}'
+            
+            if var['format'] == 'raw':
+                expr = expr.replace( '$' + var['name'], val )
+            elif var['format'] == 'encapsulated':
+                expr = re.sub( '\${\s*' + var['name'] + '\s*\}', val, expr, flags=re.MULTILINE )
 
-      if self.debug:
-         print('extract_vars::result expr="{0}"'.format(expr))
-      return expr
+        if self.debug:
+            print('extract_vars::result expr="{0}"'.format(expr))
+        return expr
 

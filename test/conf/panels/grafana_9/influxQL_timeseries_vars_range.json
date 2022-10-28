@@ -1,0 +1,252 @@
+{
+    "id": 1,
+    "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+    },
+    "type": "timeseries",
+    "title": "Selected Servers VS Server 1",
+    "datasource": {
+        "uid": "000000002",
+        "type": "influxdb"
+    },
+    "pluginVersion": "9.2.2-eb6f0ffe76",
+    "interval": ">10m",
+    "links": [],
+    "targets": [
+        {
+            "alias": "$m.$col [[tag_hostname]]",
+            "dsType": "influxdb",
+            "groupBy": [
+                {
+                    "params": [
+                        "auto"
+                    ],
+                    "type": "time"
+                },
+                {
+                    "params": [
+                        "hostname"
+                    ],
+                    "type": "tag"
+                }
+            ],
+            "hide": false,
+            "measurement": "logins.count",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT mean(\"value\") FROM \"logins.count\" WHERE (\"hostname\" = 'server1') AND $timeFilter GROUP BY time($__interval), \"hostname\"",
+            "rawQuery": true,
+            "refId": "A",
+            "resultFormat": "time_series",
+            "select": [
+                [
+                    {
+                        "params": [
+                            "value"
+                        ],
+                        "type": "field"
+                    },
+                    {
+                        "params": [],
+                        "type": "mean"
+                    }
+                ]
+            ],
+            "tags": [
+                {
+                    "key": "hostname",
+                    "operator": "=",
+                    "value": "server1"
+                }
+            ],
+            "target": "",
+            "datasource": {
+                "uid": "000000002",
+                "type": "influxdb"
+            }
+        },
+        {
+            "alias": "$m.$col $host",
+            "dsType": "influxdb",
+            "groupBy": [
+                {
+                    "params": [
+                        "auto"
+                    ],
+                    "type": "time"
+                }
+            ],
+            "hide": false,
+            "measurement": "logins.count",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT mean(\"value\") FROM \"logins.count\" WHERE $timeFilter GROUP BY time($__interval)",
+            "rawQuery": true,
+            "refId": "B",
+            "resultFormat": "time_series",
+            "select": [
+                [
+                    {
+                        "params": [
+                            "value"
+                        ],
+                        "type": "field"
+                    },
+                    {
+                        "params": [],
+                        "type": "mean"
+                    }
+                ]
+            ],
+            "tags": [],
+            "target": "",
+            "datasource": {
+                "uid": "000000002",
+                "type": "influxdb"
+            }
+        },
+        {
+            "alias": "$m.$col $tag_hostname",
+            "dsType": "influxdb",
+            "groupBy": [
+                {
+                    "params": [
+                        "auto"
+                    ],
+                    "type": "time"
+                }
+            ],
+            "hide": false,
+            "measurement": "logins.count",
+            "orderByTime": "ASC",
+            "policy": "default",
+            "query": "SELECT mean(\"value\") FROM \"logins.count\" WHERE \"hostname\" =~ /^$host2$/ AND $timeFilter GROUP BY time($__interval), \"hostname\"",
+            "rawQuery": true,
+            "refId": "C",
+            "resultFormat": "time_series",
+            "select": [
+                [
+                    {
+                        "params": [
+                            "value"
+                        ],
+                        "type": "field"
+                    },
+                    {
+                        "params": [],
+                        "type": "mean"
+                    }
+                ]
+            ],
+            "tags": [],
+            "target": "",
+            "datasource": {
+                "uid": "000000002",
+                "type": "influxdb"
+            }
+        }
+    ],
+    "timeFrom": null,
+    "timeShift": null,
+    "fieldConfig": {
+        "defaults": {
+            "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "spanNulls": true,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                    "mode": "none",
+                    "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "axisColorMode": "text",
+                "scaleDistribution": {
+                    "type": "linear"
+                },
+                "axisCenteredZero": false,
+                "hideFrom": {
+                    "tooltip": false,
+                    "viz": false,
+                    "legend": false
+                },
+                "thresholdsStyle": {
+                    "mode": "line+area"
+                }
+            },
+            "color": {
+                "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                    {
+                        "color": "transparent",
+                        "value": null
+                    },
+                    {
+                        "value": -107,
+                        "color": "red"
+                    }
+                ]
+            },
+            "unit": "short"
+        },
+        "overrides": []
+    },
+    "options": {
+        "tooltip": {
+            "mode": "single",
+            "sort": "none"
+        },
+        "legend": {
+            "showLegend": true,
+            "displayMode": "table",
+            "placement": "right",
+            "calcs": []
+        }
+    },
+    "alert": {
+        "conditions": [
+            {
+                "evaluator": {
+                    "params": [
+                        -107
+                    ],
+                    "type": "gt"
+                },
+                "operator": {
+                    "type": "and"
+                },
+                "query": {
+                    "params": [
+                        "A",
+                        "5m",
+                        "now"
+                    ]
+                },
+                "reducer": {
+                    "params": [],
+                    "type": "avg"
+                },
+                "type": "query"
+            }
+        ],
+        "executionErrorState": "alerting",
+        "frequency": "60s",
+        "handler": 1,
+        "name": "Selected Servers alert",
+        "noDataState": "no_data",
+        "notifications": []
+    }
+}

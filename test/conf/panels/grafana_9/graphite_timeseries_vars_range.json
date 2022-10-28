@@ -1,0 +1,202 @@
+{
+    "id": 1,
+    "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+    },
+    "type": "timeseries",
+    "title": "Requests / s",
+    "datasource": {
+        "type": "graphite",
+        "uid": "000000001"
+    },
+    "pluginVersion": "9.2.2-eb6f0ffe76",
+    "links": [],
+    "fieldConfig": {
+        "defaults": {
+            "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "lineWidth": 1,
+                "fillOpacity": 40,
+                "gradientMode": "none",
+                "spanNulls": true,
+                "showPoints": "never",
+                "pointSize": 5,
+                "stacking": {
+                    "mode": "normal",
+                    "group": "A"
+                },
+                "axisPlacement": "auto",
+                "axisLabel": "",
+                "axisColorMode": "text",
+                "scaleDistribution": {
+                    "type": "linear"
+                },
+                "axisCenteredZero": false,
+                "hideFrom": {
+                    "tooltip": false,
+                    "viz": false,
+                    "legend": false
+                },
+                "thresholdsStyle": {
+                    "mode": "off"
+                }
+            },
+            "color": {
+                "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                    {
+                        "value": null,
+                        "color": "green"
+                    },
+                    {
+                        "value": 80,
+                        "color": "red"
+                    }
+                ]
+            },
+            "links": [],
+            "unit": "short"
+        },
+        "overrides": [
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "backend_01"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#65C5DB"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "backend_02"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#447EBC"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "backend_03"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#0A437C"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "highres.test"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#1F78C1"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "mobile"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#6ED0E0"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "scale(highres.test,3)"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#6ED0E0"
+                        }
+                    }
+                ]
+            },
+            {
+                "matcher": {
+                    "id": "byName",
+                    "options": "tablet"
+                },
+                "properties": [
+                    {
+                        "id": "color",
+                        "value": {
+                            "mode": "fixed",
+                            "fixedColor": "#EAB839"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "targets": [
+        {
+            "datasource": {
+                "type": "graphite",
+                "uid": "000000001"
+            },
+            "refId": "A",
+            "target": "groupByNode(movingAverage(apps.$app.$server.counters.requests.count, 10), 2, 'sum')",
+            "textEditor": true
+        }
+    ],
+    "timeFrom": null,
+    "timeShift": null,
+    "options": {
+        "tooltip": {
+            "mode": "single",
+            "sort": "none"
+        },
+        "legend": {
+            "showLegend": true,
+            "displayMode": "list",
+            "placement": "bottom",
+            "calcs": []
+        }
+    }
+}

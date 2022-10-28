@@ -1,0 +1,177 @@
+{
+    "targets": [
+        {
+            "datasource": {
+                "uid": "$datasource"
+            },
+            "expr": "sum by (host) (sum_over_time({$label_name=~\"$label_value\", job=~\"$job\", instance=~\"$instance\"} | json | status=200 | unwrap body_bytes_sent |  __error__=\"\" [$__interval]))",
+            "legendFormat": "Bytes sent",
+            "refId": "A"
+        }
+    ],
+    "request": {
+        "url": "api/ds/query",
+        "method": "POST",
+        "data": {
+            "queries": [
+                {
+                    "datasource": {
+                        "uid": "NX9d1VH7k",
+                        "type": "loki"
+                    },
+                    "expr": "sum by (host) (sum_over_time({filename=~\"/var/log/nginx/json_access\\\\.log\", job=~\".*\", instance=~\".*\"} | json | status=200 | unwrap body_bytes_sent |  __error__=\"\" [$__interval]))",
+                    "legendFormat": "Bytes sent",
+                    "refId": "A",
+                    "queryType": "range",
+                    "maxLines": 1000,
+                    "datasourceId": 167,
+                    "intervalMs": 60000,
+                    "maxDataPoints": 50
+                }
+            ],
+            "range": {
+                "from": "2022-10-28T16:01:28.497Z",
+                "to": "2022-10-28T16:06:28.497Z",
+                "raw": {
+                    "from": "now-5m",
+                    "to": "now"
+                }
+            },
+            "from": "1666972888497",
+            "to": "1666973188497"
+        },
+        "hideFromInspector": false
+    },
+    "response": {
+        "results": {
+            "A": {
+                "frames": [
+                    {
+                        "schema": {
+                            "name": "Bytes sent",
+                            "refId": "A",
+                            "meta": {
+                                "type": "timeseries-many",
+                                "stats": [
+                                    {
+                                        "displayName": "Summary: bytes processed per second",
+                                        "unit": "Bps",
+                                        "value": 181072223
+                                    },
+                                    {
+                                        "displayName": "Summary: lines processed per second",
+                                        "value": 139525
+                                    },
+                                    {
+                                        "displayName": "Summary: total bytes processed",
+                                        "unit": "decbytes",
+                                        "value": 3075708
+                                    },
+                                    {
+                                        "displayName": "Summary: total lines processed",
+                                        "value": 2370
+                                    },
+                                    {
+                                        "displayName": "Summary: exec time",
+                                        "unit": "s",
+                                        "value": 0.016986084
+                                    },
+                                    {
+                                        "displayName": "Ingester: total reached",
+                                        "value": 215
+                                    },
+                                    {
+                                        "displayName": "Ingester: total chunks matched",
+                                        "value": 3
+                                    },
+                                    {
+                                        "displayName": "Ingester: total batches",
+                                        "value": 6
+                                    },
+                                    {
+                                        "displayName": "Ingester: total lines sent",
+                                        "value": 1821
+                                    },
+                                    {
+                                        "displayName": "Ingester: head chunk bytes",
+                                        "unit": "decbytes",
+                                        "value": 0
+                                    },
+                                    {
+                                        "displayName": "Ingester: head chunk lines",
+                                        "value": 0
+                                    },
+                                    {
+                                        "displayName": "Ingester: decompressed bytes",
+                                        "unit": "decbytes",
+                                        "value": 0
+                                    },
+                                    {
+                                        "displayName": "Ingester: decompressed lines",
+                                        "value": 0
+                                    },
+                                    {
+                                        "displayName": "Ingester: compressed bytes",
+                                        "unit": "decbytes",
+                                        "value": 0
+                                    },
+                                    {
+                                        "displayName": "Ingester: total duplicates",
+                                        "value": 0
+                                    }
+                                ],
+                                "executedQueryString": "Expr: sum by (host) (sum_over_time({filename=~\"/var/log/nginx/json_access\\\\.log\", job=~\".*\", instance=~\".*\"} | json | status=200 | unwrap body_bytes_sent |  __error__=\"\" [1m]))\nStep: 1m0s"
+                            },
+                            "fields": [
+                                {
+                                    "name": "Time",
+                                    "type": "time",
+                                    "typeInfo": {
+                                        "frame": "time.Time"
+                                    },
+                                    "config": {
+                                        "interval": 60000
+                                    }
+                                },
+                                {
+                                    "name": "Value",
+                                    "type": "number",
+                                    "typeInfo": {
+                                        "frame": "float64"
+                                    },
+                                    "labels": {
+                                        "host": "appfelstrudel"
+                                    },
+                                    "config": {
+                                        "displayNameFromDS": "Bytes sent"
+                                    }
+                                }
+                            ]
+                        },
+                        "data": {
+                            "values": [
+                                [
+                                    1666972860000,
+                                    1666972920000,
+                                    1666972980000,
+                                    1666973040000,
+                                    1666973100000,
+                                    1666973160000
+                                ],
+                                [
+                                    1105715,
+                                    1083153,
+                                    1066598,
+                                    1076943,
+                                    1096283,
+                                    1073479
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "refId": "A"
+            }
+        }
+    }
+}

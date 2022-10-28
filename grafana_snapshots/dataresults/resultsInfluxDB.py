@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+#***********************************************************************************************
 from .resultsBase import resultsBase
 from typing import Union
 
-#***************************************************
+import re
+
+#***********************************************************************************************
 class resultsInfluxDB(resultsBase):
     """
     response contains an array of results:
@@ -35,6 +37,9 @@ class resultsInfluxDB(resultsBase):
     }
 
     """
+    #* to catch tag in alias [[ tag_<tagname> ]] 
+    tagfinder = re.compile(r'(\[\[\s*tag_([a-zA-Z0-9_]+)\s*]])')
+    var_tagfinder = re.compile(r'(\${?\s*tag_(\$?[a-zA-Z0-9_]+)\s*}?)')
 
     #***********************************************
     def get_snapshotData(self, targets: Union[list, dict])-> list:
@@ -60,6 +65,10 @@ class resultsInfluxDB(resultsBase):
 
             # loop on each timeseries received from the response
             for idx, statement in enumerate(self.results['results']):
+
+                #* something wrong occurs with query !
+                if 'error' in statement:
+                    return snapshotData
 
                 if len(targets)> idx:
                     target = targets[idx]
@@ -99,19 +108,34 @@ class resultsInfluxDB(resultsBase):
                         'type': 'number',
                         'values': values
                     } )
+                    if 'alias' in target:
+                        name = target['alias']
+                        # add vars:
+                        # 'm' with value "metric name"
+                        # 'col' with value "column name"
+                        self.symbols_vars.update( {
+                            'm': serie['name'],
+                            'col': serie['columns'][1],
+                        } )
+
+                    labels = None
                     if 'tags' in serie:
-                        name = list(serie['tags'].values())[0]
                         value_part.update({
                             'labels': serie['tags'],
                         })
-                    elif 'alias' in target:
-                        name = target['alias']
-                    else:
-                        ####
-                        # WARNING: take the name of the last serie : why but why not ?
-                        ####
-                        name = '{0}.{1}'.format(serie['name'], serie['columns'][1])
+                        labels = serie['tags']
 
+                    if name is None:
+                        if labels is not None:
+                            name = list(labels.values())[0]
+                        else:
+                            ####
+                            # WARNING: take the name of the last serie : why but why not ?
+                            ####
+                            name = '{0}.{1}'.format(serie['name'], serie['columns'][1])
+
+                    #* name could contain vars to instanciate $m $col $var
+                    name = self.buildDisplayName( name, labels )
                     value_part['config']['displayNameFromDS'] = name
 
                     #** build snapshotDataObj
@@ -136,5 +160,29 @@ class resultsInfluxDB(resultsBase):
             pass
 
         return snapshotData
+    #***********************************************
+    def buildDisplayName( self, name, labels ):
 
-#***************************************************
+        # /!\ special form "$tag_$var" meaning [[tag_$var]]
+        if labels is not None:
+            for m in re.finditer( resultsInfluxDB.var_tagfinder, name ):
+                var = m.group(2)
+                if var in labels:
+                    val = labels[var]
+                    name = name.replace( m.group(1), val )
+                else:
+                    name = name.replace( m.group(1), '[[tag_{0}]]'.format(var) )
+
+        name = resultsBase.buildDisplayName(self, name, labels)
+
+        #** collect all tag_name from expression
+        if labels is not None:
+            for m in re.finditer( resultsInfluxDB.tagfinder, name ):
+                var = m.group(2)
+                if var in labels:
+                    val = labels[var]
+                    name = name.replace( m.group(1), val )
+
+        return name
+
+#***********************************************************************************************

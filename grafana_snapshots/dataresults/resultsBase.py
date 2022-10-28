@@ -9,6 +9,7 @@ from grafana_snapshots.dataresults.panels.dispatcher import PanelDispatcher
 
 #**********************************************************************************
 class resultsBase(object):
+
     #***********************************************
     def __init__( *args, **kwargs ):
         self = args[0]
@@ -38,15 +39,14 @@ class resultsBase(object):
     #***********************************************
     def buildDisplayName( self, name, labels ):
 
-        if re.match(r'{{', name):
+        if labels is not None and re.search(r'{{', name):
             tm = Template( name )
             name = tm.render( labels )
-        if re.match(r'\$', name):
+
         #** replace all variables name with values in expr
+        if re.search(r'\$', name):
             for var in self.symbols_vars:
                 name = name.replace( '$' + var, self.symbols_vars[var] )
-    #      if self.debug:
-    #         print('buildDisplayName::result displayName="{0}"'.format(name))
 
         return name
 

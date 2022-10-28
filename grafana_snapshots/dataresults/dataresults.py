@@ -4,13 +4,12 @@
 from distutils.version import LooseVersion
 from typing import Union
 
-from .resultsBase import resultsStream
 from grafana_snapshots.dataresults.resultsMatrix import resultsMatrix
 from grafana_snapshots.dataresults.resultsSQL import resultsSQL
 from grafana_snapshots.dataresults.resultsFrame import resultsFrame
 from grafana_snapshots.dataresults.resultsGraphite import resultsGraphite
 from grafana_snapshots.dataresults.resultsInfluxDB import resultsInfluxDB
-
+from grafana_snapshots.dataresults.resultsStream import resultsStream
 #***************************************************
 class dataresults(object):
     # prometheus query change in v 8
@@ -44,8 +43,16 @@ class dataresults(object):
                 klass = resultsInfluxDB
 
         elif self.type == "loki":
-            klass = resultsStream
+            if version >= dataresults.version_8:
+                klass = resultsFrame
+            else:
+                klass = resultsStream
 
+        elif self.type == "grafana-mongodb-datasource":
+            if version >= dataresults.version_8:
+                klass = resultsFrame
+            else:
+                raise NotImplementedError('mongodb version <8 not implemented.')
         elif self.type == "graphite":
             klass = resultsGraphite
 

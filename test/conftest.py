@@ -71,7 +71,7 @@ class ConfigReader(object):
         return self.datasources
 
     #***********************************************
-    def buildGrafanaData(self, context: dict) -> GrafanaData:
+    def buildGrafanaData(self, context: dict, time_from: str='now-5m', time_to: str=None) -> GrafanaData:
 
         datasources = self.readDatasources('datasources.json')
 
@@ -79,7 +79,8 @@ class ConfigReader(object):
             api= dict(),
             datasources=datasources,
             context= context,
-            time_from = 'now-5m',
+            time_from = time_from,
+            time_to = time_to,
         )
         if data_api is not None:
             self.data_api = data_api
@@ -120,7 +121,7 @@ class ConfigReader(object):
                     if not datasource:
                         continue
 
-                    request = self.data_api.get_query_from_datasource(datasource, target)
+                    request = self.data_api.get_query_from_datasource(datasource, target, panel=panel)
                     break
 
         return request

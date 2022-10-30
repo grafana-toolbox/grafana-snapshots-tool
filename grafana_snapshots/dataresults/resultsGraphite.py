@@ -80,6 +80,9 @@ class resultsGraphite(resultsBase):
                 self.panel.set_overrides( snapshotDataObj )
                 snapshotData.append( snapshotDataObj )
 
+
+        self.panel.set_transformations( snapshotData )
+
         return snapshotData
 
 #***************************************************

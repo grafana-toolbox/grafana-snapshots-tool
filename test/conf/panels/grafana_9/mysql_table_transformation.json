@@ -1,0 +1,108 @@
+{
+    "id": 2,
+    "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+    },
+    "type": "table",
+    "title": "Panel Title",
+    "transformations": [
+        {
+            "id": "filterFieldsByName",
+            "options": {
+                "include": {
+                    "pattern": "/al/"
+                }
+            }
+        }
+    ],
+    "datasource": {
+        "uid": "QTzGEw97z",
+        "type": "mysql"
+    },
+    "pluginVersion": "9.2.2-eb6f0ffe76",
+    "fieldConfig": {
+        "defaults": {
+            "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                    {
+                        "color": "green",
+                        "value": null
+                    },
+                    {
+                        "color": "red",
+                        "value": 80
+                    }
+                ]
+            },
+            "color": {
+                "mode": "thresholds"
+            }
+        },
+        "overrides": []
+    },
+    "options": {
+        "showHeader": true,
+        "footer": {
+            "show": false,
+            "reducer": [
+                "sum"
+            ],
+            "fields": ""
+        }
+    },
+    "targets": [
+        {
+            "datasource": {
+                "type": "mysql",
+                "uid": "QTzGEw97z"
+            },
+            "format": "table",
+            "group": [],
+            "metricColumn": "none",
+            "rawQuery": true,
+            "rawSql": "SELECT\n*\nFROM countrylanguage",
+            "refId": "A",
+            "select": [
+                [
+                    {
+                        "params": [
+                            "value"
+                        ],
+                        "type": "column"
+                    }
+                ]
+            ],
+            "table": "countrylanguage",
+            "timeColumn": "time",
+            "where": [],
+            "editorMode": "code",
+            "sql": {
+                "columns": [
+                    {
+                        "type": "function",
+                        "parameters": []
+                    }
+                ],
+                "groupBy": [
+                    {
+                        "type": "groupBy",
+                        "property": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "limit": 50
+            }
+        }
+    ]
+}

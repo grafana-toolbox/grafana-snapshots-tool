@@ -159,6 +159,8 @@ class resultsInfluxDB(resultsBase):
         elif self.format == 'table':
             pass
 
+        self.panel.set_transformations( snapshotData )
+
         return snapshotData
     #***********************************************
     def buildDisplayName( self, name, labels ):
@@ -167,12 +169,15 @@ class resultsInfluxDB(resultsBase):
         if labels is not None:
             for m in re.finditer( resultsInfluxDB.var_tagfinder, name ):
                 var = m.group(2)
+                # if var is a label (not a $var!) should be substituted directly.
                 if var in labels:
                     val = labels[var]
                     name = name.replace( m.group(1), val )
+                # var is probably a $var, it would be substituted in two passes: [[tag_$var]], then tag value
                 else:
                     name = name.replace( m.group(1), '[[tag_{0}]]'.format(var) )
 
+        #* call parent method.
         name = resultsBase.buildDisplayName(self, name, labels)
 
         #** collect all tag_name from expression

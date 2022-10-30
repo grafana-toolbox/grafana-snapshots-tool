@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+#**********************************************************************************
 from distutils.version import LooseVersion
 
 from grafana_snapshots.dataresults.panels.timeseries import TimeSeriesPanel
@@ -8,7 +8,7 @@ from grafana_snapshots.dataresults.panels.graph import GraphPanel
 from grafana_snapshots.dataresults.panels.stat import StatPanel
 from grafana_snapshots.dataresults.panels.table import TablePanel
 
-#***************************************************
+#**********************************************************************************
 class PanelDispatcher:
     """
     ## Panel definition
@@ -51,10 +51,10 @@ class PanelDispatcher:
         self.panelObj = klass(panel=panel)
 
     #***********************************************
-    def __call__(*args, **kwargs) -> list:
-        self = args[0]
-        results = args[1]
-        return self.panelObj.get_FieldsConfig(results, **kwargs)
+    # def __call__(*args, **kwargs) -> list:
+    #     self = args[0]
+    #     results = args[1]
+    #     return self.panelObj.get_FieldsConfig(results, **kwargs)
 
     #***********************************************
     def get_FieldsConfig(*args, **kwargs) -> list:
@@ -63,17 +63,22 @@ class PanelDispatcher:
 
     #***********************************************
     def set_overrides(self, snapshotDataElmt) -> None:
-        return self.panelObj.set_overrides(snapshotDataElmt)
+        self.panelObj.set_overrides(snapshotDataElmt)
+
+
+    #***********************************************
+    def set_transformations(self, snapshotData) -> None:
+        self.panelObj.set_transformations( snapshotData )
 
     #***********************************************
     # def __getattr__(*args, **kwargs) -> list:
     #     self = args[0]
     #     results = args[1]
     #     return self.panel.get_FieldsConfig(results, **kwargs)
-    def __getattr__(self, item, results, **kwargs) -> list:
-        if item == 'get_FieldsConfig':
-            return self.panel.get_FieldsConfig(results, **kwargs)
-        else:
-            return list()
+    # def __getattr__(self, item, results, **kwargs) -> list:
+    #     if item == 'get_FieldsConfig':
+    #         return self.panel.get_FieldsConfig(results, **kwargs)
+    #     else:
+    #         return list()
 
-#***************************************************
+#**********************************************************************************

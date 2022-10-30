@@ -155,7 +155,7 @@ class resultsFrame(resultsBase):
         # on line has columns which are timestamp, [ labels_values ], values
         elif self.format == 'table':
             for ref_id, refId in self.results['results'].items():
-
+                snapshotDataObj = {}
                 fields_names = {}
                 # for idx, frame in refId['frames'].items():
                 #     names = [
@@ -170,65 +170,83 @@ class resultsFrame(resultsBase):
 
                 # loop on each timeseries received from the frame
                 meta = None
+                labels = []
                 for frame in refId['frames']:
-                    if ts_part is None:
-                        ts_part = { 
-                            'name': frame['schema']['fields'][0]['name'],
-                            'type': frame['schema']['fields'][0]['type'],
-                            'values': [],
-                        }
-                        if 'meta' in frame['schema']:
-                            meta = frame['schema']['meta']
-                            meta.pop('step', None)
-                            meta['preferredVisualisationType'] = 'table'
-                    if value_part is None:
-                        value_part = { 
-                            'name': frame['schema']['fields'][1]['name'],
-                            'type': frame['schema']['fields'][1]['type'],
-                            'values': [],
-                        }
+                    for idx,field in enumerate(frame['schema']['fields']):
+                        #* labels for the value in timeseries
+                        if 'labels' in field:
+                            value_length = len(frame['data']['values'][1])
+                            labels = frame['schema']['fields'][1]['labels']
+                            for label in labels.keys():
+                                value = [labels[label]] * value_length
+                                if label not in fields_names:
+                                    fields_names.update( {
+                                        label: { 
+                                            'name': label,
+                                            'type': 'string',
+                                            'values': [],
+                                        }
+                                    })
+                                fields_names[label]['values'].extend(value)
+                        #* other fields
+                        if field['name'] not in fields_names:
+                            fields_names.update( {
+                                field['name']: { 
+                                    'name': field['name'],
+                                    'type': field['type'],
+                                    'values': [],
+                                }
+                            })
+                        fields_names[field['name']]['values'].extend(frame['data']['values'][idx])
 
-                    if 'labels' in frame['schema']['fields'][1]:
-                        for label in frame['schema']['fields'][1]['labels'].keys():
-                            if label not in fields_names:
-                                fields_names.update( {
-                                    label: { 
-                                        'name': label,
-                                        'type': 'string',
-                                        'values': [],
-                                    }
-                                })
+                    # if ts_part is None:
+                    #     ts_part = { 
+                    #         'name': frame['schema']['fields'][0]['name'],
+                    #         'type': frame['schema']['fields'][0]['type'],
+                    #         'values': [],
+                    #     }
+                    #     if 'meta' in frame['schema']:
+                    #         meta = frame['schema']['meta']
+                    #         meta.pop('step', None)
+                    #         meta['preferredVisualisationType'] = 'table'
+                    # if value_part is None:
+                    #     value_part = { 
+                    #         'name': frame['schema']['fields'][1]['name'],
+                    #         'type': frame['schema']['fields'][1]['type'],
+                    #         'values': [],
+                    #     }
 
-                for frame in refId['frames']:
-                    # add timestamp value
-                    ts_part['values'].extend(frame['data']['values'][0])
-                    # add Value value
-                    value_part['values'].extend(frame['data']['values'][1])
 
-                    # add values for each labels
-                    labels = []
-                    value_length = len(frame['data']['values'][1])
-                    if 'labels' in frame['schema']['fields'][1]:
-                        labels = frame['schema']['fields'][1]['labels']
-                    for field_name, field in fields_names.items():
-                        value = ''
-                        if field_name in labels:
-                            value = [labels[field_name]] * value_length
-                        field['values'].extend(value)
+                # for frame in refId['frames']:
+                #     # add timestamp value
+                #     ts_part['values'].extend(frame['data']['values'][0])
+                #     # add Value value
+                #     value_part['values'].extend(frame['data']['values'][1])
+
+                #     # add values for each labels
+                #     labels = []
+                #     value_length = len(frame['data']['values'][1])
+                #     if 'labels' in frame['schema']['fields'][1]:
+                #         labels = frame['schema']['fields'][1]['labels']
+                #     for field_name, field in fields_names.items():
+                #         value = ''
+                #         if field_name in labels:
+                #             value = [labels[field_name]] * value_length
+                #         field['values'].extend(value)
 
 
                 # build list of fields to extend with default schema elements
                 # order is timestamp, labels, then values
                 # ts = frame['data']['values'][0]
-                fields = [
-                    { 'type': 'timestamp', 'value': ts_part },
-                ]
+                # fields = [
+                #     { 'type': 'timestamp', 'value': ts_part },
+                # ]
+                fields = list(fields_names.values())
+                # for _, field in fields_names.items():
+                #     fields.append( {'type': 'value', 'value': field} )
 
-                for _, field in fields_names.items():
-                    fields.append( {'type': 'value', 'value': field} )
-
-                # values = frame['data']['values'][1]
-                fields.append( { 'type': 'value', 'value': value_part } )
+                # # values = frame['data']['values'][1]
+                # fields.append( { 'type': 'value', 'value': value_part } )
 
                 snapshotDataObj['fields'] = self.panel.get_FieldsConfig(frame, None, fields=fields)
                 snapshotDataObj['meta'] = meta
@@ -252,6 +270,8 @@ class resultsFrame(resultsBase):
                     #     'type': values_info['type'],
                     #     'values': values
                     # } )
+
+        self.panel.set_transformations( snapshotData )
 
         return snapshotData
 

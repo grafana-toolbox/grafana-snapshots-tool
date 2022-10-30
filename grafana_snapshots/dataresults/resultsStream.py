@@ -53,6 +53,8 @@ class resultsStream(resultsBase):
         if isinstance(targets, dict):
             targets = [ targets ]
 
+        self.panel.set_transformations( snapshotData )
+
         return snapshotData
 
 #**********************************************************************************

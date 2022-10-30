@@ -73,6 +73,8 @@ def test_data_2_ts_range_panel_ts(build_config):
 
 #***************************************************************************************
 def test_data_ts_tag_range_panel_ts(build_config):
+    # vars
+    context = {'groupBy':'datacenter'}
     # read the datasource
     content = build_config.readResponse('queries/grafana_9/influxdb/influxQL_timeseries_tags_range_5m.json')
     format = 'time_series'
@@ -87,6 +89,7 @@ def test_data_ts_tag_range_panel_ts(build_config):
         format=format,
         results=content,
         version=api_version,
+        vars=context,
         panel=panel)
     snapshotData = dataRes.get_snapshotData(targets)
 

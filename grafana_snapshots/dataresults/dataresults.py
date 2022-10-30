@@ -33,7 +33,10 @@ class dataresults(object):
                 klass = resultsMatrix
 
         elif self.type in ('mssql', 'mysql', "postgres", "oracle"):
-            klass = resultsSQL
+            if version >= dataresults.version_8:
+                klass = resultsFrame
+            else:
+                klass = resultsSQL
 
         elif self.type == "influxdb":
             dialect = kwargs.get('dialect', None)

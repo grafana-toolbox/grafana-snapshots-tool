@@ -67,8 +67,8 @@ class PanelDispatcher:
 
 
     #***********************************************
-    def set_transformations(self, snapshotData) -> None:
-        self.panelObj.set_transformations( snapshotData )
+    def set_transformations(self, snapshotData: list) -> list:
+        return self.panelObj.set_transformations( snapshotData )
 
     #***********************************************
     # def __getattr__(*args, **kwargs) -> list:

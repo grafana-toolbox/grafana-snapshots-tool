@@ -73,7 +73,7 @@ class resultsSQL(resultsBase):
 
         # NOT YET IMPLEMENTED
 
-        self.panel.set_transformations( snapshotData )
+        snapshotData = self.panel.set_transformations( snapshotData )
 
         return snapshotData
 #***************************************************

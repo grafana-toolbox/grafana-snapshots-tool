@@ -159,7 +159,7 @@ class resultsInfluxDB(resultsBase):
         elif self.format == 'table':
             pass
 
-        self.panel.set_transformations( snapshotData )
+        snapshotData = self.panel.set_transformations( snapshotData )
 
         return snapshotData
     #***********************************************

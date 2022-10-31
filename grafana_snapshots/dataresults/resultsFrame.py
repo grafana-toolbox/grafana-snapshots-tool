@@ -271,7 +271,7 @@ class resultsFrame(resultsBase):
                     #     'values': values
                     # } )
 
-        self.panel.set_transformations( snapshotData )
+        snapshotData = self.panel.set_transformations( snapshotData )
 
         return snapshotData
 

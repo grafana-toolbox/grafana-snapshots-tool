@@ -197,7 +197,7 @@ class DefaultPanel:
                             self._set_target_attributes(property['id'], property['value'], source=field['config'])
 
     #***********************************************
-    def set_transformations(self, snapshotData: list) -> None:
+    def set_transformations(self, snapshotData: list) -> list:
         """
         a transformation is an object that modify fields from the results data
     	[
@@ -245,10 +245,10 @@ class DefaultPanel:
         """
         if snapshotData is None or \
             (snapshotData is not None and not isinstance(snapshotData, list)):
-            return
+            return snapshotData
 
         if 'transformations' not in self.panel:
-            return
+            return snapshotData
 
         for trans in self.panel['transformations']:
 
@@ -316,11 +316,46 @@ class DefaultPanel:
     
             #*******************************
             elif trans['id'] == 'merge':
-                pass
+                #** we receive a list of snapshotDataObj: have to merge fields with same name
+                #**   into a sigle snapshotDataObj containing all fields.
+                # the list must contain at least 2 elements to merge something
+                if len(snapshotData) < 2:
+                    return snapshotData
+
+                #** we will merge all contents in the first snapshotDataObj
+                snapshot = snapshotData[0] 
+                del snapshotData[0]
+
+                #** build a dict on fields name
+                fields_names = {}
+                for field in snapshot['fields']:
+                    name = field['name']
+                    if name == 'Value':
+                        name += ' #' + snapshot['refId']
+                        field['name'] = name
+                        field['config']['displayName'] = name
+                    fields_names[name] = 1
+                #** now loop on field to determine those that are not currently in the list
+                for snapshotDataObj in snapshotData:
+                    for field in snapshotDataObj['fields']:
+                        name = field['name']
+                        if name == 'Value':
+                            name += ' #' + snapshotDataObj['refId']
+                            field['name'] = name
+                            field['config']['displayName'] = name
+                        #** if field name not found in the existing fields: add it.
+                        if name not in fields_names:
+                            #** add in known fields list
+                            fields_names[name] = 1
+                            #** add in snapshot fields
+                            snapshot['fields'].append(field)
+                #** remove all snapshots: subsistute with snapshot
+                del snapshot['refId']
+                snapshotData = [ snapshot ]
             else:
                 raise NotImplementedError('transformation not implemented')
 
-            pass
+        return snapshotData
 
 
 # def check_transformations( *args ):

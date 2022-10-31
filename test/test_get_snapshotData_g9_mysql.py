@@ -176,3 +176,36 @@ def test_data_table_2queries_panel_table_raw(build_config):
         'invalid snapshot data fields length wanted 4 but is {}'.format(len(snapshotData[0]['fields']))
     assert len(snapshotData[1]['fields']) == 3 ,\
         'invalid snapshot data fields length wanted 3 but is {}'.format(len(snapshotData[1]['fields']))
+
+#***************************************************************************************
+def test_data_table_2queries_panel_table_merge(build_config):
+    # read the datasource
+    content = build_config.readResponse('queries/grafana_9/mysql/table_timeless_2_queries_raw.json')
+    format = "table"
+    # read the panel
+    panel = build_config.readPanel('panels/grafana_9/mysql_table_transformation.json')
+    # set no specific transformation
+    panel["transformations"]= [ {
+      "id": "merge",
+      "options": {}
+    } ]
+
+    targets = build_config.targets
+    if len(targets) == 0:
+        targets = panel['targets']
+
+    dataRes = dataresults( 
+        type=datasource_type,
+        format=format,
+        results=content,
+        version=api_version,
+        panel=panel)
+    snapshotData = dataRes.get_snapshotData(targets)
+
+    assert snapshotData is not None, "invalid data"
+    # 2 queries : two series, merge into one
+    assert len(snapshotData) == 1 ,\
+        'invalid snapshot data length wanted 1 but is {}'.format(len(snapshotData))
+    # four fields in results of query 1; three fiels in query2: merge on 1 field
+    assert len(snapshotData[0]['fields']) == 6 ,\
+        'invalid snapshot data fields length wanted 6 but is {}'.format(len(snapshotData[0]['fields']))

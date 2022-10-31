@@ -258,7 +258,7 @@ def main():
 
       #**********************************************************************************
       #*** collect the data from datasources to populate the snapshot
-      data_api = GrafanaData( params )
+      data_api = GrafanaData( **params )
       res = data_api.get_dashboard_data()
       if res is None or not res:
          print("can't obtain dashboard data... snapshot canceled!")

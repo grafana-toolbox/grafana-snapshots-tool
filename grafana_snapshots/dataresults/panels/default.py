@@ -32,7 +32,7 @@ class DefaultPanel:
         return target
 
     #***********************************************
-    def get_FieldConfig( self, fields: dict, results: dict, ) -> list:
+    def get_FieldConfig( self, fields: dict, results: dict ) -> list:
         config_elmt = {} 
         for field in fields:
 
@@ -76,27 +76,27 @@ class DefaultPanel:
     def get_FieldsConfig(*args, **kwargs) -> list:
         self = args[0]
         results = args[1]
+        format = kwargs.get("format", "timeseries")
 
-        fields = kwargs.get('fields', [] )
-        res = []
-        for field in fields:
-            if 'type' in field and field['type'] == 'time':
-                config = self.get_FieldConfig(self.ts_fields, results)
-            else:
-                config = self.get_FieldConfig(self.value_fields, results)
-            if 'config' in field:
-                field['config'].update( config )
-            else:
-                field['config'] = config
-            res.append(field)
-
-        if len(res) == 0:
-            res = [
+        if format == "timeseries":
+            return [
                 { 'config': self.get_FieldConfig(self.ts_fields, results) },
                 { 'config': self.get_FieldConfig(self.value_fields, results) },
             ]
+        elif format == "table":
+            fields = kwargs.get("fields", None)
+            res_fields = []
+            for field in fields:
+                new_field = field["value"]
+                if field["type"] == "timestamp":
+                    new_field["config"] = self.get_FieldConfig(self.ts_fields, results)
+                elif field["type"] == "value":
+                    new_field["config"] = self.get_FieldConfig(self.value_fields, results)
+                res_fields.append( new_field )
 
-        return res
+            return res_fields
+        else:
+            return []
 
     #***********************************************
     def _set_target_attributes(self, attributes: str, value: any, source: dict=None) -> None:
@@ -107,8 +107,10 @@ class DefaultPanel:
         target = source
         for idx in range(0, len(attrs)):
             attr = attrs[idx]
+            if attr not in target:
+                target = None
+                break
             if idx == len(attrs) -1:
-                # target[attr] = copy.deepcopy(value)
                 target[attr] = value
             else:
                 # check if we can climb the tree (attribute exists)
@@ -241,6 +243,18 @@ class DefaultPanel:
                     "mode": "inner" | "outer"
                 }
             }
+        ### sort by field (only one)
+            { "id": "sortBy",
+                "options": {
+                    "fields": {},
+                    "sort": [
+                        {
+                            "field": "Language",
+                            "desc": true | false,
+                        }
+                    ]
+                }
+            }
 	    ]
         """
         if snapshotData is None or \
@@ -277,42 +291,6 @@ class DefaultPanel:
                                 new_fields.append(field)
                     #* substitute the original list with the new one
                     snapshotDataElmt['fields'] = new_fields
-            #*******************************
-            elif trans['id'] == 'organize':
-                #** get columns ordered
-                if 'indexByName' in trans['options']:
-                    sorted_cols = sorted(trans['options']['indexByName']
-                        , key=trans['options']['indexByName'].get)
-
-                #** only sort if some colunm names are provided
-                if len(sorted_cols) > 0:
-                    for snapshotDataElmt in snapshotData:
-                        new_fields = []
-                        for col_name in sorted_cols:
-                            for field in snapshotDataElmt['fields']:
-                                if field['name'] == col_name:
-                                    new_fields.append(field)
-                                    break
-                        #* substitute the original list with the new one
-                        snapshotDataElmt['fields'] = new_fields
-
-                #** get columns rename
-                if 'renameByName' in trans['options']:
-                    for cur_name in trans['options']['renameByName'].keys():
-                        new_name = trans['options']['renameByName'][cur_name]
-                        if new_name == '':
-                            continue
-                        for snapshotDataElmt in snapshotData:
-                            for field in snapshotDataElmt['fields']:
-                                # we have found the field: add new nane
-                                if field['name'] == cur_name:
-                                    if 'config' not in field:
-                                        field['config'] = {
-                                            'displayName': new_name,
-                                        }
-                                    else:
-                                        field['config']['displayName'] = new_name
-                                    break
     
             #*******************************
             elif trans['id'] == 'merge':
@@ -352,6 +330,82 @@ class DefaultPanel:
                 #** remove all snapshots: subsistute with snapshot
                 del snapshot['refId']
                 snapshotData = [ snapshot ]
+
+            #*******************************
+            elif trans['id'] == 'organize':
+                #** get columns ordered
+                if 'indexByName' in trans['options']:
+                    sorted_cols = sorted(trans['options']['indexByName']
+                        , key=trans['options']['indexByName'].get)
+
+                #** only sort if some colunm names are provided
+                if len(sorted_cols) > 0:
+                    for snapshotDataElmt in snapshotData:
+                        new_fields = []
+                        for col_name in sorted_cols:
+                            for field in snapshotDataElmt['fields']:
+                                if field['name'] == col_name:
+                                    new_fields.append(field)
+                                    break
+                        #* substitute the original list with the new one
+                        snapshotDataElmt['fields'] = new_fields
+
+                #** get columns rename
+                if 'renameByName' in trans['options']:
+                    for cur_name in trans['options']['renameByName'].keys():
+                        new_name = trans['options']['renameByName'][cur_name]
+                        if new_name == '':
+                            continue
+                        for snapshotDataElmt in snapshotData:
+                            for field in snapshotDataElmt['fields']:
+                                # we have found the field: add new nane
+                                if field['name'] == cur_name:
+                                    if 'config' not in field:
+                                        field['config'] = {
+                                            'displayName': new_name,
+                                        }
+                                    else:
+                                        field['config']['displayName'] = new_name
+                                    break
+    
+            #*******************************
+            elif trans['id'] == 'sortBy':
+
+                #* get the name to sort on
+                reverse_order = False
+                if 'sort' in trans['options'] and len(trans['options']['sort']) > 0\
+                    and 'field' in trans['options']['sort'][0]:
+                    sort_name = trans['options']['sort'][0]['field']
+                    if 'desc' in trans['options']['sort'][0]:
+                        reverse_order = trans['options']['sort'][0]['desc']
+                if sort_name is None:
+                    return snapshotData
+
+                # have to find the column to sort in each snapshotData element
+                # column name may be present in several snapshot elements (without a merge transformation by example)
+                for snapshotDataElmt in snapshotData:
+                    unordered_field = {}
+                    for field in snapshotDataElmt['fields']:
+                        # we have found the field: add new nane
+                        if field['name'] == sort_name:
+                            for idx, val in enumerate(field['values']):
+                                unordered_field[val] = idx
+                            break
+
+                    # we have a column to sort, proceed
+                    if len(unordered_field) >0:
+                        # sort the column value, with idx as value
+                        ordered_field = dict(sorted(unordered_field.items(), reverse=reverse_order))
+                        # now sort each field with previously defined order
+                        for field in snapshotDataElmt['fields']:
+                            ordered_values = []
+                            for idx in ordered_field.values():
+                                if idx < len(field['values']):
+                                    ordered_values.append(field['values'][idx])
+                                else:
+                                    ordered_values.append(None)
+                            field['values'] = ordered_values
+
             else:
                 raise NotImplementedError('transformation not implemented')
 

@@ -56,6 +56,7 @@ class TimeSeriesPanel(DefaultPanel):
             { 'name': 'links', 'type': 'copy_all', 'value': 'defaults.links', },
             { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
             { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults.unit', },
+            { 'name': 'unitScale', 'type': 'copy_all', 'value': 'defaults.unitScale', },
         ] )
 
         self.value_fields.extend( [
@@ -70,6 +71,7 @@ class TimeSeriesPanel(DefaultPanel):
             { 'name': 'noValue', 'type': 'copy_all', 'value': 'defaults.noValue', },
             { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
             { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults.unit', },
+            { 'name': 'unitScale', 'type': 'copy_all', 'value': 'defaults.unitScale', },
         ] )
 
 #**********************************************************************************

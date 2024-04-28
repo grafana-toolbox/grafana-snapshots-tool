@@ -65,7 +65,6 @@ class PanelDispatcher:
     def set_overrides(self, snapshotDataElmt) -> None:
         self.panelObj.set_overrides(snapshotDataElmt)
 
-
     #***********************************************
     def set_transformations(self, snapshotData: list) -> list:
         return self.panelObj.set_transformations( snapshotData )

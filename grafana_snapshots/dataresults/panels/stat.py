@@ -19,6 +19,7 @@ class StatPanel(DefaultPanel):
             { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
             { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults.unit', },
             { 'name': 'noValue', 'type': 'copy_all', 'value': 'defaults.noValue', },
+            { 'name': 'unitScale', 'type': 'copy_all', 'value': 'defaults.unitScale', },
         ] )
 
         self.value_fields.extend( [
@@ -32,6 +33,7 @@ class StatPanel(DefaultPanel):
             { 'name': 'noValue', 'type': 'copy_all', 'value': 'defaults.noValue', },
             { 'name': 'thresholds', 'type': 'copy_all', 'value': 'defaults.thresholds', },
             { 'name': 'unit', 'type': 'copy_all', 'value': 'defaults.unit', },
+            { 'name': 'unitScale', 'type': 'copy_all', 'value': 'defaults.unitScale', },
         ] )
 
 #**********************************************************************************

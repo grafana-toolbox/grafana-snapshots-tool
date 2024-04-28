@@ -17,16 +17,19 @@ def test_data_ts_range_panel_ts(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/two_timeseries.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
+    # build a target
+    # if 'targets' not in panel or len(panel['targets'])<2:
+    #     raise Exception("can' build target from panel")
+
+    targets = panel["targets"]
+
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
@@ -46,9 +49,6 @@ def test_data_ts_instant_panel_ts(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/timeseries_instant.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -56,11 +56,11 @@ def test_data_ts_instant_panel_ts(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
-    assert len(snapshotData) == 3 , 'invalid snapshot data length wanted 2 but is {}'.format(len(snapshotData))
+    assert len(snapshotData) == 3 , 'invalid snapshot data length wanted 3 but is {}'.format(len(snapshotData))
     # two fields in result: ts and value
     assert len(snapshotData[0]['fields']) == 2 , 'invalid snapshot data fields length wanted 2 but is {}'.format(len(snapshotData))
 
@@ -75,9 +75,6 @@ def test_data_ts_range_panel_ts_overwrite(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/timeseries_overwrites.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -85,7 +82,7 @@ def test_data_ts_range_panel_ts_overwrite(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -108,9 +105,6 @@ def test_data_ts_range_panel_stat(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/stat_range.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -118,7 +112,7 @@ def test_data_ts_range_panel_stat(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -133,9 +127,6 @@ def test_data_ts_range_panel_gauge(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/gauge_std.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -143,7 +134,7 @@ def test_data_ts_range_panel_gauge(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -158,9 +149,6 @@ def test_data_ts_range_panel_bargauge(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/bargauge_std.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -168,7 +156,7 @@ def test_data_ts_range_panel_bargauge(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -189,9 +177,6 @@ def test_data_ts_range_panel_piechart(build_config):
     format = 'time_series'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/piechart.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -199,7 +184,7 @@ def test_data_ts_range_panel_piechart(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # one ts results
@@ -224,9 +209,6 @@ def test_data_table_instant_panel_table(build_config):
     format = 'table'
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/table_overwrite.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -234,7 +216,7 @@ def test_data_table_instant_panel_table(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # one results

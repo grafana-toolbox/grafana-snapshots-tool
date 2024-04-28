@@ -23,6 +23,10 @@ class resultsBase(object):
         self.symbols_vars = kwargs.get('vars', {})
 
         self.debug = kwargs.get('debug', False)
+        self.logger = kwargs.get('logger')
+        if self.logger is None:
+            self.debug = False
+
         self.panel = PanelDispatcher(
             version = kwargs.get('version'),
             panel = kwargs.get('panel'),
@@ -37,7 +41,7 @@ class resultsBase(object):
         raise NotImplementedError('method not implemented')
 
     #***********************************************
-    def buildDisplayName( self, name, labels ):
+    def buildDisplayName( self, name:str, labels: dict ):
 
         if labels is not None and re.search(r'{{', name):
             tm = Template( name )
@@ -48,6 +52,26 @@ class resultsBase(object):
             for var in self.symbols_vars:
                 name = name.replace( '$' + var, self.symbols_vars[var] )
 
+        # if self.debug and self.logger is not None:
+        #     self.logger.debug("buildDisplayName::result displayName=\"{0}\"}".format(name))
+
         return name
+
+    #***********************************************
+    def buildLegend(self, labels: dict)->str:
+        """
+        generate legend String from labels
+        => "{ label_key=\"label_value\"}"
+
+        FORMAT: 
+        labels: dict
+
+        RETURN:
+         str: "{ label_key=\"label_value\",}"
+        """
+        res = []
+        for key,val in labels.items():
+            res.append( "{0}=\"{1}\"".format(key, val))
+        return "{%s}" % ', '.join(res)
 
 #**********************************************************************************

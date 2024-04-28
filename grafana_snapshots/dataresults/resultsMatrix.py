@@ -3,8 +3,6 @@
 #***********************************************************************************************
 import json, re
 
-from jinja2 import Template
-
 from .resultsBase import resultsBase
 from typing import Union
 
@@ -88,7 +86,7 @@ class resultsMatrix(resultsBase):
 
                 for value_pair in result['values']:
                     if self.debug:
-                        print('ts={0} - val={1}'.format(value_pair[0], value_pair[1]))
+                        self.logger.debug("ts={0} - val={1}".format(value_pair[0], value_pair[1]))
                     ts.append(int(value_pair[0]) * 1000)
                     value = value_pair[1]
                     if value is None or value == 'NaN':
@@ -103,9 +101,9 @@ class resultsMatrix(resultsBase):
 
                     values.append(value)
                     if self.debug:
-                        print('ts={} - value={} - min: {} - max {}'.format(value_pair[0], value, min, max))
+                        self.logger.debug("ts={} - value={} - min: {} - max {}".format(value_pair[0], value, min, max))
 
-                (ts_part, value_part) = self.panel.get_FieldsConfig(result, values=values)
+                (ts_part, value_part) = self.panel.get_FieldsConfig(result, None, values=values)
                 #** build timestamp list
                 ts_part.update( {
                     'name': 'Time',
@@ -157,16 +155,18 @@ class resultsMatrix(resultsBase):
                     else:
                         snapshotDataObj['refId'] = '?'
                 # if self.debug:
-                #    print( 'build_timeseries_snapshotData::snapshot[{0}]: {1}'.format(target['refId'], snapshotDataObj ))
+                #    self.logger.debug("build_timeseries_snapshotData::snapshot[{0}]: {1}".format(target['refId'], snapshotDataObj ))
+
                 snapshotData.append( snapshotDataObj )
 
         # format is table : received results are same than for time_series
         # but they must be formatted differently :
         elif self.format == 'table':
-            pass
+            if self.logger is not None:
+                self.logger.warning("result MATRIX table not implemented!")
 
         snapshotData = self.panel.set_transformations( snapshotData )
 
         return snapshotData
 
-#***********************************************************************************************
+#***************************************************

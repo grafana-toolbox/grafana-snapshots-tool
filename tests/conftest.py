@@ -61,6 +61,11 @@ class ConfigReader(object):
 
             self.panel = panel
             self.panel_name = filepath
+            if len(self.targets) == 0:
+                if 'targets' in panel and len(panel['targets'])>0:
+                    self.targets = panel['targets']
+                else:
+                    raise Exception("can' build target from panel")
         return self.panel
 
     #***********************************************

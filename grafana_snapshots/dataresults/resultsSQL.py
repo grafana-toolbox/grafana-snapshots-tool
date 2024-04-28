@@ -59,6 +59,10 @@ class resultsSQL(resultsBase):
     #***********************************************
     def get_snapshotData(self, targets: Union[list, dict])-> list:
         snapshotData = list()
+        if self.logger is not None:
+            self.logger.warning("results Stream not implemented!")
+        return snapshotData
+
         snapshotDataObj = {}
         (ts_part, value_part) = ( None, None)
 
@@ -76,4 +80,5 @@ class resultsSQL(resultsBase):
         snapshotData = self.panel.set_transformations( snapshotData )
 
         return snapshotData
+
 #***************************************************

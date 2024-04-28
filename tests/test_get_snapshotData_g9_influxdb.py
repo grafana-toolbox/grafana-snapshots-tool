@@ -14,18 +14,18 @@ def test_data_ts_range_panel_ts(build_config):
     # read the datasource
     content = build_config.readResponse('queries/grafana_9/influxdb/influxQL_timeseries_range_5m.json')
     format = 'time_series'
+    # targets = build_config.targets
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/two_timeseries.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
+    # if len(targets) == 0:
+    #     targets = panel['targets']
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
@@ -44,18 +44,18 @@ def test_data_2_ts_range_panel_ts(build_config):
     # read the datasource
     content = build_config.readResponse('queries/grafana_9/influxdb/influxQL_two_timeseries_range_5m.json')
     format = 'time_series'
+    # targets = build_config.targets
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/two_timeseries.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
+    # if len(targets) == 0:
+    #     targets = panel['targets']
     dataRes = dataresults( 
         type=datasource_type,
         format=format,
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
@@ -78,11 +78,11 @@ def test_data_ts_tag_range_panel_ts(build_config):
     # read the datasource
     content = build_config.readResponse('queries/grafana_9/influxdb/influxQL_timeseries_tags_range_5m.json')
     format = 'time_series'
+    # targets = build_config.targets
     # read the panel
     panel = build_config.readPanel('panels/grafana_9/timeseries_instant.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
+    # if len(targets) == 0:
+    #     targets = panel['targets']
 
     dataRes = dataresults( 
         type=datasource_type,
@@ -91,7 +91,7 @@ def test_data_ts_tag_range_panel_ts(build_config):
         version=api_version,
         vars=context,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results
@@ -110,10 +110,10 @@ def test_data_flux_ts_range_panel_ts(build_config):
     content = build_config.readResponse('queries/grafana_9/influxdb/flux_two_timeseries_tags_range_5m.json')
     format = 'time_series'
     # read the panel
+    # targets = build_config.targets
     panel = build_config.readPanel('panels/grafana_9/two_timeseries.json')
-    targets = build_config.targets
-    if len(targets) == 0:
-        targets = panel['targets']
+    # if len(targets) == 0:
+    #     targets = panel['targets']
     dataRes = dataresults( 
         type=datasource_type,
         dialect='Flux',
@@ -121,7 +121,7 @@ def test_data_flux_ts_range_panel_ts(build_config):
         results=content,
         version=api_version,
         panel=panel)
-    snapshotData = dataRes.get_snapshotData(targets)
+    snapshotData = dataRes.get_snapshotData(build_config.targets)
 
     assert snapshotData is not None, "invalid data"
     # two ts results

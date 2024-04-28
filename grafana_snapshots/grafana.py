@@ -44,21 +44,21 @@ class GrafanaFolderNotFoundError(Exception):
         super(GrafanaFolderNotFoundError, self).__init__(message)
 
 #******************************************************************************************
-    def remove_accents_and_space(input_str):
-        """
-        build a valid file name from dashboard name.
+def remove_accents_and_space(input_str):
+    """
+    build a valid file name from dashboard name.
 
-        as mentioned in the function name remove ....
-        
-        input: a dashboard name
-        
-        :result: converted string
-        """
-        nfkd_form = unicodedata.normalize('NFKD', input_str)
-        res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-        res = re.sub('\s+', '_', res)
+    as mentioned in the function name remove ....
+    
+    input: a dashboard name
+    
+    :result: converted string
+    """
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+    res = re.sub('\s+', '_', res)
 
-        return res
+    return res
 
 #******************************************************************************************
 class Grafana(object):
@@ -94,6 +94,7 @@ class Grafana(object):
         self.allow_new = kwargs.get('allow_new', False)
 
         self.debug = kwargs.get('debug', False)
+        self.logger = kwargs.get('logger', None)
 
         #* build an api object
         if url is None:
@@ -369,10 +370,10 @@ class Grafana(object):
         for dtsrc in dtsrcs:
             if 'uid' not in dtsrc:
                 datasources[dtsrc['name']] = dtsrc
-                if 'isDefault' in dtsrc and dtsrc['isDefault']:
-                    datasources['default'] = dtsrc
             else:
                 datasources[dtsrc['uid']] = dtsrc
+            if 'isDefault' in dtsrc and dtsrc['isDefault']:
+                datasources['default'] = dtsrc
         self.datasources = datasources
 
         return self.datasources
@@ -451,7 +452,7 @@ class Grafana(object):
         old_snap = False
         del_snap = False
         for snap in snapshots:
-            #print(snap)
+            # self.logger.debug(snap)
             if dashboard_name == snap['name']:
                 old_snap = True
                 try:
@@ -461,13 +462,13 @@ class Grafana(object):
                     raise Exception("can't remove existing snapshot");
                     break
 
-        if self.debug:
+        if self.debug and self.logger is not None:
             if old_snap and del_snap:
-                print("old snapshot was found and removed.")
+                self.logger.info("old snapshot was found and removed.")
             elif old_snap:
-                print("old snapshot was found but not removed.")
+                self.logger.info("old snapshot was found but not removed.")
             else:
-                print("old snapshot was not found.")
+                self.logger.info("old snapshot was not found.")
 
         #**********************************************************************************
         # create new snapshot

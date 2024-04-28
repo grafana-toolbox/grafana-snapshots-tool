@@ -39,7 +39,7 @@ class resultsStream(resultsBase):
     }
     """
     #***********************************************
-    def get_snapshotData(self, targets: list)-> list:
+    def get_snapshotData(self, targets: Union[list, dict])-> list:
         snapshotData = list()
         snapshotDataObj = {}
         (ts_part, value_part, ref_id) = ( None, None, None)

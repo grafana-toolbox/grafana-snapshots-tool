@@ -31,8 +31,8 @@ config = None
 class myArgs:
     attrs = [ 'pattern'
         , 'base_path', 'config_file'
-        , 'dashboard_name'
-        , 'time_from', 'time_to'
+        , 'dashboard_name', 'snapshot_name'
+        , 'time_from', 'time_to', 'grafana_label_save'
         , 'verbose'
     ]
     def __init__(self):
@@ -107,6 +107,10 @@ def main():
                         , default='default'
         )
 
+    parser.add_argument('-G', '--grafana_label_save'
+                        , help='label in the config file that represents the grafana to connect to for saving the snapshot.'
+        )
+
     parser.add_argument('-i', '--import_file'
                         , help='path to the file to import as a snapshot.\
                         File as to e previously exported by this tool.'
@@ -123,7 +127,7 @@ def main():
         )
 
     parser.add_argument('-s', '--snapshot_name'
-                        , help='name of snapshot to extract from Grafana.'
+                        , help='optional name of snapshot to generate/import/extract to/from Grafana. Default to dashboard_name.'
         )
 
     parser.add_argument('-t', '--time_to'
@@ -255,33 +259,6 @@ def main():
     datasources = {}
     context = { 'vars': {} }
 
-    if args.dashboard_name is None:
-        if "defaut_dashboard" in config["general"]:
-            args.dashboard_name = config["general"]["defaut_dashboard"]
-        else:
-            logger.error("no dashboard_name specified")
-            sys.exit(1)
-
-    # collect info from configuration file
-    context_name = args.dashboard_name
-    if args.context_name is not None:
-        context_name = args.context_name
-
-    config['general']['dashboard_name'] = context_name
-
-    if 'contexts' in config and context_name in config['contexts']:
-        cur_cont = config['contexts'][context_name]
-        if 'vars' in cur_cont:
-            context['vars'].update(cur_cont['vars'])
-        if 'time_from' in cur_cont and args.time_from is None:
-            args.time_from = cur_cont['time_from']
-        if 'time_to' in cur_cont and args.time_to is None:
-            args.time_to = cur_cont['time_to']
-
-    if args.time_from is None:
-        args.time_from = 'now-5m'
-    if args.time_to is None:
-        args.time_to = 'now'
 #************
     config['check_folder'] = False
     if args.grafana_folder is not None:
@@ -294,20 +271,20 @@ def main():
         sys.exit(1)
    
     #** init default conf from grafana with set label.
-    config['grafana'] = config['grafana'][args.grafana_label]
+    config['cur_grafana'] = config['grafana'][args.grafana_label]
 
 #************
-    if not 'token' in config['grafana']:
+    if not 'token' in config['cur_grafana']:
         logger.error("no token has been specified in grafana config label '{0}'.".format(args.grafana_label))
         sys.exit(1)
 
     params = {
-        'host': config['grafana'].get('host', 'localhost'),
-        'protocol': config['grafana'].get('protocol', 'http'),
-        'port': config['grafana'].get('port', '3000'),
-        'token': config['grafana'].get('token'),
-        'verify_ssl': config['grafana'].get('verify_ssl', True),
-        'search_api_limit': config['grafana'].get('search_api_limit', 5000),
+        'host': config['cur_grafana'].get('host', 'localhost'),
+        'protocol': config['cur_grafana'].get('protocol', 'http'),
+        'port': config['cur_grafana'].get('port', '3000'),
+        'token': config['cur_grafana'].get('token'),
+        'verify_ssl': config['cur_grafana'].get('verify_ssl', True),
+        'search_api_limit': config['cur_grafana'].get('search_api_limit', 5000),
         'folder': config['general'].get('grafana_folder', 'General'),
     }
 
@@ -318,6 +295,36 @@ def main():
         sys.exit(1)
 
     if args.action == 'generate' or args.action == 'export':
+
+        # check input parameters
+        if args.dashboard_name is None:
+            if "default_dashboard" in config["general"]:
+                args.dashboard_name = config["general"]["default_dashboard"]
+            else:
+                logger.error("no dashboard_name specified")
+                sys.exit(1)
+
+        # collect info from configuration file
+        context_name = args.dashboard_name
+        if args.context_name is not None:
+            context_name = args.context_name
+
+        config['general']['dashboard_name'] = args.dashboard_name
+
+        if 'contexts' in config and context_name in config['contexts']:
+            cur_cont = config['contexts'][context_name]
+            if 'vars' in cur_cont:
+                context['vars'].update(cur_cont['vars'])
+            if 'time_from' in cur_cont and args.time_from is None:
+                args.time_from = cur_cont['time_from']
+            if 'time_to' in cur_cont and args.time_to is None:
+                args.time_to = cur_cont['time_to']
+
+        if args.time_from is None:
+            args.time_from = 'now-5m'
+        if args.time_to is None:
+            args.time_to = 'now'
+
         try:
             dashboard = grafana_api.export_dashboard(config['general']['dashboard_name'])
         except Grafana.GrafanaDashboardNotFoundError:
@@ -350,7 +357,7 @@ def main():
 
         #**********************************************************************************
         #*** collect the data from datasources to populate the snapshot
-        data_api = GrafanaData( params )
+        data_api = GrafanaData( **params )
         try:
             res = data_api.get_dashboard_data()
         except Exception as exp:
@@ -362,9 +369,12 @@ def main():
 
         #**********************************************************************************
         #*** build the dashboard name
-        dashboard_name = config['general']['dashboard_name']
-        if 'snapshot_suffix' in config['general'] and config['general']['snapshot_suffix'] :
-            dashboard_name += datetime.datetime.today().strftime(config['general']['snapshot_suffix'])
+        if args.snapshot_name is not None:
+            snapshot_name = args.snapshot_name
+        else:
+            snapshot_name = config['general']['dashboard_name']
+            if 'snapshot_suffix' in config['general'] and config['general']['snapshot_suffix'] :
+                snapshot_name += datetime.datetime.today().strftime(config['general']['snapshot_suffix'])
 
         #**********************************************************************************
         # init element for new snapshot
@@ -422,27 +432,61 @@ def main():
             "url": "",
             "version": 0
         }
-        params = {
+        snapshot_params = {
             'dashboard': dashboard['dashboard'],
-            'name': dashboard_name,
+            'name': snapshot_name,
             'meta': meta,
         }
 
         if args.action == 'generate':
+
+            specific_save = False
+            if args.grafana_label_save is not None \
+                and args.grafana_label_save in config['grafana']:
+                #** init default conf from grafana with set label.
+                config['cur_grafana'] = config['grafana'][args.grafana_label_save]
+                specific_save = True
+
+            #************
+            if specific_save:
+                if not 'token' in config['cur_grafana']:
+                    logger.error("no token has been specified in grafana config label '{0}'.".format(args.grafana_label))
+                    logger.warn("reseting generation to source grafana {0}".format(args.grafana_label))
+                    specific_save = False
+
+            if specific_save:
+                params = {
+                    'host': config['cur_grafana'].get('host', 'localhost'),
+                    'protocol': config['cur_grafana'].get('protocol', 'http'),
+                    'port': config['cur_grafana'].get('port', '3000'),
+                    'token': config['cur_grafana'].get('token'),
+                    'verify_ssl': config['cur_grafana'].get('verify_ssl', True),
+                    'search_api_limit': config['cur_grafana'].get('search_api_limit', 5000),
+                    'folder': config['general'].get('grafana_folder', 'General'),
+                }
+
+                try:
+                    save_grafana_api = Grafana.Grafana( **params )
+                except Exception as e:
+                    logger.error("can't init grafana api: message: {}".format(e) )
+                    save_grafana_api = None
+                if save_grafana_api is not None:
+                    grafana_api = save_grafana_api
+                
             #**********************************************************************************
             # create new snapshot
             try:
-                res = grafana_api.insert_snapshot( **params )
+                res = grafana_api.insert_snapshot( **snapshot_params )
                 if res:
-                    logger.info("OK: new snapshot '{0}' created.".format(dashboard_name))
+                    logger.info("OK: new snapshot '{0}' created.".format(snapshot_name))
                 else:
-                    logger.warning("KO: snapshot '{0}' not created.".format(dashboard_name))
+                    logger.warning("KO: snapshot '{0}' not created.".format(snapshot_name))
             except Exception as e:
                 logger.error("exception something was wrong: {}".format(traceback.format_exc()) )
                 logger.info("can't create new snapshot !")
 
         else: # action is export
-            save_snapshot(config, args, base_path, dashboard_name, params, 'exported')
+            save_snapshot(config, args, base_path, snapshot_name, snapshot_params, 'exported')
             # end if action == export 
 
     # end if action == generate|export 
@@ -485,16 +529,18 @@ def main():
         if 'dashboard' in params:
             # if original snapshot generated by grafana UI, it doesn't have name
             # so build it from file name
-            if 'name' not in params:
+            if args.snapshot_name is not None:
+                params['name'] = args.snapshot_name
+            elif 'name' not in params:
                 params["name"] = os.path.basename(import_path).split(".")[0]
-            dashboard_name= params['name']
+            snapshot_name= params['name']
             
             try:
                 res = grafana_api.insert_snapshot( **params )
                 if res:
-                    logger.info("OK: snapshot '{}' imported.".format(dashboard_name))
+                    logger.info("OK: snapshot '{}' imported.".format(snapshot_name))
                 else:
-                    logger.info("KO: snapshot '{0}' not imported.".format(dashboard_name))
+                    logger.info("KO: snapshot '{0}' not imported.".format(snapshot_name))
             except Exception as e:
                 logger.error("exception: {}".format(traceback.format_exc()) )
                 logger.warning("can't import snapshot !")

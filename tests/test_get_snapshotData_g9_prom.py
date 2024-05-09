@@ -21,8 +21,6 @@ def test_data_ts_range_panel_ts(build_config):
     # if 'targets' not in panel or len(panel['targets'])<2:
     #     raise Exception("can' build target from panel")
 
-    targets = panel["targets"]
-
     dataRes = dataresults( 
         type=datasource_type,
         format=format,

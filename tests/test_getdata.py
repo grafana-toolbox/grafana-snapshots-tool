@@ -9,6 +9,7 @@ from grafana_snapshots.grafanaData import GrafanaData
 #  /|\ theses tests only work when host is connected to internet and has access to https://play.grafana.org/
 # /_._\
 #***************************************************************************************
+# 2024/04/28: not working: uid mismatch between panel and datasources list
 #***************************************************************************************
 def test_getdata_influxdb_influxQL(build_config):
 
@@ -23,6 +24,16 @@ def test_getdata_influxdb_influxQL(build_config):
         time_from = 'now-1h',
     )
     panel = build_config.readPanel('panels/grafana_9/influxQL_timeseries_vars_range.json')
+    ds_type = panel["datasource"]["type"]
+    ds= None
+    for _,src in data_api.datasources.items():
+        if src["type"] ==ds_type:
+            ds = src["uid"]
+    if ds is None:
+        assert False, "can't determine datasource on grafana.com"
+
+    # force data source to uid (set in our conf)
+    panel["datasource"]["uid"] = ds
 
     data_api.dashboard = {
         'panels': [ panel ],

@@ -135,7 +135,7 @@ class ConfigReader(object):
 
 @pytest.fixture
 def build_config():
-    config = ConfigReader(base='test/conf')
+    config = ConfigReader(base='tests/conf')
     return config
 
 #******************************************************************************************

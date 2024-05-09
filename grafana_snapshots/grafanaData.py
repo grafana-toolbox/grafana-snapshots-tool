@@ -207,6 +207,8 @@ class GrafanaData(object):
 
         self.time_to = self.get_time( kwargs.get('time_to') )
         self.time_from = self.get_time(kwargs.get('time_from'))
+        self.step = self.get_step_ms(self.time_from, self.time_to)
+
         self.context = kwargs.get('context')
 
     #***********************************************
@@ -301,6 +303,7 @@ class GrafanaData(object):
             params['query'] = expr
             params['time_to'] = self.time_to
             params['time_from'] = self.time_from
+            params['intervalMS'] = self.step
 
             request = query_factory(datasource, params)
 
@@ -323,8 +326,15 @@ class GrafanaData(object):
 
         if 'panels' in self.dashboard:
             for panel in self.dashboard['panels']:
+                #** row panel...
+                if 'type' in panel and panel['type'] in ('row', 'text'):
+                    if self.debug:
+                        self.logger.debug("target-type is '{0}': skipped".format(panel['type']))
+                    continue
+
                 if self.debug:
                     self.logger.debug("panel: {}".format(panel))
+
                 dtsrc = 'default'
                 target = None
                 if 'datasource' in panel and panel['datasource'] is not None:
@@ -338,12 +348,6 @@ class GrafanaData(object):
                     targets = panel['targets']
                     if self.debug:
                         self.logger.debug("target: %s" % (targets))
-                else:
-                    #** row panel... probably
-                    targets = None
-                    if self.debug and 'type' in panel and panel['type'] in ('row', 'text'):
-                        self.logger.debug("target-type is '{0}': skipped".format(panel['type']))
-                    continue
 
                 datasource = self.get_datasource(dtsrc)
                 if (datasource is not None or dtsrc == '-- Mixed --' ) and targets is not None:
@@ -992,7 +996,10 @@ class GrafanaData(object):
 
         return ts
     #**********************************************************************************
-    def get_step(self, ts_from, ts_to):
+    def get_step_ms(self, ts_from: int, ts_to: int)->int:
+        """
+        build a step in milli seconds based on from/to interval and grafana's steps (collected manually)
+        """
         # compute step value
         # last 5 min: step 15 (300 : 15: 20 )
         # last 15 min: step 15 (900 : 15: 60 )
@@ -1027,4 +1034,4 @@ class GrafanaData(object):
                 break
 
     #    print('step={0}'.format(step))
-        return step
+        return step * 1000

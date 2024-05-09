@@ -130,4 +130,6 @@ dmypy.json
 
 # Visual Studio Code
 .vscode/*
+
+local_conf/
 local_cli.py

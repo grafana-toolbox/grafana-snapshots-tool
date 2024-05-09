@@ -1,7 +1,12 @@
 general:
-  debug: false
+  logger:
+    # full file path or 'syslog' or stdout
+    facility: stdout
+    logLevel: verbose
   snapshot_suffix: "_%Y%m%d%H%M"
   output_path: snapshots
+  default_dashboard: Oracle Overview
+
 grafana:
   default:
     protocol: http

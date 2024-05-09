@@ -17,7 +17,7 @@ class resultsBase(object):
         self.results = kwargs.get('results', None)
         if self.results is None:
             raise ValueError("results not set!")
-
+        
         self.format = kwargs.get('format', 'time_series')
 
         self.symbols_vars = kwargs.get('vars', {})

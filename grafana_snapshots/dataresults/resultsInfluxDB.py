@@ -42,6 +42,18 @@ class resultsInfluxDB(resultsBase):
     var_tagfinder = re.compile(r'(\${?\s*tag_(\$?[a-zA-Z0-9_]+)\s*}?)')
 
     #***********************************************
+    def __init__( *args, **kwargs ):
+        self = args[0]
+
+        super(resultsInfluxDB, self).__init__(**kwargs)
+
+        self.results = kwargs.get('results', None)
+        if "results" in self.results and self.results["results"]:
+            for res in self.results["results"]:
+                if "error" in res:
+                    raise ValueError("infuxDB query error: '{0}'!".format(res["error"]))
+
+    #***********************************************
     def get_snapshotData(self, targets: Union[list, dict])-> list:
         snapshotData = list()
         snapshotDataObj = {}

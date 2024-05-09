@@ -1,0 +1,70 @@
+{
+    "datasource": {
+      "uid": "ww63Ic7Mk",
+      "type": "prometheus"
+    },
+    "fieldConfig": {
+      "defaults": {
+        "unitScale": true,
+        "mappings": [],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "color": "red",
+              "value": 80
+            }
+          ]
+        },
+        "color": {
+          "mode": "thresholds"
+        }
+      },
+      "overrides": []
+    },
+    "gridPos": {
+      "h": 8,
+      "w": 12,
+      "x": 0,
+      "y": 0
+    },
+    "id": 1,
+    "options": {
+      "reduceOptions": {
+        "values": false,
+        "calcs": [
+          "lastNotNull"
+        ],
+        "fields": ""
+      },
+      "orientation": "auto",
+      "textMode": "auto",
+      "wideLayout": true,
+      "colorMode": "value",
+      "graphMode": "area",
+      "justifyMode": "auto",
+      "showPercentChange": false
+    },
+    "pluginVersion": "10.3.3",
+    "targets": [
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "h8KkCLt7z"
+        },
+        "editorMode": "code",
+        "expr": "up{host=\"localhost\"}",
+        "format": "time_series",
+        "instant": false,
+        "legendFormat": "__auto",
+        "range": true,
+        "refId": "A"
+      }
+    ],
+    "title": "Stat pnael",
+    "type": "stat"
+  }

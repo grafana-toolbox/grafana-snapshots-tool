@@ -93,6 +93,10 @@ def main():
                         , help='name of dashboard to export or generate.'
                     )
 
+    parser.add_argument('-e', '--expires'
+                           , help='snapshot expiration; When the snapshot should expire in seconds. 3600 is 1 hour, 86400 is 1 day. \
+                            Default is to never expire.'
+    )
     parser.add_argument('-F', '--grafana_folder'
                         , help='the folder name where to export/import from/into Grafana.'
         )
@@ -319,6 +323,8 @@ def main():
                 args.time_from = cur_cont['time_from']
             if 'time_to' in cur_cont and args.time_to is None:
                 args.time_to = cur_cont['time_to']
+            if 'expires' in cur_cont and args.expires is None:
+                args.expires = cur_cont['expires']
 
         if args.time_from is None:
             args.time_from = 'now-5m'
@@ -350,6 +356,7 @@ def main():
             'datasources': datasources,
             'time_to': args.time_to,
             'time_from': args.time_from,
+            'expires': args.expires,
             'context': context,
             'debug': args.verbose,
             'logger': logger,
@@ -432,11 +439,16 @@ def main():
             "url": "",
             "version": 0
         }
+
         snapshot_params = {
             'dashboard': dashboard['dashboard'],
             'name': snapshot_name,
             'meta': meta,
         }
+
+        if args.expires is not None:
+            meta['expires'] = (now + dateutil.relativedelta.relativedelta(seconds=args.expires)).isoformat()
+            snapshot_params['expires'] = args.expires
 
         if args.action == 'generate':
 
@@ -451,7 +463,7 @@ def main():
             if specific_save:
                 if not 'token' in config['cur_grafana']:
                     logger.error("no token has been specified in grafana config label '{0}'.".format(args.grafana_label))
-                    logger.warn("reseting generation to source grafana {0}".format(args.grafana_label))
+                    logger.warning("reseting generation to source grafana {0}".format(args.grafana_label))
                     specific_save = False
 
             if specific_save:
@@ -534,7 +546,10 @@ def main():
             elif 'name' not in params:
                 params["name"] = os.path.basename(import_path).split(".")[0]
             snapshot_name= params['name']
-            
+
+            if args.expires is not None:
+                # meta['expires'] = (now + dateutil.relativedelta.relativedelta(seconds=args.expires)).isoformat()
+                params['expires'] = args.expires
             try:
                 res = grafana_api.insert_snapshot( **params )
                 if res:

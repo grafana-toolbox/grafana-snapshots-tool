@@ -72,12 +72,10 @@ build a directory structure:
 
 ```bash
 grafana-snapshots -h
-usage: grafana-snapshots [-h] [-b BASE_PATH] [-c CONFIG_FILE]
-                         [-d DASHBOARD_NAME] [-F GRAFANA_FOLDER]
-                         [-f TIME_FROM] [-g GRAFANA_LABEL] [-i IMPORT_FILE]
-                         [-o CONTEXT_NAME] [-p] [-s SNAPSHOT_NAME]
-                         [-t TIME_TO] [-v] [-V]
-                         [ACTION]
+usage: grafana-snapshots [-h] [-b BASE_PATH] [-c CONFIG_FILE] [-d DASHBOARD_NAME] [-e EXPIRES] [-F GRAFANA_FOLDER]
+      [-f TIME_FROM] [-g GRAFANA_LABEL] [-G GRAFANA_LABEL_SAVE] [-i IMPORT_FILE] [-o CONTEXT_NAME]
+      [-p] [-s SNAPSHOT_NAME] [-t TIME_TO] [-v] [-V]
+      [ACTION]
 ```
 
 then enter into your directory and type in you commands.

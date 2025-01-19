@@ -133,3 +133,7 @@ dmypy.json
 
 local_conf/
 local_cli.py
+
+#
+grafana_snapshots/version.py
+tt.json

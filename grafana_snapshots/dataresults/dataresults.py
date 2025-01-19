@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from distutils.version import LooseVersion
+from verlib2 import Version
 from typing import Union
 
 from grafana_snapshots.dataresults.resultsMatrix import resultsMatrix
@@ -13,8 +13,8 @@ from grafana_snapshots.dataresults.resultsStream import resultsStream
 #***************************************************
 class dataresults(object):
     # prometheus query change in v 8
-    version_8 = LooseVersion('8')
-    version_9 = LooseVersion('9')
+    version_8 = Version('8')
+    version_9 = Version('9')
 
     #***********************************************
     def __init__( *args, **kwargs ):

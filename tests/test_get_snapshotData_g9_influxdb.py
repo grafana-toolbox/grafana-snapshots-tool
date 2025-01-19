@@ -1,9 +1,9 @@
-from distutils.version import LooseVersion
+from verlib2 import Version
 
 from grafana_snapshots.dataresults.dataresults import dataresults
 
 datasource_type = 'influxdb'
-api_version = LooseVersion('9.2.1')
+api_version = Version('9.2.1')
 
 #***************************************************************************************
 #***************************************************************************************

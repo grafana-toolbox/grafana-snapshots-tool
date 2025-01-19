@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #**********************************************************************************
-from distutils.version import LooseVersion
+from verlib2 import Version
 
 from grafana_snapshots.dataresults.panels.timeseries import TimeSeriesPanel
 from grafana_snapshots.dataresults.panels.graph import GraphPanel
@@ -20,8 +20,8 @@ class PanelDispatcher:
     #### thresholds
     """
     # prometheus query change in v 8
-    version_8 = LooseVersion('8')
-    version_9 = LooseVersion('9')
+    version_8 = Version('8')
+    version_9 = Version('9')
 
     #***********************************************
     def __init__( *args, **kwargs ) -> None:

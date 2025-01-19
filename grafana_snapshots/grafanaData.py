@@ -5,7 +5,7 @@ import dateutil.parser, dateutil.relativedelta, time
 from datetime import datetime, timezone
 from urllib import request
 from jinja2 import Template
-# from distutils.version import LooseVersion
+
 from grafana_client.knowledge import query_factory
 
 from grafana_snapshots.dataresults.dataresults import dataresults

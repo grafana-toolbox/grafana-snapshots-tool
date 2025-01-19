@@ -1,10 +1,10 @@
 import pytest
-from distutils.version import LooseVersion
+from verlib2 import Version
 
 from grafana_snapshots.dataresults.dataresults import dataresults
 
 datasource_type = 'prometheus'
-api_version = LooseVersion('7.5.11')
+api_version = Version('7.5.11')
 
 #***************************************************************************************
 def test_ts_ts(build_config):

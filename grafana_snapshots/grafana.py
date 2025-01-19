@@ -6,7 +6,7 @@
 import grafana_client.api as GrafanaApi
 import grafana_client.client as GrafanaClient
 import re, traceback, unicodedata
-from distutils.version import LooseVersion
+from verlib2 import Version
 from requests.exceptions import ConnectionError
 
 from grafana_snapshots.constants import (PKG_NAME)
@@ -120,7 +120,7 @@ class Grafana(object):
         except:
             raise
 
-        self.version = LooseVersion(self.grafana_api.version)
+        self.version = Version(self.grafana_api.version)
 
     #***********************************************
     def find_dashboard(self, dashboard_name):
@@ -439,6 +439,7 @@ class Grafana(object):
 
         dashboard = kwargs.get('dashboard')
         dashboard_name = kwargs.get('name')
+        snapshot_expiration = kwargs.get("expires")
 
         #**********************************************************************************
         #*** check if snapshot name is already present in list
@@ -474,9 +475,10 @@ class Grafana(object):
         # create new snapshot
         params = {
             'dashboard': dashboard,
-            'name': dashboard_name
+            'name': dashboard_name,
         }
-
+        if snapshot_expiration is not None:
+            params['expires'] = snapshot_expiration
         res = False
         try:
             res = self.grafana_api.snapshots.create_new_snapshot( **params )

@@ -13,7 +13,7 @@ setup(
     long_description=open('README.md', 'r').read(),
     author="author",
     author_email="jfpik78@gmail.com",
-    url="https://github.com/peekjef72/grafana-snapshots-tool",
+    url="https://github.com/grafana-toolbox/grafana-snapshots",
     entry_points={
         'console_scripts': [
             'grafana-snapshots = grafana_snapshots.cli:main'

@@ -1,6 +1,8 @@
-# Grafana Snapshots Tool
+# Grafana Snapshots
 
-A python3 bases application to build grafana snapshots that contains data(!) using [Grafana API](https://grafana.com/docs/grafana/latest/http_api/) and a python interface [grafana-client](https://github.com/panodata/grafana-client)
+Create Grafana snapshots **including data(!)**.
+
+The application uses the [Grafana HTTP API] and its Python client [grafana-client].
 
 The aim of this tool is to:
 1. Easily build snapshots from existing Grafana dashboard.
@@ -12,18 +14,18 @@ That was a sticking point for us since it prevented us from being able to provid
 With this tool, we are able to build static dashboards, also called snapshots, that can be shared and visualized in grafana.
 It can be also used to store particular situation even if the data window is out of the scope of the retention of the datasource.
 
-## Install using this repo
+## Install package
 
+Install from PyPI.
 ```bash
-pip install git+https://github.com/peekjef72/grafana-snapshots-tool.git
+pip3 install grafana-snapshots
 ```
 
-## Install pypi package
-install from pypi
-
+Install from repository.
 ```bash
-pip3 install grafana-snapshots-tool 
+pip install git+https://github.com/grafana-toolbox/grafana-snapshots.git
 ```
+
 ## Requirements:
 * bash
 * python >3.6
@@ -116,3 +118,6 @@ then you can go into Grafana Gui and find the snapshot in dashboard/Manage/Snaps
 * overrides are not used to modify values !
 * changes with new version of Grafana (>7.5) have several impacts on the rendering of panels; a code review is required to improve the result.
 
+
+[grafana-client]: https://github.com/grafana-toolbox/grafana-client
+[Grafana HTTP API]: https://grafana.com/docs/grafana/latest/http_api/

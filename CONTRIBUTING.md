@@ -1,7 +1,7 @@
 # Contributing
 
 Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given. 
+little bit helps, and credit will always be given.
 
 You can contribute in many ways:
 
@@ -9,7 +9,7 @@ You can contribute in many ways:
 
 ### Report Bugs
 
-Report bugs at https://github.com/peekjef72/grafana-snapshot/issues.
+Report bugs at https://github.com/grafana-toolbox/grafana-snapshots/issues.
 
 If you are reporting a bug, please include:
 
@@ -29,7 +29,7 @@ is open to whoever wants to implement it.
 
 ### Submit Feedback
 
-The best way to send feedback is to file an issue at https://github.com/peekjef72/grafana-snapshot/issues
+The best way to send feedback is to file an issue at https://github.com/grafana-toolbox/grafana-snapshots/issues
 
 If you are proposing a feature:
 

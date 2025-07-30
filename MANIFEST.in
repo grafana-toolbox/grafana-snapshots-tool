@@ -1,5 +1,3 @@
-# include *.md
-# include LICENSE
-# include requirements.txt
-exclude .gitattributes .gitignore Makefile CODEOWNERS
-prune .github
+include *.md
+include LICENSE
+include requirements.txt

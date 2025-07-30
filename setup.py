@@ -1,10 +1,25 @@
-from setuptools import setup
+from grafana_snapshots.constants import (PKG_NAME, PKG_VERSION)
+from setuptools import setup, find_packages
+
+# Global variables
+name = PKG_NAME
+version = PKG_VERSION
 
 setup(
-    name="grafana-snapshots-tool",
-    # use_scm_version={
-    #     "local_scheme": "no-local-version",
-    #     "version_scheme": "python-simplified-semver",
-    #     "write_to": "grafana_snapshots/version.py",
-    # },
+    name=name,
+    version=version,
+    description='A Python-based application to build Grafana snapshots using the Grafana API and grafana-client python interface',
+    long_description_content_type='text/markdown',
+    long_description=open('README.md', 'r').read(),
+    author="author",
+    author_email="jfpik78@gmail.com",
+    url="https://github.com/grafana-toolbox/grafana-snapshots",
+    entry_points={
+        'console_scripts': [
+            'grafana-snapshots = grafana_snapshots.cli:main'
+        ]
+    },
+    packages=find_packages(),
+    install_requires=open('./requirements.txt').readlines(),
+    package_data={'': ['conf/*']},
 )

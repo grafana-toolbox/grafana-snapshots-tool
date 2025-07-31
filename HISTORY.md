@@ -1,11 +1,15 @@
 # HISTORY
 
-## Unreleased
+## 0.3.1 / 2025-07-30
 
 * Refreshed dependencies:
   * Update to grafana-client >= 5
   * Relax dependency pinning for Jinja2, python-dateutil, and PyYAML
   * Remove dependency on setuptools
+
+## 0.3.0 / 2025-01-25
+
+* added expiration for snapshots
 
 ## 0.3.0 / 2024-05-09
 

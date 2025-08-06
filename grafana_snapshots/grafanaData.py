@@ -304,7 +304,7 @@ class GrafanaData(object):
             params['query'] = expr
             params['time_to'] = self.time_to
             params['time_from'] = self.time_from
-            params['intervalMS'] = self.step
+            params['intervalMs'] = self.step
 
             new_req = query_factory(datasource, params)
         elif "datasource" in target and target["datasource"]['type'] == '__expr__':

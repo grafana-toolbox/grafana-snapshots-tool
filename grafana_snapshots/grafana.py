@@ -112,13 +112,9 @@ class Grafana(object):
             except ConnectionError:
                 raise Exception("Connecting to Grafana failed")
 
-        #* try to connect to the API
-        try:
-            res = self.grafana_api.health.check()
-            if res['database'] != 'ok':
-                raise Exception('grafana is not UP')
-        except:
-            raise
+        #* try to connect to the API - This will throw if it fails
+        # res["database"] doesn't return on Grafana 12
+        _ = self.grafana_api.health.check()
 
         self.version = Version(self.grafana_api.version)
 

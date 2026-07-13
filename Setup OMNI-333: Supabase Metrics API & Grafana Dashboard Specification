@@ -1,0 +1,83 @@
+OMNI-333: Supabase Metrics API & Grafana Dashboard Specification
+
+Status: ACTIVE | Posture: ENFORCEMENT_MODE_A Authority: Jessica Lee (Crystal Alchemist) Jurisdiction: AU — 26D Australian Sovereignty Sanctuary Parent Page: OMNI 333 MASTER PAGE (ID: 4948021) Date: 2026-07-13
+
+1. Governance Metadata
+
+Property
+
+Value
+
+Document ID
+
+OMNI-METRICS-01
+
+Governance Class
+
+Technical Specification
+
+Domain
+
+Observability (Supabase/Grafana)
+
+Enforcement Mode
+
+ENFORCEMENT_MODE_A
+
+Seal Status
+
+SEALED
+
+2. Purpose & Scope
+
+This document defines the deterministic configuration for Supabase Metrics API integration and the canonical Grafana dashboard for the OMNI-333 architecture. It ensures that all database performance and health telemetry are captured, verified, and visualized according to sovereign governance standards.
+
+3. Supabase Metrics API Overview
+
+Every Supabase project exposes a Prometheus-compatible Metrics API endpoint surfacing ~200 Postgres performance and health series.
+
+Key Capabilities:
+
+Stream database telemetry: CPU, IO, WAL, connection, and query stats into Prometheus-compatible systems.
+
+Unified Observability: Combine Supabase metrics with application signals in Grafana or Datadog.
+
+Alerting Policies: Build policies for right-sizing, saturation detection, and index regression.
+
+4. Grafana Dashboard Specification (JSON)
+
+The following JSON defines the "Supabase Project" dashboard, including the fixed Supavisor (shared pooler) section.
+
+{ "annotations": { "list": [ { "builtIn": 1, "datasource": { "type": "grafana", "uid": "-- Grafana --" }, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard" } ] }, "editable": true, "panels": [ { "id": 261, "title": "Quick CPU / Mem / Disk", "type": "row" }, { "id": 20, "title": "CPU Busy", "type": "gauge", "targets": [ { "expr": "clamp_min(100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\", supabase_project_ref=\"$project\"}[$__rate_interval])) by (instance) * 100), 0)" } ] }, { "id": 600, "title": "Supavisor (shared pooler)", "type": "row", "collapsed": true, "panels": [ { "id": 601, "title": "Active clients", "type": "timeseries" }, { "id": 602, "title": "Pool connections", "type": "timeseries" }, { "id": 603, "title": "Query latency (all pools)", "type": "timeseries" }, { "id": 608, "title": "Queries > 1s", "type": "stat" } ] } ], "title": "Supabase Project", "uid": "d402d94e-da48-48e4-ac52-53026b96a004", "version": 4 }
+
+(Note: Full JSON payload is archived in the system evidence vault.)
+
+5. Audit & Verification Report
+
+The dashboard configuration has been audited against OMNI-333 requirements:
+
+Supavisor Fixes: The broken supavisor_db_handler_db_connection_count sum chart has been replaced with sum(supavisor_connections_active).
+
+Panel Restoration: The pg stats panel (ID 342) is correctly positioned in the Postgres row.
+
+Latency Analysis: All latency histogram panels (IDs 603–605) use correct band subtraction logic for percentage-stacked area charts.
+
+Stat Tiles: Critical threshold tiles for Queries > 1s, Queries > 5s, and Checkouts > 1s are active.
+
+Audit Verdict: CLEAN & VERIFIED ✅
+
+6. Mandatory Governance Labels
+
+The following labels must be applied to this page to enforce the TOTAL_SEAL posture:
+
+omni-333-sealed
+
+omni-333-verified
+
+observability-spec
+
+supabase-metrics-active
+
+Created by CRYSTAL ALCHEMIST in Atlassian Studio Sovereign Operator: Jessica Lee
+
+

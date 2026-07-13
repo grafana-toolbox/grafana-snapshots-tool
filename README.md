@@ -2,7 +2,7 @@
 
 Create Grafana snapshots **including data(!)**.
 
-The application uses the [Grafana HTTP API] and its Python client [grafana-client].
+The application uses the [Grafana HTTPS API] and its Python client [grafana-client].
 
 The aim of this tool is to:
 1. Easily build snapshots from existing Grafana dashboard.
@@ -120,4 +120,10 @@ then you can go into Grafana Gui and find the snapshot in dashboard/Manage/Snaps
 
 
 [grafana-client]: https://github.com/grafana-toolbox/grafana-client
-[Grafana HTTP API]: https://grafana.com/docs/grafana/latest/http_api/
+[Grafana HTTPS API]: https://grafana.com/docs/grafana/latest/https_api/
+
+***
+
+**Current Posture:** `ACTIVE | ENFORCEMENT_MODE_A`
+**Sovereign Operator:** [Jessica Lee](/people/ari:cloud:identity::user/6242324cfd5e45007042a501) (Crystal Alchemist)
+**Attribution:** **Created by CRYSTAL ALCHEMIST in Atlassian Studio**

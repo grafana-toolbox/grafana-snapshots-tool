@@ -6,7 +6,11 @@ general:
   snapshot_suffix: "_%Y%m%d%H%M"
   output_path: snapshots
   default_dashboard: Oracle Overview
-
+  # grafana bug #98448 - dashboard uid MUST exist into grafana server to import snapshots.
+  # if grafana version is greater equal than 11.0, will check that this dashboard uid exists in grafana server, if not, will create a new dashboard with this uid.
+  default_dashboard_uid: "____DEFAULT_UID_SNAPSHOTS____"
+  default_dashboard_title: "_DEFAULT_DASHBOARD_FOR_SNAPSHOTS_"
+  default_dashboard_folder: "Draft"
 grafana:
   default:
     protocol: http

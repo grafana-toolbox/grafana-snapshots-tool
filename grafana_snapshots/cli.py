@@ -1,20 +1,5 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Oct 1 2020
-
-@author: jfpik
-
-Suivi des modifications :
-    V 0.0.0 - 2020/09/16 - JF. PIK - initial version
-    V 0.0.1 - 2020/10/16 - JF. PIK - switch to grafana-api
-    V 0.2.0 - 2022/02/12 - JF. PIK - switch to grafana_client
-
-"""
-#***********************************************************************************************
-#
-#
-# TODO:
 #***********************************************************************************************
 
 import typing as t
@@ -103,7 +88,7 @@ def main():
 
     parser.add_argument('-f', '--time_from'
                            , help='start_time of data; format is iso date or \
-                            string containg now-xF. default is \'now-5m\'.'
+                            string containing now-xF. default is \'now-5m\'.'
         )
 
     parser.add_argument('-g', '--grafana_label'
@@ -135,7 +120,7 @@ def main():
         )
 
     parser.add_argument('-t', '--time_to'
-                        , help='end_time of data; format is iso date or string containg now-xF. default is \'now\'.'
+                        , help='end_time of data; format is iso date or string containing now-xF. default is \'now\'.'
         )
 
     parser.add_argument('-v ', '--verbose'
@@ -153,7 +138,7 @@ def main():
                         , choices=['generate', 'import', 'export', 'extract']
                         , default='generate'
                         , help='action to perform on snapshot. Is one of \'generate\' (default), \
-                            \'export\', \'extract\' or, \'import\'.\ngenerate: generate snapshot and publish it into Grafana.\nexport: generate snapshot and dump it to local file.\nimport: import a local snapshoot (previously exported) to Grafana.\nextract: get snapshoot from Grafana and dump it to local file.'
+                            \'export\', \'extract\' or, \'import\'.\ngenerate: generate snapshot and publish it into Grafana.\nexport: generate snapshot and dump it to local file.\nimport: import a local snapshot (previously exported) to Grafana.\nextract: get snapshot from Grafana and dump it to local file.'
         )
 
     inArgs = myArgs()
@@ -165,7 +150,7 @@ def main():
 
     config_file = os.path.join(base_path, CONFIG_NAME)
     if args.config_file is not None:
-        if not re.search(r'^(\.|\/)?/', config_file):
+        if not re.search(r'^(\.|\/)?/', args.config_file):
             config_file = os.path.join(base_path,args.config_file)
         else:
             config_file = args.config_file
@@ -177,7 +162,7 @@ def main():
                 config = yaml.safe_load(cfg_fh)
             except yaml.scanner.ScannerError as exc:
                 mark = exc.problem_mark
-                print("Yaml file parsing unsuccessul : %s - line: %s column: %s => %s" % (config_file, mark.line+1, mark.column+1, exc.problem) )
+                print("Yaml file parsing unsuccessful : %s - line: %s column: %s => %s" % (config_file, mark.line+1, mark.column+1, exc.problem) )
             except Exception as exp:
                 print('ERROR: config file not read: %s' % str(exp))
     except Exception as ex:
@@ -343,7 +328,7 @@ def main():
         try:
             datasources = grafana_api.get_datasources()
         except Exception as e:
-            logger.error("excepton during grafana datasource retrive error: {} - message: {}".format(e.status_code, e.message) )
+            logger.error("exception during grafana datasource retrieve error: {} - message: {}".format(e.status_code, e.message) )
             sys.exit(2)
 
         if args.verbose:
@@ -463,7 +448,7 @@ def main():
             if specific_save:
                 if not 'token' in config['cur_grafana']:
                     logger.error("no token has been specified in grafana config label '{0}'.".format(args.grafana_label))
-                    logger.warning("reseting generation to source grafana {0}".format(args.grafana_label))
+                    logger.warning("resetting generation to source grafana {0}".format(args.grafana_label))
                     specific_save = False
 
             if specific_save:
@@ -510,10 +495,7 @@ def main():
 
         import_file = args.import_file
         if not re.search(r'^\.?/', import_file):
-            import_path = base_path
-            if 'output_path' in config['general']:
-                import_path = os.path.join(import_path, config['general']['output_path'])
-            import_path = os.path.join(import_path, import_file)
+            import_path = os.path.join(base_path, import_file)
         else:
             import_path = import_file
 
@@ -539,6 +521,47 @@ def main():
         #   }
 
         if 'dashboard' in params:
+            # grafana (regression) bug #98448 - dashboard uid MUST exist into grafana server to import snapshots.
+            # if grafana version is greater equal than 11.0, will check that this
+            if grafana_api.version.major > 11:
+                old_folder = grafana_api.grafana_folder
+                grafana_api.grafana_folder = config['general'].get('default_dashboard_folder', 'Draft')
+
+                new_dashboard = {
+                    "dashboard": {
+                        "title": config['general'].get('default_dashboard_title', "_DEFAULT_DASHBOARD_FOR_SNAPSHOTS_"),
+                        "uid": config['general'].get('default_dashboard_uid', "____DEFAULT_UID_SNAPSHOTS____"),
+                        "panels": [],
+                        "schemaVersion": 16,
+                        "version": 0
+                    },
+                    "folderId": 0,
+                    "message": "Default dashboard for snapshots",
+                    "overwrite": False
+                }
+                try:
+                    default_dashboard_for_snapshots = grafana_api.import_dashboard(new_dashboard['dashboard'])
+                except Grafana.GrafanaDashboardNotFoundError:
+                    default_dashboard_for_snapshots = None
+                except Grafana.GrafanaBadInputError as e:
+                    logger.error("exception during grafana dashboard retrieve error: bad parameter - message: {0}".format(e.message) )
+                    sys.exit(2)
+                except Exception as e:
+                    logger.error("exception during grafana dashboard retrieve error: {} ".format(str(e)) )
+                    sys.exit(2)
+
+                if default_dashboard_for_snapshots is None:
+                    logger.error("grafana version >= 11.0 - dashboard uid MUST exist into grafana server to import snapshots.")
+                    logger.error("can't create dashboard with title '{0}' in folder '{1}' in grafana server: check token permissions, or create a new one manually.".format(new_dashboard['dashboard']['title'], new_dashboard['folder']))
+                    sys.exit(2)
+                else:
+                    logger.info("grafana version >= 11.0 - dashboard uid MUST exist into grafana server to import snapshots.")
+                    logger.info("dashboard with title '{0}' in folder '{1}' created in grafana server.".format(new_dashboard['dashboard']['title'], grafana_api.grafana_folder))
+                    params['dashboard']['uid'] = new_dashboard['dashboard']['uid']
+
+                # reset grafana_folder to original value
+                grafana_api.grafana_folder = old_folder
+
             # if original snapshot generated by grafana UI, it doesn't have name
             # so build it from file name
             if args.snapshot_name is not None:

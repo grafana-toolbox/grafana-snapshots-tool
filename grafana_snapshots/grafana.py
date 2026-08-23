@@ -21,7 +21,7 @@ class GrafanaDashboardNotFoundError(Exception):
 
     """
 
-    def __init__(self, dashboard_name, folder, message):
+    def __init__(self, dashboard_name: str, folder: str, message: str):
         self.dashboard = dashboard_name
         self.folder = folder
         self.message = message
@@ -37,22 +37,38 @@ class GrafanaFolderNotFoundError(Exception):
 
     """
 
-    def __init__(self, folder, message):
+    def __init__(self, folder: str, message: str):
         self.folder = folder
         self.message = message
         # Backwards compatible with implementations that rely on just the message.
         super(GrafanaFolderNotFoundError, self).__init__(message)
 
 #******************************************************************************************
-def remove_accents_and_space(input_str):
+class GrafanaBadInputError(Exception):
+    """
+    input:
+      folder
+      message
+
+    """
+
+    def __init__(self, message: str):
+        self.message = message
+        # Backwards compatible with implementations that rely on just the message.
+        super(GrafanaBadInputError, self).__init__(message)
+
+#******************************************************************************************
+def remove_accents_and_space(input_str: str) -> str:
     """
     build a valid file name from dashboard name.
 
     as mentioned in the function name remove ....
     
-    input: a dashboard name
+    input: 
+        input_str (@str): a dashboard name
     
-    :result: converted string
+    result:
+        (@str): a converted string
     """
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     res = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
@@ -78,7 +94,7 @@ class Grafana(object):
             config['port'] = kwargs.get('port', 3000)
             config['token'] = kwargs.get('token', None)
             if config['token'] is None:
-                raise GrafanaClient.GrafanaBadInputError('grafana token is not defined')
+                raise GrafanaBadInputError('grafana token is not defined')
 
             config['verify_ssl'] = kwargs.get('verify_ssl', True)
 
@@ -115,7 +131,7 @@ class Grafana(object):
         #* try to connect to the API
         try:
             res = self.grafana_api.health.check()
-            if res['database'] != 'ok':
+            if res['version'] == '':
                 raise Exception('grafana is not UP')
         except:
             raise
@@ -123,19 +139,18 @@ class Grafana(object):
         self.version = Version(self.grafana_api.version)
 
     #***********************************************
-    def find_dashboard(self, dashboard_name):
+    def find_dashboard(self, dashboard_name: str) -> dict:
 
-        #* use to retrive dashboards which name are matching the lookup named
-        #* some api version didn't return forlderTitle... require to lookup in two phases
-        found_dashs = []
+        #* use to retrieve dashboards which name are matching the lookup named
+        #* some api version didn't return folderTitle... require to lookup in two phases
 
         #* init cache for dashboards.
         if len(Grafana.dashboards) == 0:
             #** collect all dashboard names.
             try:
                 res = self.grafana_api.search.search_dashboards(
-                type_='dash-db',
-                limit=self.search_api_limit
+                    type_='dash-db',
+                    limit=self.search_api_limit
                 )
             except Exception as e:
                 raise Exception("error: {}".format(traceback.format_exc()) )
@@ -156,20 +171,23 @@ class Grafana(object):
         #* find the board uid in the list
         for cur_dash in dashboards:
             if cur_dash['title'] == dashboard_name:
-                # set current dashbard as found candidate
-                board = cur_dash
+                # set current dashboard as found candidate
+                if self.version.major > 11:
+                    board = self.grafana_api.dashboard.get_dashboard(cur_dash['uid'])
+                else:
+                    board = cur_dash
                 # check the folder part
-                if ('folderTitle' in cur_dash and cur_dash['folderTitle'] == folder['title']) or \
-                    ('folderTitle' not in cur_dash and folder['id'] == 0 ):
+                if ('meta' in board and ('folderTitle' in board['meta'] and board['meta']['folderTitle'] == folder['title']) or \
+                    ('folderTitle' not in board['meta'] and folder['id'] == 0 )):
                     # this is a requested folder or no folder !
                     break
 
         return board
 
     #***********************************************
-    def export_dashboard(self, dashboard_name):
+    def export_dashboard(self, dashboard_name: str) -> dict:
         """
-        retrive the dashboard object from Grafana server.
+        retrieve the dashboard object from Grafana server.
             params:
                 dashboard_name (str): name of the dashboard to retrieve
             result:
@@ -192,9 +210,9 @@ class Grafana(object):
 
 
     #***********************************************
-    def remove_dashboard(self, dashboard_name):
+    def remove_dashboard(self, dashboard_name: str) -> bool:
         """
-        retrive the dashboard object from Grafana server and remove it.
+        retrieve the dashboard object from Grafana server and remove it.
             params:
                 dashboard_name (str): name of the dashboard to retrieve
             result:
@@ -225,7 +243,7 @@ class Grafana(object):
 
         if (folder['id'] == 0 and 'folderId' in board and board['folderId'] != folder['id'] ) \
             or (folder['id'] != 0 and not 'folderId' in board ):
-            raise GrafanaApi.GrafanaBadInputError("Dashboard name found but in folder '{0}'!".format(board['folderTitle']))
+            raise GrafanaBadInputError("Dashboard name found but in folder '{0}'!".format(board['folderTitle']))
 
         if 'uid' in board:
             try:
@@ -237,7 +255,7 @@ class Grafana(object):
         return res
 
     #******************************************************************************************
-    def get_folder(self, folder_name=None, folder_uid=None):
+    def get_folder(self, folder_name: str=None, folder_uid: str=None):
         """
         try to find folder meta data (uid...) from folder name
             params:
@@ -270,7 +288,16 @@ class Grafana(object):
         return folder
 
     #***********************************************
-    def import_dashboard(self, dashboard):
+    def import_dashboard(self, dashboard: dict)->bool:
+        """
+        import a dashboard into grafana server
+
+        input:
+            dashboard (dict): the dashboard object itself.
+
+        return:
+            True if dashboard was imported, False otherwise
+        """
 
         #** build a temporary meta dashboard struct to store info
         #** by default dashboard will be overwritten
@@ -303,7 +330,10 @@ class Grafana(object):
                 else:
                     raise Exception("KO: grafana folder '{0}' creation failed.".format(self.grafana_folder))
             else:
-                new_dash['folderId'] = folder['id']
+                if 'uid' in folder:
+                    new_dash['folderUid'] = folder['uid']
+                if 'id' in folder:
+                    new_dash['folderId'] = folder['id']
 
         #** several case
         # read new folder1/dash1(uid1) => old folder1/dash1(uid1): classic update
@@ -320,23 +350,32 @@ class Grafana(object):
                 old_dash['folderId'] = 0
 
             # case b) get a copy of an existing dash to a folder where dash is not present
-            if new_dash['folderId'] != old_dash['folderId']:
-                # if new_dash['dashboard']['uid'] == old_dash['uid']:
+            if ( 'folderUid' in new_dash and 'folderUid' in old_dash and new_dash['folderUid'] != old_dash['folderUid']) \
+              or ( 'folderId' in new_dash and 'folderId' in old_dash and new_dash['folderId'] != old_dash['folderId'] ):
                 if self.allow_new:
                     new_dash['overwrite'] = False
                     #force the creation of a new dashboard
                     new_dash['dashboard']['uid'] = None
                     new_dash['dashboard']['id'] = None
                 else:
-                    raise GrafanaApi.GrafanaBadInputError("dashboard already exists in an another folder and allow_new is False.")
+                    raise GrafanaBadInputError("dashboard already exists in an another folder and allow_new is False.")
             #** case d) send a copy to existing dash : update existing
-            elif new_dash['folderId'] == old_dash['folderId']:
-                if new_dash['dashboard']['uid'] != old_dash['uid']:
-                    if self.overwrite:
-                        new_dash['dashboard']['uid'] = old_dash['uid']
-                        new_dash['dashboard']['id'] = old_dash['id']
-                    else:
-                        raise GrafanaApi.GrafanaBadInputError("dashboard already exists in this folder with an another id and overwrite is False.")
+            elif ( 'folderUid' in new_dash and 'folderUid' in old_dash and new_dash['folderUid'] == old_dash['folderUid']) \
+              or ( 'folderId' in new_dash and 'folderId' in old_dash and new_dash['folderId'] == old_dash['folderId'] ):
+                if 'dashboard' in old_dash:
+                    if new_dash['dashboard']['uid'] != old_dash['dashboard']['uid']:
+                        if self.overwrite:
+                            new_dash['dashboard']['uid'] = old_dash['dashboard']['uid']
+                            new_dash['dashboard']['id'] = old_dash['dashboard']['id']
+                        else:
+                            raise GrafanaBadInputError("dashboard already exists in this folder with an another id and overwrite is False.")
+                else:
+                    if new_dash['dashboard']['uid'] != old_dash['uid']:
+                        if self.overwrite:
+                            new_dash['dashboard']['uid'] = old_dash['uid']
+                            new_dash['dashboard']['id'] = old_dash['id']
+                        else:
+                            raise GrafanaBadInputError("dashboard already exists in this folder with an another id and overwrite is False.")
             else:
                 #force the creation of a new dashboard
                 new_dash['dashboard']['uid'] = None
@@ -358,7 +397,7 @@ class Grafana(object):
         return res
 
     #***********************************************
-    def get_datasources(self):
+    def get_datasources(self: 'Grafana') -> dict:
 
         datasources = {}
 
@@ -379,18 +418,21 @@ class Grafana(object):
         return self.datasources
 
     #***********************************************
-    def list_datasources(self):
+    def list_datasources(self: 'Grafana') -> list:
         """
         wrapper for grafana_api.grafana_api.datasource.list_datasources()
-        input: none
-        :return:
-        list of datasource objs
+
+        input:
+            none
+
+        return:
+            list of datasource objs
         """
 
         return self.grafana_api.datasource.list_datasources()
 
     #**********************************************************************************
-    def get_snapshot_by_name(self, snapshot_name):
+    def get_snapshot_by_name(self: 'Grafana', snapshot_name: str) -> dict:
         """
         get a snapshot content from grafana, looking in existing snapshots by name
 
@@ -422,14 +464,16 @@ class Grafana(object):
         return extracted_snap
 
     #**********************************************************************************
-    def insert_snapshot(self, **kwargs ):
+    def insert_snapshot(self: 'Grafana', **kwargs ) -> bool :
         """
         insert or replace a snapshot in grafana
 
-        :input
-        dashboard=dict -- the dashboard obj itself.
-            name=str -- the snapshot name to create in grafana.
-        :result: bool
+        input:
+            - dashboard=dict -- the dashboard obj itself.
+            - name=str -- the snapshot name to create in grafana.
+
+        result:
+            bool
         """
         #* format for exported snapshots is:
         #   params = {
@@ -489,7 +533,7 @@ class Grafana(object):
         return res
 
     #**********************************************************************************
-    def smartquery(self, datasource: dict, request: dict):
+    def smartquery(self: 'Grafana', datasource: dict, request: dict)->dict:
         """
         wrapper for grafana_api.grafana_api.datasource.smart_query()
 

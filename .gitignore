@@ -134,3 +134,4 @@ dmypy.json
 local_conf/
 local_cli.py
 tt.json
+local_tests/

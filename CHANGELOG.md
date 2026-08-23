@@ -1,5 +1,10 @@
 # HISTORY
 
+## 0.3.2 / 2026-08-23
+
+* fixed import for grafana version >= 11 (see README)
+* added new parameters in config file to rule import.
+
 ## 0.3.1 / 2025-07-30
 
 * Refreshed dependencies:
